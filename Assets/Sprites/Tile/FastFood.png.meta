@@ -104,24 +104,24 @@ TextureImporter:
     buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 65
     textureCompression: 1
-    compressionQuality: 50
+    compressionQuality: 100
     crunchedCompression: 0
     allowsAlphaSplitting: 0
-    overridden: 0
+    overridden: 1
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: iPhone
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 65
     textureCompression: 1
-    compressionQuality: 50
+    compressionQuality: 100
     crunchedCompression: 0
     allowsAlphaSplitting: 0
-    overridden: 0
+    overridden: 1
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -148,7 +148,7 @@ TextureImporter:
         width: 136
         height: 182
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -166,10 +166,10 @@ TextureImporter:
         serializedVersion: 2
         x: 2
         y: 1327
-        width: 202
+        width: 199
         height: 142
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -190,7 +190,7 @@ TextureImporter:
         width: 196
         height: 146
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -211,7 +211,7 @@ TextureImporter:
         width: 187
         height: 133
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -232,7 +232,7 @@ TextureImporter:
         width: 187
         height: 170
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -253,7 +253,7 @@ TextureImporter:
         width: 204
         height: 151
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -266,7 +266,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_6
+      name: FastFood_8
       rect:
         serializedVersion: 2
         x: 400
@@ -274,7 +274,7 @@ TextureImporter:
         width: 164
         height: 193
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -287,7 +287,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_8
+      name: FastFood_6
       rect:
         serializedVersion: 2
         x: 2
@@ -295,7 +295,7 @@ TextureImporter:
         width: 197
         height: 153
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -308,15 +308,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_9
+      name: FastFood_7
       rect:
         serializedVersion: 2
         x: 207
         y: 808
-        width: 189
-        height: 182
+        width: 184
+        height: 179
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -329,15 +329,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_10
+      name: FastFood_9
       rect:
         serializedVersion: 2
         x: 572
         y: 810
         width: 200
-        height: 174
+        height: 144
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -350,7 +350,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_11
+      name: FastFood_10
       rect:
         serializedVersion: 2
         x: 780
@@ -358,7 +358,7 @@ TextureImporter:
         width: 244
         height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -371,15 +371,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_12
+      name: FastFood_11
       rect:
         serializedVersion: 2
         x: 2
-        y: 606
+        y: 607
         width: 198
-        height: 191
+        height: 187
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -392,15 +392,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_13
+      name: FastFood_12
       rect:
         serializedVersion: 2
         x: 208
-        y: 606
+        y: 609
         width: 189
-        height: 202
+        height: 193
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -413,7 +413,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_14
+      name: FastFood_13
       rect:
         serializedVersion: 2
         x: 405
@@ -421,7 +421,7 @@ TextureImporter:
         width: 194
         height: 181
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -434,7 +434,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_15
+      name: FastFood_14
       rect:
         serializedVersion: 2
         x: 609
@@ -442,7 +442,7 @@ TextureImporter:
         width: 194
         height: 185
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -455,7 +455,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_16
+      name: FastFood_15
       rect:
         serializedVersion: 2
         x: 811
@@ -463,7 +463,7 @@ TextureImporter:
         width: 174
         height: 192
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -476,7 +476,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_17
+      name: FastFood_16
       rect:
         serializedVersion: 2
         x: 0
@@ -484,7 +484,7 @@ TextureImporter:
         width: 207
         height: 185
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -497,7 +497,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_18
+      name: FastFood_17
       rect:
         serializedVersion: 2
         x: 210
@@ -505,7 +505,7 @@ TextureImporter:
         width: 206
         height: 186
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -518,7 +518,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_19
+      name: FastFood_18
       rect:
         serializedVersion: 2
         x: 424
@@ -526,7 +526,7 @@ TextureImporter:
         width: 186
         height: 198
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -539,7 +539,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_20
+      name: FastFood_19
       rect:
         serializedVersion: 2
         x: 618
@@ -547,7 +547,7 @@ TextureImporter:
         width: 188
         height: 193
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -560,15 +560,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_21
+      name: FastFood_20
       rect:
         serializedVersion: 2
-        x: 810
+        x: 813
         y: 420
-        width: 204
-        height: 168
+        width: 201
+        height: 169
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -581,7 +581,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_22
+      name: FastFood_21
       rect:
         serializedVersion: 2
         x: 2
@@ -589,7 +589,7 @@ TextureImporter:
         width: 208
         height: 198
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -602,15 +602,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_23
+      name: FastFood_22
       rect:
         serializedVersion: 2
-        x: 216
+        x: 218
         y: 212
-        width: 210
+        width: 205
         height: 196
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -623,7 +623,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_24
+      name: FastFood_23
       rect:
         serializedVersion: 2
         x: 432
@@ -631,7 +631,7 @@ TextureImporter:
         width: 199
         height: 197
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -644,7 +644,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_25
+      name: FastFood_24
       rect:
         serializedVersion: 2
         x: 639
@@ -652,7 +652,7 @@ TextureImporter:
         width: 191
         height: 202
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -665,7 +665,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_26
+      name: FastFood_25
       rect:
         serializedVersion: 2
         x: 2
@@ -673,7 +673,7 @@ TextureImporter:
         width: 214
         height: 201
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -686,7 +686,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_27
+      name: FastFood_26
       rect:
         serializedVersion: 2
         x: 224
@@ -694,7 +694,7 @@ TextureImporter:
         width: 200
         height: 204
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -707,7 +707,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_28
+      name: FastFood_27
       rect:
         serializedVersion: 2
         x: 432
@@ -715,7 +715,7 @@ TextureImporter:
         width: 200
         height: 200
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -728,7 +728,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_29
+      name: FastFood_28
       rect:
         serializedVersion: 2
         x: 640
@@ -736,7 +736,7 @@ TextureImporter:
         width: 194
         height: 200
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -749,15 +749,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FastFood_30
+      name: FastFood_29
       rect:
         serializedVersion: 2
         x: 842
-        y: 0
-        width: 178
-        height: 193
+        y: 1
+        width: 167
+        height: 192
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -782,35 +782,34 @@ TextureImporter:
     nameFileIdTable:
       FastFood_0: -1022644646
       FastFood_1: 1328735475
-      FastFood_23: -1031346695
-      FastFood_19: -59164339
-      FastFood_27: 712496332
+      FastFood_23: 67840572
+      FastFood_19: 1781941237
+      FastFood_27: 1133036423
+      FastFood_7: 1904415
       FastFood_6: -1784596098
-      FastFood_7: -1354660408
-      FastFood_15: -54520023
-      FastFood_10: -431221129
-      FastFood_12: 1554249311
-      FastFood_9: 1904415
-      FastFood_11: 1543960983
+      FastFood_15: -169608948
+      FastFood_10: 1554249311
+      FastFood_12: 495140137
+      FastFood_9: 1543960983
+      FastFood_11: 1379700678
       FastFood_5: -1908217850
-      FastFood_14: 495140137
-      FastFood_20: 1781941237
-      FastFood_25: -426222364
-      FastFood_16: -169608948
-      FastFood_26: 1216377990
-      FastFood_17: 1072488
-      FastFood_28: 1133036423
-      FastFood_13: 1379700678
-      FastFood_22: 1064565217
-      FastFood_2: 1497123353
-      FastFood_21: 433306187
-      FastFood_29: 1851881566
-      FastFood_4: -874981979
-      FastFood_18: -116939534
-      FastFood_30: 1259983683
-      FastFood_3: -1972952631
-      FastFood_24: 67840572
-      FastFood_8: 391983303
+      FastFood_14: -169608948
+      FastFood_20: 433306187
+      FastFood_25: 1216377990
+      FastFood_16: 1072488
+      FastFood_26: 712496332
+      FastFood_17: -116939534
+      FastFood_28: 1851881566
+      FastFood_13: -54520023
+      FastFood_22: -1031346695
+      FastFood_2: 433306187
+      FastFood_21: 1064565217
+      FastFood_29: 1259983683
+      FastFood_4: -116939534
+      FastFood_18: -59164339
+      FastFood_3: 67840572
+      FastFood_24: -426222364
+      FastFood_8: -431221129
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

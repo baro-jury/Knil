@@ -104,24 +104,24 @@ TextureImporter:
     buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 65
     textureCompression: 1
-    compressionQuality: 50
+    compressionQuality: 100
     crunchedCompression: 0
     allowsAlphaSplitting: 0
-    overridden: 0
+    overridden: 1
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: iPhone
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 65
     textureCompression: 1
-    compressionQuality: 50
+    compressionQuality: 100
     crunchedCompression: 0
     allowsAlphaSplitting: 0
-    overridden: 0
+    overridden: 1
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -140,7 +140,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: AfternoonTea_0
+      name: AfternoonTea_2
       rect:
         serializedVersion: 2
         x: 286
@@ -161,7 +161,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_1
+      name: AfternoonTea_3
       rect:
         serializedVersion: 2
         x: 798
@@ -182,10 +182,10 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_5
+      name: AfternoonTea_1
       rect:
         serializedVersion: 2
-        x: 146
+        x: 151
         y: 793
         width: 134
         height: 195
@@ -203,7 +203,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_7
+      name: AfternoonTea_0
       rect:
         serializedVersion: 2
         x: 0
@@ -224,7 +224,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_9
+      name: AfternoonTea_7
       rect:
         serializedVersion: 2
         x: 503
@@ -245,7 +245,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_10
+      name: AfternoonTea_8
       rect:
         serializedVersion: 2
         x: 651
@@ -266,7 +266,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_12
+      name: AfternoonTea_6
       rect:
         serializedVersion: 2
         x: 353
@@ -287,7 +287,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_13
+      name: AfternoonTea_9
       rect:
         serializedVersion: 2
         x: 797
@@ -308,7 +308,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_15
+      name: AfternoonTea_5
       rect:
         serializedVersion: 2
         x: 202
@@ -329,7 +329,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_20
+      name: AfternoonTea_4
       rect:
         serializedVersion: 2
         x: 0
@@ -350,11 +350,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_22
+      name: AfternoonTea_13
       rect:
         serializedVersion: 2
-        x: 582
-        y: 414
+        x: 583
+        y: 415
         width: 149
         height: 200
       alignment: 0
@@ -371,10 +371,10 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_25
+      name: AfternoonTea_15
       rect:
         serializedVersion: 2
-        x: 939
+        x: 941
         y: 398
         width: 90
         height: 195
@@ -392,7 +392,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_26
+      name: AfternoonTea_10
       rect:
         serializedVersion: 2
         x: 2
@@ -413,7 +413,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_27
+      name: AfternoonTea_11
       rect:
         serializedVersion: 2
         x: 208
@@ -434,10 +434,10 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_28
+      name: AfternoonTea_12
       rect:
         serializedVersion: 2
-        x: 402
+        x: 403
         y: 414
         width: 177
         height: 172
@@ -455,10 +455,10 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_29
+      name: AfternoonTea_14
       rect:
         serializedVersion: 2
-        x: 747
+        x: 749
         y: 395
         width: 137
         height: 192
@@ -476,7 +476,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_30
+      name: AfternoonTea_16
       rect:
         serializedVersion: 2
         x: 6
@@ -497,7 +497,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_31
+      name: AfternoonTea_17
       rect:
         serializedVersion: 2
         x: 189
@@ -518,7 +518,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_32
+      name: AfternoonTea_18
       rect:
         serializedVersion: 2
         x: 371
@@ -539,7 +539,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_33
+      name: AfternoonTea_19
       rect:
         serializedVersion: 2
         x: 546
@@ -560,7 +560,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_34
+      name: AfternoonTea_20
       rect:
         serializedVersion: 2
         x: 747
@@ -581,7 +581,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_35
+      name: AfternoonTea_21
       rect:
         serializedVersion: 2
         x: 929
@@ -602,7 +602,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_39
+      name: AfternoonTea_25
       rect:
         serializedVersion: 2
         x: 597
@@ -623,7 +623,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_42
+      name: AfternoonTea_22
       rect:
         serializedVersion: 2
         x: 0
@@ -644,7 +644,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_43
+      name: AfternoonTea_23
       rect:
         serializedVersion: 2
         x: 212
@@ -665,7 +665,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_44
+      name: AfternoonTea_24
       rect:
         serializedVersion: 2
         x: 408
@@ -686,7 +686,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_45
+      name: AfternoonTea_26
       rect:
         serializedVersion: 2
         x: 747
@@ -707,7 +707,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_46
+      name: AfternoonTea_27
       rect:
         serializedVersion: 2
         x: 923
@@ -728,7 +728,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_47
+      name: AfternoonTea_28
       rect:
         serializedVersion: 2
         x: 1060
@@ -749,7 +749,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AfternoonTea_48
+      name: AfternoonTea_29
       rect:
         serializedVersion: 2
         x: 1176
@@ -780,55 +780,41 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      AfternoonTea_27: -2077586914
-      AfternoonTea_17: -1920734175
+      AfternoonTea_27: -2133360681
+      AfternoonTea_17: 1902932893
       AfternoonTea_38: -779720233
-      AfternoonTea_18: -1955309356
-      AfternoonTea_3: -697623560
-      AfternoonTea_25: -333700396
+      AfternoonTea_18: -1124529434
+      AfternoonTea_3: -1962163249
+      AfternoonTea_40: -24966033
       AfternoonTea_37: 131581127
-      AfternoonTea_19: 745404070
-      AfternoonTea_33: -308356110
-      AfternoonTea_6: -2432517
-      AfternoonTea_20: 1695952610
-      AfternoonTea_5: -1356323351
-      AfternoonTea_39: -19625808
-      AfternoonTea_14: -616552310
-      AfternoonTea_15: 1923542742
-      AfternoonTea_0: -358820250
-      AfternoonTea_21: 1104871301
-      AfternoonTea_28: -1869695656
-      AfternoonTea_12: -2041313843
-      AfternoonTea_24: -1190638282
-      AfternoonTea_44: -553372722
-      AfternoonTea_46: -2133360681
-      AfternoonTea_35: -564837969
-      AfternoonTea_40: 1750392699
-      AfternoonTea_9: -24966033
-      AfternoonTea_22: 1097122202
-      AfternoonTea_43: -1153861177
-      AfternoonTea_2: 966548288
-      AfternoonTea_11: -958019076
-      AfternoonTea_41: 1155854295
-      AfternoonTea_26: -697911093
-      AfternoonTea_7: -1695699047
-      AfternoonTea_45: -2078213664
-      AfternoonTea_30: 22255091
-      AfternoonTea_29: 1151685522
-      AfternoonTea_34: 602119381
-      AfternoonTea_48: 1388031034
-      AfternoonTea_10: 603606857
-      AfternoonTea_47: -2094794803
-      AfternoonTea_1: -1962163249
-      AfternoonTea_42: 2091753511
-      AfternoonTea_13: -558044155
-      AfternoonTea_36: 126913416
-      AfternoonTea_23: -1806897213
-      AfternoonTea_31: 1902932893
-      AfternoonTea_16: 934644802
-      AfternoonTea_32: -1124529434
-      AfternoonTea_8: 1251346754
-      AfternoonTea_4: -626100544
+      AfternoonTea_2: -358820250
+      AfternoonTea_11: -2077586914
+      AfternoonTea_41: -697911093
+      AfternoonTea_19: -308356110
+      AfternoonTea_26: -2078213664
+      AfternoonTea_9: -558044155
+      AfternoonTea_7: -24966033
+      AfternoonTea_22: 2091753511
+      AfternoonTea_6: -2041313843
+      AfternoonTea_20: 602119381
+      AfternoonTea_29: 1388031034
+      AfternoonTea_5: 1923542742
+      AfternoonTea_25: -19625808
+      AfternoonTea_14: 1151685522
+      AfternoonTea_10: -697911093
+      AfternoonTea_15: -333700396
+      AfternoonTea_0: -1695699047
+      AfternoonTea_1: -1356323351
+      AfternoonTea_28: -2094794803
+      AfternoonTea_21: -564837969
+      AfternoonTea_13: 1097122202
+      AfternoonTea_36: -1806897213
+      AfternoonTea_12: -1869695656
+      AfternoonTea_23: -1153861177
+      AfternoonTea_16: 22255091
+      AfternoonTea_24: -553372722
+      AfternoonTea_8: 603606857
+      AfternoonTea_4: 1695952610
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

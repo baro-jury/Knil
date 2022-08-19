@@ -104,24 +104,24 @@ TextureImporter:
     buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 65
     textureCompression: 1
-    compressionQuality: 50
+    compressionQuality: 100
     crunchedCompression: 0
     allowsAlphaSplitting: 0
-    overridden: 0
+    overridden: 1
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: iPhone
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 65
     textureCompression: 1
-    compressionQuality: 50
+    compressionQuality: 100
     crunchedCompression: 0
     allowsAlphaSplitting: 0
-    overridden: 0
+    overridden: 1
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -148,7 +148,7 @@ TextureImporter:
         width: 150
         height: 192
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -161,7 +161,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_5
+      name: Makeup_0
       rect:
         serializedVersion: 2
         x: 2
@@ -169,7 +169,7 @@ TextureImporter:
         width: 209
         height: 140
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -182,7 +182,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_7
+      name: Makeup_2
       rect:
         serializedVersion: 2
         x: 519
@@ -190,7 +190,7 @@ TextureImporter:
         width: 185
         height: 154
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -203,7 +203,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_8
+      name: Makeup_3
       rect:
         serializedVersion: 2
         x: 710
@@ -211,7 +211,7 @@ TextureImporter:
         width: 204
         height: 139
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -224,7 +224,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_10
+      name: Makeup_5
       rect:
         serializedVersion: 2
         x: 188
@@ -232,7 +232,7 @@ TextureImporter:
         width: 168
         height: 192
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -245,7 +245,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_12
+      name: Makeup_7
       rect:
         serializedVersion: 2
         x: 550
@@ -253,7 +253,7 @@ TextureImporter:
         width: 148
         height: 211
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -266,7 +266,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_13
+      name: Makeup_8
       rect:
         serializedVersion: 2
         x: 704
@@ -274,7 +274,7 @@ TextureImporter:
         width: 145
         height: 207
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -287,7 +287,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_14
+      name: Makeup_4
       rect:
         serializedVersion: 2
         x: 2
@@ -295,7 +295,7 @@ TextureImporter:
         width: 179
         height: 185
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -308,7 +308,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_15
+      name: Makeup_6
       rect:
         serializedVersion: 2
         x: 363
@@ -316,7 +316,7 @@ TextureImporter:
         width: 181
         height: 175
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -329,7 +329,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_16
+      name: Makeup_14
       rect:
         serializedVersion: 2
         x: 1064
@@ -337,7 +337,7 @@ TextureImporter:
         width: 60
         height: 206
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -350,7 +350,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_17
+      name: Makeup_9
       rect:
         serializedVersion: 2
         x: 2
@@ -358,7 +358,7 @@ TextureImporter:
         width: 171
         height: 198
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -371,7 +371,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_18
+      name: Makeup_10
       rect:
         serializedVersion: 2
         x: 188
@@ -379,7 +379,7 @@ TextureImporter:
         width: 183
         height: 183
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -392,7 +392,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_19
+      name: Makeup_11
       rect:
         serializedVersion: 2
         x: 395
@@ -400,7 +400,7 @@ TextureImporter:
         width: 163
         height: 193
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -413,7 +413,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_20
+      name: Makeup_12
       rect:
         serializedVersion: 2
         x: 704
@@ -421,7 +421,7 @@ TextureImporter:
         width: 160
         height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -434,7 +434,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_23
+      name: Makeup_16
       rect:
         serializedVersion: 2
         x: 198
@@ -442,7 +442,7 @@ TextureImporter:
         width: 191
         height: 189
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -455,7 +455,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_24
+      name: Makeup_13
       rect:
         serializedVersion: 2
         x: 870
@@ -463,7 +463,7 @@ TextureImporter:
         width: 188
         height: 132
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -476,7 +476,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_25
+      name: Makeup_21
       rect:
         serializedVersion: 2
         x: 1122
@@ -484,7 +484,7 @@ TextureImporter:
         width: 130
         height: 200
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -497,7 +497,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_26
+      name: Makeup_15
       rect:
         serializedVersion: 2
         x: 2
@@ -505,7 +505,7 @@ TextureImporter:
         width: 190
         height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -518,7 +518,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_28
+      name: Makeup_17
       rect:
         serializedVersion: 2
         x: 392
@@ -526,7 +526,7 @@ TextureImporter:
         width: 200
         height: 179
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -539,7 +539,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_29
+      name: Makeup_18
       rect:
         serializedVersion: 2
         x: 594
@@ -547,7 +547,7 @@ TextureImporter:
         width: 180
         height: 192
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -560,7 +560,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_30
+      name: Makeup_19
       rect:
         serializedVersion: 2
         x: 779
@@ -568,7 +568,7 @@ TextureImporter:
         width: 191
         height: 178
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -581,7 +581,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_31
+      name: Makeup_20
       rect:
         serializedVersion: 2
         x: 972
@@ -589,7 +589,7 @@ TextureImporter:
         width: 144
         height: 195
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -602,7 +602,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_32
+      name: Makeup_22
       rect:
         serializedVersion: 2
         x: 1258
@@ -610,7 +610,7 @@ TextureImporter:
         width: 130
         height: 194
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -623,7 +623,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_33
+      name: Makeup_24
       rect:
         serializedVersion: 2
         x: 214
@@ -631,7 +631,7 @@ TextureImporter:
         width: 182
         height: 205
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -644,7 +644,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_34
+      name: Makeup_25
       rect:
         serializedVersion: 2
         x: 402
@@ -652,7 +652,7 @@ TextureImporter:
         width: 177
         height: 202
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -665,7 +665,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_35
+      name: Makeup_26
       rect:
         serializedVersion: 2
         x: 585
@@ -673,7 +673,7 @@ TextureImporter:
         width: 185
         height: 193
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -686,7 +686,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_37
+      name: Makeup_23
       rect:
         serializedVersion: 2
         x: 2
@@ -694,7 +694,7 @@ TextureImporter:
         width: 206
         height: 182
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -707,7 +707,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_38
+      name: Makeup_27
       rect:
         serializedVersion: 2
         x: 776
@@ -715,7 +715,7 @@ TextureImporter:
         width: 195
         height: 173
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -728,7 +728,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_39
+      name: Makeup_28
       rect:
         serializedVersion: 2
         x: 974
@@ -736,7 +736,7 @@ TextureImporter:
         width: 150
         height: 194
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -749,7 +749,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Makeup_40
+      name: Makeup_29
       rect:
         serializedVersion: 2
         x: 1130
@@ -757,7 +757,7 @@ TextureImporter:
         width: 196
         height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -780,47 +780,37 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Makeup_13: -599762654
       Makeup_36: -1887878554
-      Makeup_27: -2045800326
-      Makeup_25: -1972334064
-      Makeup_7: 1174234339
-      Makeup_14: 174762070
-      Makeup_11: 1727661609
-      Makeup_6: -260637459
-      Makeup_15: -151411665
-      Makeup_34: -100492137
-      Makeup_23: -1998508002
-      Makeup_22: -1866182444
-      Makeup_20: 1634807981
-      Makeup_33: -1495551408
-      Makeup_37: 481029447
-      Makeup_18: 2142481671
-      Makeup_12: 28481357
-      Makeup_21: -1718385808
-      Makeup_35: 2143055837
-      Makeup_9: 234913365
-      Makeup_8: -612239956
-      Makeup_17: 828855188
-      Makeup_4: 1421478130
-      Makeup_24: 1395363298
-      Makeup_38: 1115800583
-      Makeup_3: 1791278210
-      Makeup_29: 800679899
-      Makeup_19: -1021755510
-      Makeup_31: 1543433185
-      Makeup_28: 1705403498
-      Makeup_32: 979025959
-      Makeup_5: 395486029
-      Makeup_0: -1221287793
-      Makeup_30: 2128562219
+      Makeup_13: 1395363298
+      Makeup_27: 1115800583
+      Makeup_25: -100492137
+      Makeup_7: 28481357
+      Makeup_14: -806146486
+      Makeup_11: -1021755510
+      Makeup_6: -151411665
+      Makeup_15: -1633373894
+      Makeup_23: 481029447
+      Makeup_22: 979025959
+      Makeup_20: 1543433185
+      Makeup_18: 800679899
+      Makeup_12: 1634807981
+      Makeup_21: -1972334064
+      Makeup_9: 828855188
+      Makeup_8: -599762654
+      Makeup_17: 1705403498
+      Makeup_4: 174762070
+      Makeup_24: -1495551408
+      Makeup_3: -612239956
+      Makeup_29: 432044
+      Makeup_19: 2128562219
+      Makeup_28: -22070143
+      Makeup_5: 1016548642
+      Makeup_0: 395486029
       Makeup_1: 851476037
-      Makeup_2: -730413567
-      Makeup_26: -1633373894
-      Makeup_40: 432044
-      Makeup_39: -22070143
-      Makeup_10: 1016548642
-      Makeup_16: -806146486
+      Makeup_2: 1174234339
+      Makeup_26: 2143055837
+      Makeup_10: 2142481671
+      Makeup_16: -1998508002
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
