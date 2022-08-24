@@ -20,7 +20,7 @@ public class TileController : MonoBehaviour
 
     public void _Click()
     {
-        //GameplayController.instance._ClickTile(gameObject.transform);
-        TestGameplay.instance._ClickTile(gameObject.transform);
+        GameplayController.instance._ClickTile(gameObject.transform);
+        //TestGameplay.instance._ClickTile(gameObject.transform);
     }
 }

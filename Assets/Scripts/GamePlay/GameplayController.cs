@@ -1,6 +1,8 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameplayController : MonoBehaviour
@@ -9,16 +11,29 @@ public class GameplayController : MonoBehaviour
 
     private bool isCoupled = true;
     private int siblingIndex;
-
-    [HideInInspector]
-    public Transform tile;
-    [HideInInspector]
-    public Transform[] points = new Transform[4];
+    private string currentLevel;
+    private Transform[] points = new Transform[4];
 
     [SerializeField]
+    private Transform tile;
+    [SerializeField]
+    private Button pauseButton;
+    [SerializeField]
+    private GameObject preBoosterPanel;
+    [SerializeField]
+    private GameObject pausePanel;
+    [SerializeField]
+    private GameObject settingPanel;
+    [SerializeField]
+    private GameObject guidePanel;
+    [SerializeField]
+    private GameObject replayPanel;
+    [SerializeField]
+    private GameObject gameOverPanel;
+    [SerializeField]
+    private GameObject winPanel;
+    [SerializeField]
     private Transform tempAlignWithLeft, tempAlignWithRight, tempAlignWithTop, tempAlignWithBottom, tempAlignWithStart, tempAlignWithEnd;
-
-    //public List<int> idElement = new List<int>();
 
     void _MakeInstance()
     {
@@ -31,9 +46,113 @@ public class GameplayController : MonoBehaviour
     void Awake()
     {
         _MakeInstance();
+        Time.timeScale = 0;
     }
 
-    #region Click
+    #region In Game
+
+    public void _Pause()
+    {
+        pausePanel.SetActive(true);
+        Time.timeScale = 0;
+    }
+
+    public void _Resume()
+    {
+        pausePanel.SetActive(false);
+        Time.timeScale = 1;
+    }
+
+    public void _GoToMenu()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    public void _GoToSetting()
+    {
+        settingPanel.SetActive(true);
+    }
+
+    public void _TurnOffVolume()
+    {
+
+    }
+
+    public void _TurnOnVolume()
+    {
+
+    }
+
+    public void _ShowHowToPlay()
+    {
+        guidePanel.SetActive(true);
+    }
+
+    public void _TurnOffGuidePanel()
+    {
+        guidePanel.SetActive(false);
+    }
+
+    public void _TurnOffSettingPanel()
+    {
+        settingPanel.SetActive(false);
+    }
+
+    public void _ReplayConfirmation()
+    {
+        replayPanel.SetActive(true);
+    }
+
+    public void _Replay()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void _NotReplay()
+    {
+        replayPanel.SetActive(false);
+    }
+
+    public void _ChooseLevel()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    public void _GameOver()
+    {
+        gameOverPanel.SetActive(true);
+        //string[] curLv = currentLevel.Split("_");
+        //string[] markedLv = ProgressController.instance._GetMarkedLevel().Split("_");
+        //if (Convert.ToInt32(curLv[1]) > Convert.ToInt32(markedLv[1]))
+        //{
+        //    ProgressController.instance._MarkCurrentLevel(currentLevel);
+        //}
+    }
+
+    public void _WatchAds()
+    {
+
+    }
+
+    public void _CompleteLevel()
+    {
+        Time.timeScale = 0;
+        winPanel.SetActive(true);
+    }
+
+    public void _GoToNextLevel()
+    {
+        SceneManager.LoadScene(1);
+    }
+
+    public void _ShareResult()
+    {
+
+    }
+
+    #endregion
+
+    #region Click Tiles
     public void _ClickTile(Transform currentTile)
     {
         isCoupled = !isCoupled;
@@ -50,8 +169,7 @@ public class GameplayController : MonoBehaviour
             }
             else
             {
-                if (ResourceController.spritesDict[tile.GetChild(0).GetComponent<Image>().sprite]
-                    != ResourceController.spritesDict[currentTile.GetChild(0).GetComponent<Image>().sprite])
+                if (!_AreTheSameTiles(tile, currentTile))
                 {
                     Debug.Log("Click khac tile khac ID");
                 }
@@ -60,6 +178,7 @@ public class GameplayController : MonoBehaviour
                     if (_HasAvailableConnection(tile, currentTile))
                     {
                         StartCoroutine(MakeConnection(points));
+                        StartCoroutine(DestroyTiles(points));
                     }
                     else
                     {
@@ -70,11 +189,189 @@ public class GameplayController : MonoBehaviour
         }
     }
 
+    void _SetLinePositions(Transform t0, Transform t1, Transform t2, Transform t3)
+    {
+        points[0] = t0;
+        points[1] = t1;
+        points[2] = t2;
+        points[3] = t3;
+    }
+    #endregion
+
+    #region Booster
+
+    public void _BoosterShuffle() //Đổi vị trí: Khi người chơi sử dụng, các item thay đổi vị trí cho nhau.
+    {
+        BoardController.instance._RearrangeTiles();
+    }
+
+    public void _BoosterHint() //Hint: Khi sử dụng sẽ gợi ý 1 kết quả
+    {
+        bool isFounded = false;
+        while (!isFounded)
+        {
+            int index = Random.Range(0, ResourceController.spritesDict.Count);
+            List<Transform> temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
+            if (temp.Count != 0)
+            {
+                for (int j = 1; j < temp.Count; j++)
+                {
+                    if (_HasAvailableConnection(temp[0], temp[j]))
+                    {
+                        StartCoroutine(MakeConnection(points));
+                        isFounded = true;
+                        break;
+                    }
+
+                }
+            }
+        }
+    }
+
+    //can chinh sua
+    public void _BoosterMagicWand() //Đũa thần: 2 kết quả hoàn thành
+    {
+        int numCouple = 0;
+        List<Transform> temp;
+        Transform[] trans = new Transform[4];
+        for (int index = 0; index < ResourceController.spritesDict.Count; index++)
+        {
+        check:
+            if (numCouple == 2)
+            {
+                break;
+            }
+            temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
+            if (temp.Count == 2)
+            {
+                if (_HasAvailableConnection(temp[0], temp[1]))
+                {
+                    trans[2 * numCouple] = temp[0];
+                    trans[2 * numCouple + 1] = temp[1];
+                    numCouple++;
+                }
+            }
+            else if (temp.Count > 2)
+            {
+                for (int j = 0; j < (temp.Count / 2); j++)
+                {
+                    if (numCouple == 2)
+                    {
+                        goto check;
+                    }
+                    if (_HasAvailableConnection(temp[2 * j], temp[2 * j + 1])) //check theo tung cap lien tiep, neu co 2 cap deu an duoc thi add vao mang
+                                                                               //-> co bug: tile o cap nay noi dc tile o cap kia nhung k add dc
+                    {
+                        trans[2 * numCouple] = temp[2 * j];
+                        trans[2 * numCouple + 1] = temp[2 * j + 1];
+                        numCouple++;
+                    }
+                }
+                //for (int i = 0; i < (temp.Count - 1); i++)
+                //{
+
+                //    for (int j = (i + 1); j < temp.Count; j++)
+                //    {
+                //        if (numCouple == 2)
+                //        {
+                //            goto start;
+                //        }
+                //        if (_HasAvailableConnection(temp[i], temp[j])) //check tren board hien tai, neu co 2 cap deu an duoc thi add vao mang -> co bug: tile trung nhau khi check nhung van add
+                //        {
+                //            trans[2 * numCouple] = temp[i];
+                //            trans[2 * numCouple + 1] = temp[j];
+                //            numCouple++;
+                //        }
+                //    }
+                //}
+            }
+        }
+        StartCoroutine(MagicWand(trans));
+    }
+
+    public void _BoosterFreezeTime() //Snow: Đóng băng thời gian 10 giây
+    {
+        Debug.Log("Đóng băng thời gian 10 giây");
+        StartCoroutine(FreezeTime());
+    }
+
+    #endregion
+
+    #region PreBooster
+
+    public void _PreBoosterTimeWizard() //Time : Tăng 10 giây khi sử dụng
+    {
+        preBoosterPanel.SetActive(false);
+        TimeController.instance._SetTimeForSlider(true);
+        Time.timeScale = 1;
+    }
+
+    public void _PreBoosterEarthquake() //Remove item: Mỗi 1 hình xoá 1 cặp ( tối đa 5 cặp ) Random
+    {
+        preBoosterPanel.SetActive(false);
+        int n = 0, numCouple = Random.Range(3, 6);
+        List<Transform> temp;
+        Transform[] trans = new Transform[2 * numCouple];
+        for (int i = 0; i < ResourceController.spritesDict.Count; i++)
+        {
+            if (n == numCouple)
+            {
+                break;
+            }
+            temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(i).Key);
+            if (temp.Count != 0)
+            {
+                trans[2 * n] = temp[0];
+                trans[2 * n + 1] = temp[1];
+                n++;
+            }
+        }
+        StartCoroutine(Earthquake(trans));
+        Time.timeScale = 1;
+    }
+
+    public void _PreBoosterLaserBeam() //Remove All: Xoá 1 hình bất kỳ
+    {
+        preBoosterPanel.SetActive(false);
+        bool isFounded = false;
+        while (!isFounded)
+        {
+            int index = Random.Range(0, ResourceController.spritesDict.Count);
+            List<Transform> temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
+            if (temp.Count != 0)
+            {
+                for (int i = 0; i < temp.Count; i++)
+                {
+                    StartCoroutine(DestroyTiles(temp[i]));
+                }
+                isFounded = true;
+            }
+        }
+        Time.timeScale = 1;
+    }
+
+    public void _NoPreBooster()
+    {
+        preBoosterPanel.SetActive(false);
+        Time.timeScale = 1;
+    }
+
+    #endregion
+
+    #region IEnumerator
+
     IEnumerator MakeConnection(params Transform[] linePositions)
     {
-        LineController.instance._DrawLine(linePositions);
-        //yield return new WaitForSeconds(1f);
-        yield return new WaitForSeconds(0.5f);
+        LineController.instance._DrawLine(0.3f * tile.gameObject.GetComponent<RectTransform>().sizeDelta.x / 100, linePositions);
+
+        yield return new WaitForSeconds(0.75f);
+
+        LineController.instance._EraseLine();
+    }
+
+    IEnumerator DestroyTiles(params Transform[] linePositions)
+    {
+        yield return new WaitForSeconds(0.75f);
 
         int n = linePositions.Length;
         for (int i = 0; i < linePositions.Length; i++)
@@ -89,24 +386,52 @@ public class GameplayController : MonoBehaviour
             if (i == 0 || i == n - 1)
             {
                 linePositions[i].gameObject.SetActive(false);
-                ResourceController.spritesDict[linePositions[i].GetChild(0).GetComponent<Image>().sprite] = -1;
+                BoardController.instance._DeactivateTile(linePositions[i]);
             }
         }
 
-        LineController.instance._EraseLine();
+        BoardController.instance._ShuffleWhenNoPossibleLink();
     }
 
-    void _SetLinePositions(Transform t0, Transform t1, Transform t2, Transform t3)
+    IEnumerator MagicWand(params Transform[] transforms)
     {
-        points[0] = t0;
-        points[1] = t1;
-        points[2] = t2;
-        points[3] = t3;
+        for (int i = 0; i < (transforms.Length / 2); i++)
+        {
+            if (_HasAvailableConnection(transforms[2 * i], transforms[2 * i + 1]))
+            {
+                StartCoroutine(MakeConnection(points));
+                StartCoroutine(DestroyTiles(points));
+            }
+            yield return new WaitForSeconds(0.75f);
+        }
     }
+
+    IEnumerator FreezeTime()
+    {
+        TimeController.instance._FreezeTime(true);
+        yield return new WaitForSeconds(10);
+        TimeController.instance._FreezeTime(false);
+    }
+
+    IEnumerator Earthquake(params Transform[] transforms)
+    {
+        yield return new WaitForSeconds(0);
+        for (int i = 0; i < (transforms.Length / 2); i++)
+        {
+            StartCoroutine(DestroyTiles(transforms[2 * i], transforms[2 * i + 1]));
+        }
+    }
+
     #endregion
 
     #region Algorithm
-    bool _HasAvailableConnection(Transform tile1, Transform tile2)
+    bool _AreTheSameTiles(Transform tile1, Transform tile2)
+    {
+        return ResourceController.spritesDict[tile1.GetChild(0).GetComponent<Image>().sprite]
+            == ResourceController.spritesDict[tile2.GetChild(0).GetComponent<Image>().sprite];
+    }
+
+    public bool _HasAvailableConnection(Transform tile1, Transform tile2)
     {
         // check line with x
         if (tile1.localPosition.x == tile2.localPosition.x)
@@ -221,19 +546,11 @@ public class GameplayController : MonoBehaviour
         Transform leftTile = tile1, rightTile = tile2;
         float leftX = Mathf.Min(tile1.localPosition.x, tile2.localPosition.x);
         float rightX = Mathf.Max(tile1.localPosition.x, tile2.localPosition.x);
-        float leftY, rightY;
-        if (leftX == tile1.localPosition.x)
+        if (leftX == tile2.localPosition.x)
         {
-            leftY = tile1.localPosition.y;
-            rightY = tile2.localPosition.y;
+            leftTile = tile2;
+            rightTile = tile1;
         }
-        else
-        {
-            leftY = tile2.localPosition.y;
-            rightY = tile1.localPosition.y;
-        }
-        leftTile.localPosition = new Vector3(leftX, leftY, 0);
-        rightTile.localPosition = new Vector3(rightX, rightY, 0);
         float buttonSide = tile1.gameObject.GetComponent<RectTransform>().sizeDelta.x;
         bool checkPoint;
 
@@ -241,9 +558,10 @@ public class GameplayController : MonoBehaviour
 
         for (float i = (leftX + buttonSide); i < rightX; i += buttonSide)
         {
-            tempAlignWithLeft.localPosition = new Vector3(i, leftY, 0);
-            tempAlignWithRight.localPosition = new Vector3(i, rightY, 0);
-            checkPoint = BoardController.instance._HasButtonInLocation(i, leftY) || BoardController.instance._HasButtonInLocation(i, rightY);
+            tempAlignWithLeft.localPosition = new Vector3(i, leftTile.localPosition.y, 0);
+            tempAlignWithRight.localPosition = new Vector3(i, rightTile.localPosition.y, 0);
+            checkPoint = BoardController.instance._HasButtonInLocation(i, leftTile.localPosition.y)
+                || BoardController.instance._HasButtonInLocation(i, rightTile.localPosition.y);
             if (!checkPoint && _HasHorizontalLine(leftTile, tempAlignWithLeft) &&
                 _HasVerticalLine(tempAlignWithLeft, tempAlignWithRight) && _HasHorizontalLine(tempAlignWithRight, rightTile))
             {
@@ -267,19 +585,11 @@ public class GameplayController : MonoBehaviour
         Transform topTile = tile1, bottomTile = tile2;
         float topY = Mathf.Max(tile1.localPosition.y, tile2.localPosition.y);
         float bottomY = Mathf.Min(tile1.localPosition.y, tile2.localPosition.y);
-        float topX, bottomX;
-        if (topY == tile1.localPosition.y)
+        if (topY == tile2.localPosition.y)
         {
-            topX = tile1.localPosition.x;
-            bottomX = tile2.localPosition.x;
+            topTile = tile2;
+            bottomTile = tile1;
         }
-        else
-        {
-            topX = tile2.localPosition.x;
-            bottomX = tile1.localPosition.x;
-        }
-        topTile.localPosition = new Vector3(topX, topY, 0);
-        bottomTile.localPosition = new Vector3(bottomX, bottomY, 0);
         float buttonSide = tile1.gameObject.GetComponent<RectTransform>().sizeDelta.y;
         bool checkPoint;
 
@@ -287,9 +597,10 @@ public class GameplayController : MonoBehaviour
 
         for (float i = (topY - buttonSide); i > bottomY; i -= buttonSide)
         {
-            tempAlignWithTop.localPosition = new Vector3(topX, i, 0);
-            tempAlignWithBottom.localPosition = new Vector3(bottomX, i, 0);
-            checkPoint = BoardController.instance._HasButtonInLocation(topX, i) || BoardController.instance._HasButtonInLocation(bottomX, i);
+            tempAlignWithTop.localPosition = new Vector3(topTile.localPosition.x, i, 0);
+            tempAlignWithBottom.localPosition = new Vector3(bottomTile.localPosition.x, i, 0);
+            checkPoint = BoardController.instance._HasButtonInLocation(topTile.localPosition.x, i)
+                || BoardController.instance._HasButtonInLocation(bottomTile.localPosition.x, i);
             if (!checkPoint && _HasVerticalLine(topTile, tempAlignWithTop) &&
                 _HasHorizontalLine(tempAlignWithTop, tempAlignWithBottom) && _HasVerticalLine(tempAlignWithBottom, bottomTile))
             {
@@ -374,9 +685,9 @@ public class GameplayController : MonoBehaviour
             {
                 tempAlignWithStart.localPosition = new Vector3(i, endY, 0);
                 tempAlignWithEnd.localPosition = new Vector3(i, startY, 0);
-                if (i == endX)
+                if (i == startX)
                 {
-                    if (!BoardController.instance._HasButtonInLocation(i, startY) &&
+                    if (!BoardController.instance._HasButtonInLocation(i, endY) &&
                         _HasHorizontalLine(startTile, tempAlignWithStart) && _HasVerticalLine(tempAlignWithStart, endTile))
                     {
                         _SetLinePositions(startTile, tempAlignWithStart, endTile, null);
@@ -453,7 +764,7 @@ public class GameplayController : MonoBehaviour
                 else
                 {
                     checkPoint = BoardController.instance._HasButtonInLocation(startX, i) || BoardController.instance._HasButtonInLocation(endX, i);
-                    if (!checkPoint && _HasVerticalLine(startTile, tempAlignWithStart) && 
+                    if (!checkPoint && _HasVerticalLine(startTile, tempAlignWithStart) &&
                         _HasHorizontalLine(tempAlignWithStart, tempAlignWithEnd) && _HasVerticalLine(tempAlignWithEnd, endTile))
                     {
                         _SetLinePositions(startTile, tempAlignWithStart, tempAlignWithEnd, endTile);
@@ -471,13 +782,13 @@ public class GameplayController : MonoBehaviour
             startTile.localPosition = new Vector3(endX, endY, 0);
             endTile.localPosition = new Vector3(startX, startY, 0);
 
-            for (float i = (startY + buttonSide); i <= (tile1.parent.GetComponent<RectTransform>().sizeDelta.y + buttonSide) / 2; i += buttonSide)
+            for (float i = startY; i <= (tile1.parent.GetComponent<RectTransform>().sizeDelta.y + buttonSide) / 2; i += buttonSide)
             {
                 tempAlignWithStart.localPosition = new Vector3(endX, i, 0);
                 tempAlignWithEnd.localPosition = new Vector3(startX, i, 0);
-                if (i == endY)
+                if (i == startY)
                 {
-                    if (!BoardController.instance._HasButtonInLocation(startX, i) &&
+                    if (!BoardController.instance._HasButtonInLocation(endX, i) &&
                         _HasVerticalLine(startTile, tempAlignWithStart) && _HasHorizontalLine(tempAlignWithStart, endTile))
                     {
                         _SetLinePositions(startTile, tempAlignWithStart, endTile, null);

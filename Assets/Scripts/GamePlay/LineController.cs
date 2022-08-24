@@ -22,8 +22,9 @@ public class LineController : MonoBehaviour
         line = gameObject.GetComponent<LineRenderer>();
     }
 
-    public void _DrawLine(params Transform[] points)
+    public void _DrawLine(float width, params Transform[] points)
     {
+        line.widthMultiplier = width;
         int n = points.Length;
         for (int i = 0; i < points.Length; i++)
         {

@@ -58,11 +58,14 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Tile\BoardController.cs" />
     <Compile Include="Assets\Scripts\Background\BackgroundController.cs" />
+    <Compile Include="Assets\Scripts\MainMenu\MenuController.cs" />
     <Compile Include="Assets\Scripts\Tile\ResourceController.cs" />
     <Compile Include="Assets\Scripts\Tile\TileController.cs" />
-    <Compile Include="Assets\Scripts\GamePlay\TestGameplay.cs" />
+    <Compile Include="Assets\Scripts\GamePlay\TimeController.cs" />
     <Compile Include="Assets\Scripts\GamePlay\LineController.cs" />
     <Compile Include="Assets\Scripts\GamePlay\GameplayController.cs" />
+    <Compile Include="Assets\Scripts\GamePlay\ProgressController.cs" />
+    <Compile Include="Assets\Scripts\MainMenu\LevelController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
