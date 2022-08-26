@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ProgressController : MonoBehaviour
 {
     public static ProgressController instance;
 
-    private const string FIRST_TIME = "IsGameStartedForTheFirstTime";
+    [SerializeField]
+    private GameObject menu;
+    
     private const string PROGRESS = "Progress";
 
     void _MakeSingleInstance()
@@ -22,33 +25,30 @@ public class ProgressController : MonoBehaviour
         }
     }
 
-    void _CheckFirstTimePlay()
+    void _CheckFirstTimePlayGame()
     {
-        if (PlayerPrefs.HasKey(FIRST_TIME) == true)
+        if (!PlayerPrefs.HasKey("_CheckFirstTimePlayGame"))
         {
-            PlayerPrefs.SetString(PROGRESS, "Level_1");
-            PlayerPrefs.SetInt(FIRST_TIME, 0);
+            PlayerPrefs.SetInt(PROGRESS, 1);
+            PlayerPrefs.SetInt("_CheckFirstTimePlayGame", 0);
+            menu.GetComponent<MenuController>().continueLevelButton.gameObject.SetActive(false);
         }
     }
 
     void Awake()
     {
         _MakeSingleInstance();
-        _CheckFirstTimePlay();
+        _CheckFirstTimePlayGame();
     }
 
-    public bool _IsFirstPlay()
+    public void _MarkCurrentLevel(int level)
     {
-        return PlayerPrefs.HasKey(FIRST_TIME);
+        PlayerPrefs.SetInt(PROGRESS, level);
     }
 
-    public void _MarkCurrentLevel(string level)
+    public int _GetMarkedLevel()
     {
-        PlayerPrefs.SetString(PROGRESS, level);
+        return PlayerPrefs.GetInt(PROGRESS);
     }
 
-    public string _GetMarkedLevel()
-    {
-        return PlayerPrefs.GetString(PROGRESS);
-    }
 }

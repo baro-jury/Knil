@@ -12,12 +12,6 @@ public class TileController : MonoBehaviour
         //this.transform.parent = BoardController.instance.gameObject.transform;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void _Click()
     {
         GameplayController.instance._ClickTile(gameObject.transform);

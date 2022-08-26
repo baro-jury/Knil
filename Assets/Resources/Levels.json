@@ -1,0 +1,102 @@
+[
+    {
+        "level": 1,
+        "row": 2,
+        "column": 4,
+        "time": 100,
+        "pullDown": false,
+        "pullUp": false,
+        "pullLeft": false,
+        "pullRight": false
+    },
+    {
+        "level": 2,
+        "row": 3,
+        "column": 4,
+        "time": 100,
+        "pullDown": false,
+        "pullUp": false,
+        "pullLeft": false,
+        "pullRight": false
+    },
+    {
+        "level": 3,
+        "row": 4,
+        "column": 4,
+        "time": 100,
+        "pullDown": false,
+        "pullUp": false,
+        "pullLeft": false,
+        "pullRight": false
+    },
+    {
+        "level": 4,
+        "row": 4,
+        "column": 5,
+        "time": 150,
+        "pullDown": false,
+        "pullUp": false,
+        "pullLeft": false,
+        "pullRight": false
+    },
+    {
+        "level": 5,
+        "row": 6,
+        "column": 5,
+        "time": 150,
+        "pullDown": true,
+        "pullUp": false,
+        "pullLeft": false,
+        "pullRight": false
+    },
+    {
+        "level": 6,
+        "row": 6,
+        "column": 5,
+        "time": 150,
+        "pullDown": false,
+        "pullUp": true,
+        "pullLeft": false,
+        "pullRight": false
+    },
+    {
+        "level": 7,
+        "row": 6,
+        "column": 8,
+        "time": 150,
+        "pullDown": false,
+        "pullUp": false,
+        "pullLeft": true,
+        "pullRight": false
+    },
+    {
+        "level": 8,
+        "row": 7,
+        "column": 8,
+        "time": 200,
+        "pullDown": false,
+        "pullUp": false,
+        "pullLeft": false,
+        "pullRight": true
+    },
+    {
+        "level": 9,
+        "row": 8,
+        "column": 8,
+        "time": 200,
+        "pullDown": true,
+        "pullUp": false,
+        "pullLeft": false,
+        "pullRight": false
+    },
+    {
+        "level": 10,
+        "row": 9,
+        "column": 8,
+        "time": 200,
+        "pullDown": false,
+        "pullUp": true,
+        "pullLeft": false,
+        "pullRight": false
+    }
+]

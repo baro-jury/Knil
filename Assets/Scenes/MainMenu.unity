@@ -206,9 +206,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 273354457}
-        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: _PlaySpecificLevel
+      - m_Target: {fileID: 273354458}
+        m_TargetAssemblyTypeName: LevelController, Assembly-CSharp
+        m_MethodName: _PlayLv2
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -217,7 +217,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
 --- !u!114 &225673133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -238,7 +238,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1992364311, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
+  m_Sprite: {fileID: -1328672216, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -266,6 +266,7 @@ GameObject:
   m_Component:
   - component: {fileID: 273354456}
   - component: {fileID: 273354457}
+  - component: {fileID: 273354458}
   m_Layer: 0
   m_Name: MainMenu
   m_TagString: Untagged
@@ -300,10 +301,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcb6d7f5dec731c4c9544754c600e5ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  continueLevelButton: {fileID: 1051122758}
+  continueLevelButton: {fileID: 1062307350}
   menuPanel: {fileID: 1838811049}
   settingPanel: {fileID: 1833158520}
   guidePanel: {fileID: 1652478751}
+--- !u!114 &273354458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 273354454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11c731e3dad72b343a7e2e664820e074, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lvButtons:
+  - {fileID: 1572598779}
+  - {fileID: 225673132}
+  - {fileID: 1151251695}
+  - {fileID: 732599633}
+  - {fileID: 469213069}
+  - {fileID: 567711481}
+  - {fileID: 2049097514}
+  - {fileID: 1825281248}
+  - {fileID: 1454212802}
+  - {fileID: 1743227140}
+  dataLevels: []
 --- !u!1 &278441040
 GameObject:
   m_ObjectHideFlags: 0
@@ -983,9 +1008,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 273354457}
-        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: _PlaySpecificLevel
+      - m_Target: {fileID: 273354458}
+        m_TargetAssemblyTypeName: LevelController, Assembly-CSharp
+        m_MethodName: _PlayLv5
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -994,7 +1019,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
 --- !u!114 &469213070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1015,7 +1040,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1801777685, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
+  m_Sprite: {fileID: -1630115030, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1426,7 +1451,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
 --- !u!114 &557246777
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1548,9 +1573,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 273354457}
-        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: _PlaySpecificLevel
+      - m_Target: {fileID: 273354458}
+        m_TargetAssemblyTypeName: LevelController, Assembly-CSharp
+        m_MethodName: _PlayLv6
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1559,7 +1584,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
 --- !u!114 &567711482
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1580,7 +1605,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -335459739, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
+  m_Sprite: {fileID: 1988362404, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1967,9 +1992,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 273354457}
-        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: _PlaySpecificLevel
+      - m_Target: {fileID: 273354458}
+        m_TargetAssemblyTypeName: LevelController, Assembly-CSharp
+        m_MethodName: _PlayLv4
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1978,7 +2003,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
 --- !u!114 &732599634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1999,7 +2024,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -241887168, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
+  m_Sprite: {fileID: -499530163, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2049,7 +2074,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1838811050}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2542,12 +2567,12 @@ GameObject:
   - component: {fileID: 1051122759}
   - component: {fileID: 1051122758}
   m_Layer: 5
-  m_Name: ContinueButton
+  m_Name: ExitButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1051122757
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2561,7 +2586,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1838811050}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2614,7 +2639,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 273354457}
         m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: _PlayNewGame
+        m_MethodName: _ExitGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2644,7 +2669,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 228876457, guid: 7105bc5d345b2074c93ef966a9749345, type: 3}
+  m_Sprite: {fileID: 1337141102, guid: 7105bc5d345b2074c93ef966a9749345, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2661,6 +2686,139 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1051122756}
+  m_CullTransparentMesh: 1
+--- !u!1 &1062307348
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1062307349}
+  - component: {fileID: 1062307352}
+  - component: {fileID: 1062307351}
+  - component: {fileID: 1062307350}
+  m_Layer: 5
+  m_Name: ContinueLvButton
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1062307349
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1062307348}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.45, y: 0.45, z: 0.45}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1838811050}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 554, y: 175}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1062307350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1062307348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 1062307351}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 273354457}
+        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
+        m_MethodName: _PlaySavedGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &1062307351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1062307348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 228876457, guid: 7105bc5d345b2074c93ef966a9749345, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1062307352
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1062307348}
   m_CullTransparentMesh: 1
 --- !u!1 &1099432135
 GameObject:
@@ -2921,6 +3079,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4532568a64306cb4b9cb1c892d037cbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  menu: {fileID: 273354454}
 --- !u!1 &1151251693
 GameObject:
   m_ObjectHideFlags: 0
@@ -3004,9 +3163,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 273354457}
-        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: _PlaySpecificLevel
+      - m_Target: {fileID: 273354458}
+        m_TargetAssemblyTypeName: LevelController, Assembly-CSharp
+        m_MethodName: _PlayLv3
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3015,7 +3174,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
 --- !u!114 &1151251696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3036,7 +3195,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 2105302146, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
+  m_Sprite: {fileID: 1802655414, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3311,7 +3470,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1838811050}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3470,7 +3629,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 2028823666, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
+  m_Sprite: {fileID: 955707724, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3571,9 +3730,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 273354457}
-        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: _PlaySpecificLevel
+      - m_Target: {fileID: 273354458}
+        m_TargetAssemblyTypeName: LevelController, Assembly-CSharp
+        m_MethodName: _PlayLv9
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3582,7 +3741,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
 --- !u!114 &1454212803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3603,7 +3762,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -17069623, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
+  m_Sprite: {fileID: -595299341, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3856,9 +4015,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 273354457}
-        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: _PlaySpecificLevel
+      - m_Target: {fileID: 273354458}
+        m_TargetAssemblyTypeName: LevelController, Assembly-CSharp
+        m_MethodName: _PlayLv1
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3867,7 +4026,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
 --- !u!114 &1572598780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3888,7 +4047,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 778403831, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
+  m_Sprite: {fileID: 751501709, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4153,9 +4312,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 273354457}
-        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: _PlaySpecificLevel
+      - m_Target: {fileID: 273354458}
+        m_TargetAssemblyTypeName: LevelController, Assembly-CSharp
+        m_MethodName: _PlayLv10
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4164,7 +4323,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
 --- !u!114 &1743227141
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4185,7 +4344,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 778403831, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
+  m_Sprite: {fileID: 414960797, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4363,9 +4522,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 273354457}
-        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: _PlaySpecificLevel
+      - m_Target: {fileID: 273354458}
+        m_TargetAssemblyTypeName: LevelController, Assembly-CSharp
+        m_MethodName: _PlayLv8
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4374,7 +4533,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
 --- !u!114 &1825281249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4395,7 +4554,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 2088859311, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
+  m_Sprite: {fileID: -240706886, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4452,7 +4611,7 @@ RectTransform:
   - {fileID: 987623872}
   - {fileID: 1652478752}
   m_Father: {fileID: 1838811050}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -4531,6 +4690,7 @@ RectTransform:
   - {fileID: 1205846885}
   - {fileID: 556458608}
   - {fileID: 368470781}
+  - {fileID: 1062307349}
   - {fileID: 783222187}
   - {fileID: 1348378082}
   - {fileID: 1051122757}
@@ -5052,9 +5212,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 273354457}
-        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: _PlaySpecificLevel
+      - m_Target: {fileID: 273354458}
+        m_TargetAssemblyTypeName: LevelController, Assembly-CSharp
+        m_MethodName: _PlayLv7
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5063,7 +5223,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
 --- !u!114 &2049097515
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5084,7 +5244,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 307903734, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
+  m_Sprite: {fileID: -6742156, guid: 0fa1bb5ffeed55f46ba73a3d118ac9bc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

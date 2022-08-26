@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -27,7 +29,7 @@ public class GameplayController : MonoBehaviour
     [SerializeField]
     private GameObject guidePanel;
     [SerializeField]
-    private GameObject replayPanel;
+    private GameObject exitPanel;
     [SerializeField]
     private GameObject gameOverPanel;
     [SerializeField]
@@ -49,7 +51,7 @@ public class GameplayController : MonoBehaviour
         Time.timeScale = 0;
     }
 
-    #region In Game
+    #region Ingame
 
     public void _Pause()
     {
@@ -98,24 +100,24 @@ public class GameplayController : MonoBehaviour
         settingPanel.SetActive(false);
     }
 
-    public void _ReplayConfirmation()
-    {
-        replayPanel.SetActive(true);
-    }
-
     public void _Replay()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    public void _NotReplay()
+    public void _ExitConfirmation()
     {
-        replayPanel.SetActive(false);
+        exitPanel.SetActive(true);
     }
 
-    public void _ChooseLevel()
+    public void _ExitGame()
     {
-        SceneManager.LoadScene(0);
+        Application.Quit();
+    }
+
+    public void _NotExit()
+    {
+        exitPanel.SetActive(false);
     }
 
     public void _GameOver()
@@ -138,11 +140,28 @@ public class GameplayController : MonoBehaviour
     {
         Time.timeScale = 0;
         winPanel.SetActive(true);
+        if (LevelController.level == 10)
+        {
+            LevelController.instance._UnlockLevel(10);
+        }
+        else
+        {
+            LevelController.instance._UnlockLevel(LevelController.level + 1);
+        }
+        
     }
 
     public void _GoToNextLevel()
     {
-        SceneManager.LoadScene(1);
+        if(LevelController.level == 10)
+        {
+            _GoToMenu();
+        }
+        else
+        {
+            LevelController.level = LevelController.level + 1;
+            LevelController.instance._PlayLevel(LevelController.level);
+        }
     }
 
     public void _ShareResult()
@@ -163,6 +182,7 @@ public class GameplayController : MonoBehaviour
         }
         else
         {
+            EventSystem.current.SetSelectedGameObject(null);
             if (siblingIndex == currentTile.GetSiblingIndex())
             {
                 Debug.Log("Click cung 1 tile");
@@ -187,6 +207,12 @@ public class GameplayController : MonoBehaviour
                 }
             }
         }
+    }
+
+    bool _AreTheSameTiles(Transform tile1, Transform tile2)
+    {
+        return ResourceController.spritesDict[tile1.GetChild(0).GetComponent<Image>().sprite]
+            == ResourceController.spritesDict[tile2.GetChild(0).GetComponent<Image>().sprite];
     }
 
     void _SetLinePositions(Transform t0, Transform t1, Transform t2, Transform t3)
@@ -253,6 +279,26 @@ public class GameplayController : MonoBehaviour
             }
             else if (temp.Count > 2)
             {
+                if (numCouple == 0)
+                {
+                    trans = _ConnectableTilesFromList(temp, numCouple);
+                }
+                else
+                {
+                    for (int i = 0; i < (temp.Count - 1); i++)
+                    {
+                        for (int j = (i + 1); j < temp.Count; j++)
+                        {
+                            if (_HasAvailableConnection(temp[i], temp[j]))
+                            {
+                                trans[2 * numCouple] = temp[i];
+                                trans[2 * numCouple + 1] = temp[j];
+                                numCouple++;
+                                goto check;
+                            }
+                        }
+                    }
+                }
                 for (int j = 0; j < (temp.Count / 2); j++)
                 {
                     if (numCouple == 2)
@@ -266,27 +312,38 @@ public class GameplayController : MonoBehaviour
                         trans[2 * numCouple + 1] = temp[2 * j + 1];
                         numCouple++;
                     }
-                }
-                //for (int i = 0; i < (temp.Count - 1); i++)
-                //{
+                    /*
+                    neu couple = 1, chi can check 1 couple trong list 4tile
+                    neu couple = 0, check full list, neu co 2 couple an duoc thi add luon
 
-                //    for (int j = (i + 1); j < temp.Count; j++)
-                //    {
-                //        if (numCouple == 2)
-                //        {
-                //            goto start;
-                //        }
-                //        if (_HasAvailableConnection(temp[i], temp[j])) //check tren board hien tai, neu co 2 cap deu an duoc thi add vao mang -> co bug: tile trung nhau khi check nhung van add
-                //        {
-                //            trans[2 * numCouple] = temp[i];
-                //            trans[2 * numCouple + 1] = temp[j];
-                //            numCouple++;
-                //        }
-                //    }
-                //}
+                     */
+                }
             }
         }
         StartCoroutine(MagicWand(trans));
+    }
+
+    Transform[] _ConnectableTilesFromList(List<Transform> list, int num)
+    {
+        Transform[] temp = new Transform[4];
+        num = 0;
+        for (int i = 0; i < (list.Count - 1); i++)
+        {
+            for (int j = (i + 1); j < list.Count; j++)
+            {
+                if (num == 2)
+                {
+                    //goto check;
+                }
+                if (_HasAvailableConnection(list[i], list[j])) //check tren board hien tai, neu co 2 cap deu an duoc thi add vao mang -> co bug: tile trung nhau khi check nhung van add
+                {
+                    temp[2 * num] = list[i];
+                    temp[2 * num + 1] = list[j];
+                    num++;
+                }
+            }
+        }
+        return temp;
     }
 
     public void _BoosterFreezeTime() //Snow: Đóng băng thời gian 10 giây
@@ -371,8 +428,6 @@ public class GameplayController : MonoBehaviour
 
     IEnumerator DestroyTiles(params Transform[] linePositions)
     {
-        yield return new WaitForSeconds(0.75f);
-
         int n = linePositions.Length;
         for (int i = 0; i < linePositions.Length; i++)
         {
@@ -381,6 +436,20 @@ public class GameplayController : MonoBehaviour
                 n--;
             }
         }
+        //for (int i = 0; i < n; i++)
+        //{
+        //    if (i == 0 || i == n - 1)
+        //    {
+        //        //linePositions[i].transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InOutQuad).OnComplete(() =>
+        //        //{
+        //        //    linePositions[i].gameObject.SetActive(false);
+        //        //    BoardController.instance._DeactivateTile(linePositions[i]);
+        //        //});
+
+        //        linePositions[i].transform.DOScale(Vector3.zero, 1f).SetEase(Ease.InOutQuad);
+        //    }
+        //}
+        yield return new WaitForSeconds(0.75f);
         for (int i = 0; i < n; i++)
         {
             if (i == 0 || i == n - 1)
@@ -390,6 +459,7 @@ public class GameplayController : MonoBehaviour
             }
         }
 
+        BoardController.instance._ActivateGravity();
         BoardController.instance._ShuffleWhenNoPossibleLink();
     }
 
@@ -425,11 +495,6 @@ public class GameplayController : MonoBehaviour
     #endregion
 
     #region Algorithm
-    bool _AreTheSameTiles(Transform tile1, Transform tile2)
-    {
-        return ResourceController.spritesDict[tile1.GetChild(0).GetComponent<Image>().sprite]
-            == ResourceController.spritesDict[tile2.GetChild(0).GetComponent<Image>().sprite];
-    }
 
     public bool _HasAvailableConnection(Transform tile1, Transform tile2)
     {

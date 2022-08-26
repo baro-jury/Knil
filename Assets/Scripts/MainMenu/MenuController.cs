@@ -8,8 +8,8 @@ public class MenuController : MonoBehaviour
 {
     public static MenuController instance;
 
-    [SerializeField]
-    private Button continueLevelButton;
+    public Button continueLevelButton;
+
     [SerializeField]
     private GameObject menuPanel;
     [SerializeField]
@@ -30,17 +30,15 @@ public class MenuController : MonoBehaviour
         _MakeInstance();
     }
 
-    void Start()
-    {
-        if (!ProgressController.instance._IsFirstPlay())
-        {
-            continueLevelButton.gameObject.SetActive(true);
-        }
-    }
-
     public void _PlayNewGame()
     {
-        SceneManager.LoadScene(1);
+        LevelController.instance._UnlockLevel(1);
+        LevelController.instance._PlayLv1();
+    }
+
+    public void _PlaySavedGame()
+    {
+        LevelController.instance._PlayLevel(ProgressController.instance._GetMarkedLevel());
     }
 
     public void _ChooseLevel()
@@ -48,14 +46,14 @@ public class MenuController : MonoBehaviour
         menuPanel.SetActive(false);
     }
 
-    public void _PlaySpecificLevel()
-    {
-        SceneManager.LoadScene(1);
-    }
-
     public void _BackToMenu()
     {
         SceneManager.LoadScene(0);
+    }
+
+    public void _ExitGame()
+    {
+        Application.Quit();
     }
 
     public void _GoToSetting()

@@ -9,7 +9,7 @@ public class TimeController : MonoBehaviour
 
     [SerializeField]
     private Slider slider;
-    public float time;
+    public static float time;
     private float timeBurn = 1f;
     private bool isFreezed;
 
@@ -24,7 +24,6 @@ public class TimeController : MonoBehaviour
     void Awake()
     {
         _MakeInstance();
-        _SetTimeForSlider(false);
     }
 
     // Update is called once per frame
