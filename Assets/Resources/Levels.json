@@ -85,7 +85,7 @@
         "column": 8,
         "time": 200,
         "pullDown": true,
-        "pullUp": false,
+        "pullUp": true,
         "pullLeft": false,
         "pullRight": false
     },
@@ -95,8 +95,28 @@
         "column": 8,
         "time": 200,
         "pullDown": false,
+        "pullUp": false,
+        "pullLeft": true,
+        "pullRight": true
+    },
+    {
+        "level": 11,
+        "row": 6,
+        "column": 5,
+        "time": 200,
+        "pullDown": true,
         "pullUp": true,
-        "pullLeft": false,
-        "pullRight": false
+        "pullLeft": true,
+        "pullRight": true
+    },
+    {
+        "level": 12,
+        "row": 6,
+        "column": 5,
+        "time": 200,
+        "pullDown": true,
+        "pullUp": true,
+        "pullLeft": true,
+        "pullRight": true
     }
 ]

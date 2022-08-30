@@ -8,7 +8,7 @@ public class BoardController : MonoBehaviour
 {
     public static BoardController instance;
     public static DataLevels dataLevel;
-    public int row = 6, column = 5;
+    private int row, column, orderOfPullingDirection;
     private bool pullDown, pullUp, pullLeft, pullRight;
     private List<Transform> buttonList = new List<Transform>();
     private int[,] Matrix;
@@ -28,7 +28,8 @@ public class BoardController : MonoBehaviour
 
     void _InstantiateLevel()
     {
-        ProgressController.instance._MarkCurrentLevel(dataLevel.level);
+        //ProgressController.instance._MarkCurrentLevel(dataLevel.level);
+
         row = dataLevel.row;
         column = dataLevel.column;
         TimeController.time = dataLevel.time;
@@ -47,6 +48,7 @@ public class BoardController : MonoBehaviour
 
     void Start()
     {
+        orderOfPullingDirection = 0;
         _InstantiateLevel();
         _GenerateTiles();
         for (int i = 0; i < gameObject.transform.childCount; i++)
@@ -160,6 +162,7 @@ public class BoardController : MonoBehaviour
         for (int index = 0; index < ResourceController.spritesDict.Count; index++)
         {
             List<Transform> temp = _SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
+            //Dictionary<Transform, int> temp = _SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
             if (temp.Count != 0)
             {
                 for (int i = 0; i < (temp.Count - 1); i++)
@@ -167,6 +170,8 @@ public class BoardController : MonoBehaviour
                     for (int j = (i + 1); j < temp.Count; j++)
                     {
                         if (GameplayController.instance._HasAvailableConnection(temp[i], temp[j]))
+                        //if (/*temp.ElementAt(i).Value != -1 && temp.ElementAt(j).Value != -1 &&*/
+                        //    GameplayController.instance._HasAvailableConnection(temp.ElementAt(i).Key, temp.ElementAt(j).Key))
                         {
                             return true;
                         }
@@ -214,6 +219,33 @@ public class BoardController : MonoBehaviour
             Matrix[rTempRanI, cTempRanI] = tempI;
         }
     }
+
+    public void _SwapTiles(Transform t1, Transform t2)
+    {
+        float side = Tile.gameObject.GetComponent<RectTransform>().sizeDelta.x;
+
+        Vector3 temp = t1.localPosition;
+        t1.localPosition = t2.localPosition;
+        t2.localPosition = temp;
+
+        int rTemp1 = (int)(
+            ((row * side - side) / 2 - t1.localPosition.y) / side
+            );
+        int cTemp1 = (int)(
+            ((column * side - side) / 2 + t1.localPosition.x) / side
+            );
+        int rTemp2 = (int)(
+            ((row * side - side) / 2 - t2.localPosition.y) / side
+            );
+        int cTemp2 = (int)(
+            ((column * side - side) / 2 + t2.localPosition.x) / side
+            );
+
+        int temp1 = Matrix[rTemp1, cTemp1];
+        Matrix[rTemp1, cTemp1] = Matrix[rTemp2, cTemp2];
+        Matrix[rTemp2, cTemp2] = temp1;
+    }
+
     #endregion
 
     #region Xử lý ingame
@@ -229,7 +261,7 @@ public class BoardController : MonoBehaviour
         return false;
     }
 
-    public void _DeactivateTile(Transform t) //okay
+    public void _DeactivateTile(Transform t)
     {
         float side = t.GetComponent<RectTransform>().sizeDelta.x;
         int rTemp = (int)(
@@ -241,8 +273,16 @@ public class BoardController : MonoBehaviour
 
         Matrix[rTemp, cTemp] = -1;
         buttonList.Remove(t);
+
         if (buttonList.Count == 0)
         {
+            if (dataLevel.level < 12)
+            {
+                ProgressController.instance._MarkCurrentLevel(dataLevel.level + 1);
+            }
+            orderOfPullingDirection = 0;
+
+            new WaitForSeconds(0.75f);
             GameplayController.instance._CompleteLevel();
         }
     }
@@ -250,11 +290,15 @@ public class BoardController : MonoBehaviour
     public List<Transform> _SearchTiles(Sprite sprite) // tìm Tiles giống nhau
     {
         List<Transform> list = new List<Transform>();
+        //Dictionary<Transform, int> dict = new Dictionary<Transform, int>();
+        int value = 0;
         foreach (Transform trans in buttonList)
         {
             if (trans.GetChild(0).GetComponent<Image>().sprite == sprite)
             {
                 list.Add(trans);
+                //dict.Add(trans, value);
+                value++;
             }
         }
         return list;
@@ -334,31 +378,67 @@ public class BoardController : MonoBehaviour
     {
         if (pullDown && !pullUp && !pullLeft && !pullRight)
         {
-            _PullTilesToBottom();
+            _PullTilesToBottom(0, row - 1);
         }
         else if (!pullDown && pullUp && !pullLeft && !pullRight)
         {
-            _PullTilesToTop();
+            _PullTilesToTop(0, row - 1);
         }
         else if (!pullDown && !pullUp && pullLeft && !pullRight)
         {
-            _PullTilesToLeft();
+            _PullTilesToLeft(0, column - 1);
         }
         else if (!pullDown && !pullUp && !pullLeft && pullRight)
         {
-            _PullTilesToRight();
+            _PullTilesToRight(0, column - 1);
+        }
+        else if (!pullDown && !pullUp && pullLeft && pullRight)
+        {
+            _PullTilesToLeft(0, column / 2 - 1);
+            _PullTilesToRight(column / 2, column - 1);
+        }
+        else if (pullDown && pullUp && !pullLeft && !pullRight)
+        {
+            _PullTilesToTop(0, row / 2 - 1);
+            _PullTilesToBottom(row / 2, row - 1);
+        }
+        else if (pullDown && pullUp && pullLeft && pullRight)
+        {
+            switch (orderOfPullingDirection % 4)
+            {
+                case 0:
+                    _PullTilesToTop(0, row - 1);
+                    break;
+                case 1:
+                    _PullTilesToRight(0, column - 1);
+                    break;
+                case 2:
+                    _PullTilesToBottom(0, row - 1);
+                    break;
+                case 3:
+                    _PullTilesToLeft(0, column - 1);
+                    break;
+            }
+            if (dataLevel.level % 2 == 0)
+            {
+                orderOfPullingDirection++;
+            }
+            else
+            {
+                orderOfPullingDirection += 3;
+            }
         }
     }
 
-    void _PullTilesToBottom()
+    void _PullTilesToBottom(int rowFirst, int rowLast)
     {
-        var tempArr = new int[row];
-        int temp;
+        var tempArr = new int[rowLast - rowFirst + 1];
+
         for (int c = 0; c < column; c++)
         {
-            for (int r = 0; r < row; r++)
+            for (int r = rowFirst; r <= rowLast; r++)
             {
-                tempArr[r] = Matrix[r, c];
+                tempArr[r - rowFirst] = Matrix[r, c];
             }
 
             for (int i = 0; i < tempArr.Length - 1; i++)
@@ -367,31 +447,31 @@ public class BoardController : MonoBehaviour
                 {
                     if (tempArr[j] > tempArr[j + 1] && tempArr[j + 1] < 0)
                     {
-                        temp = tempArr[j + 1];
+                        int temp = tempArr[j + 1];
                         tempArr[j + 1] = tempArr[j];
                         tempArr[j] = temp;
 
-                        _SearchAndPullTile(j, c, j + 1, c);
+                        _SearchAndPullTile(j + rowFirst, c, j + rowFirst + 1, c);
                     }
                 }
             }
 
-            for (int r = 0; r < row; r++)
+            for (int r = rowFirst; r <= rowLast; r++)
             {
-                Matrix[r, c] = tempArr[r];
+                Matrix[r, c] = tempArr[r - rowFirst];
             }
         }
     }
 
-    void _PullTilesToTop()
+    void _PullTilesToTop(int rowFirst, int rowLast)
     {
-        var tempArr = new int[row];
-        int temp;
+        var tempArr = new int[rowLast - rowFirst + 1];
+
         for (int c = 0; c < column; c++)
         {
-            for (int r = 0; r < row; r++)
+            for (int r = rowFirst; r <= rowLast; r++)
             {
-                tempArr[r] = Matrix[r, c];
+                tempArr[r - rowFirst] = Matrix[r, c];
             }
 
             for (int i = 0; i < tempArr.Length - 1; i++)
@@ -400,31 +480,31 @@ public class BoardController : MonoBehaviour
                 {
                     if (tempArr[j] < tempArr[j + 1] && tempArr[j] < 0)
                     {
-                        temp = tempArr[j];
+                        int temp = tempArr[j];
                         tempArr[j] = tempArr[j + 1];
                         tempArr[j + 1] = temp;
 
-                        _SearchAndPullTile(j + 1, c, j, c);
+                        _SearchAndPullTile(j + rowFirst + 1, c, j + rowFirst, c);
                     }
                 }
             }
 
-            for (int r = 0; r < row; r++)
+            for (int r = rowFirst; r <= rowLast; r++)
             {
-                Matrix[r, c] = tempArr[r];
+                Matrix[r, c] = tempArr[r - rowFirst];
             }
         }
     }
 
-    void _PullTilesToLeft()
+    void _PullTilesToLeft(int colFirst, int colLast)
     {
-        var tempArr = new int[column];
-        int temp;
+        var tempArr = new int[colLast - colFirst + 1];
+
         for (int r = 0; r < row; r++)
         {
-            for (int c = 0; c < column; c++)
+            for (int c = colFirst; c <= colLast; c++)
             {
-                tempArr[c] = Matrix[r, c];
+                tempArr[c - colFirst] = Matrix[r, c];
             }
 
             for (int i = 0; i < tempArr.Length - 1; i++)
@@ -433,31 +513,31 @@ public class BoardController : MonoBehaviour
                 {
                     if (tempArr[j] < tempArr[j + 1] && tempArr[j] < 0)
                     {
-                        temp = tempArr[j];
+                        int temp = tempArr[j];
                         tempArr[j] = tempArr[j + 1];
                         tempArr[j + 1] = temp;
 
-                        _SearchAndPullTile(r, j + 1, r, j);
+                        _SearchAndPullTile(r, j + colFirst + 1, r, j + colFirst);
                     }
                 }
             }
 
-            for (int c = 0; c < column; c++)
+            for (int c = colFirst; c <= colLast; c++)
             {
-                Matrix[r, c] = tempArr[c];
+                Matrix[r, c] = tempArr[c - colFirst];
             }
         }
     }
 
-    void _PullTilesToRight()
+    void _PullTilesToRight(int colFirst, int colLast)
     {
-        var tempArr = new int[column];
-        int temp;
+        var tempArr = new int[colLast - colFirst + 1];
+
         for (int r = 0; r < row; r++)
         {
-            for (int c = 0; c < column; c++)
+            for (int c = colFirst; c <= colLast; c++)
             {
-                tempArr[c] = Matrix[r, c];
+                tempArr[c - colFirst] = Matrix[r, c];
             }
             //tempArr = SortRow(tempArr, 0, column-1);
 
@@ -467,29 +547,20 @@ public class BoardController : MonoBehaviour
                 {
                     if (tempArr[j] > tempArr[j + 1] && tempArr[j + 1] < 0)
                     {
-                        temp = tempArr[j + 1];
+                        int temp = tempArr[j + 1];
                         tempArr[j + 1] = tempArr[j];
                         tempArr[j] = temp;
 
-                        _SearchAndPullTile(r, j, r, j + 1);
+                        _SearchAndPullTile(r, j + colFirst, r, j + colFirst + 1);
                     }
                 }
             }
 
-            for (int c = 0; c < column; c++)
+            for (int c = colFirst; c <= colLast; c++)
             {
-                Matrix[r, c] = tempArr[c];
+                Matrix[r, c] = tempArr[c - colFirst];
             }
         }
-        Debug.Log("Start");
-        for (int r = 0; r < row; r++)
-        {
-            for (int c = 0; c < column; c++)
-            {
-                Debug.Log(Matrix[r, c]);
-            }
-        }
-        Debug.Log("End");
     }
 
     #endregion

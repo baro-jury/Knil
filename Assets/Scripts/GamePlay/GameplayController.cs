@@ -11,9 +11,8 @@ public class GameplayController : MonoBehaviour
 {
     public static GameplayController instance;
 
-    private bool isCoupled = true;
+    private bool isCoupled = true, activateSwap = false;
     private int siblingIndex;
-    private string currentLevel;
     private Transform[] points = new Transform[4];
 
     [SerializeField]
@@ -140,20 +139,12 @@ public class GameplayController : MonoBehaviour
     {
         Time.timeScale = 0;
         winPanel.SetActive(true);
-        if (LevelController.level == 10)
-        {
-            LevelController.instance._UnlockLevel(10);
-        }
-        else
-        {
-            LevelController.instance._UnlockLevel(LevelController.level + 1);
-        }
-        
+
     }
 
     public void _GoToNextLevel()
     {
-        if(LevelController.level == 10)
+        if (LevelController.level == 12)
         {
             _GoToMenu();
         }
@@ -172,7 +163,7 @@ public class GameplayController : MonoBehaviour
     #endregion
 
     #region Click Tiles
-    public void _ClickTile(Transform currentTile)
+    public void _ClickTile(Transform currentTile) //edit
     {
         isCoupled = !isCoupled;
         if (!isCoupled)
@@ -182,27 +173,42 @@ public class GameplayController : MonoBehaviour
         }
         else
         {
-            EventSystem.current.SetSelectedGameObject(null);
-            if (siblingIndex == currentTile.GetSiblingIndex())
+            if (activateSwap)
             {
-                Debug.Log("Click cung 1 tile");
+                BoardController.instance._SwapTiles(tile, currentTile);
+                EventSystem.current.SetSelectedGameObject(null);
+                activateSwap = false;
             }
             else
             {
-                if (!_AreTheSameTiles(tile, currentTile))
+                if (siblingIndex == currentTile.GetSiblingIndex())
                 {
-                    Debug.Log("Click khac tile khac ID");
+                    Debug.Log("Click cung 1 tile");
+                    tile = currentTile;
+                    siblingIndex = currentTile.GetSiblingIndex();
+                    isCoupled = !isCoupled;
                 }
                 else
                 {
-                    if (_HasAvailableConnection(tile, currentTile))
+                    if (!_AreTheSameTiles(tile, currentTile))
                     {
-                        StartCoroutine(MakeConnection(points));
-                        StartCoroutine(DestroyTiles(points));
+                        Debug.Log("Click khac tile khac ID");
+                        tile = currentTile;
+                        siblingIndex = currentTile.GetSiblingIndex();
+                        isCoupled = !isCoupled;
                     }
                     else
                     {
-                        Debug.Log("Khong the ket noi");
+                        if (_HasAvailableConnection(tile, currentTile))
+                        {
+                            StopAllCoroutines();
+                            StartCoroutine(MakeConnection(points));
+                            StartCoroutine(DestroyTiles(points));
+                        }
+                        else
+                        {
+                            Debug.Log("Khong the ket noi");
+                        }
                     }
                 }
             }
@@ -238,27 +244,35 @@ public class GameplayController : MonoBehaviour
         {
             int index = Random.Range(0, ResourceController.spritesDict.Count);
             List<Transform> temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
+            //Dictionary<Transform, int> temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
             if (temp.Count != 0)
             {
-                for (int j = 1; j < temp.Count; j++)
+                for (int i = 0; i < (temp.Count - 1); i++)
                 {
-                    if (_HasAvailableConnection(temp[0], temp[j]))
+                    for (int j = (i + 1); j < temp.Count; j++)
                     {
-                        StartCoroutine(MakeConnection(points));
-                        isFounded = true;
-                        break;
+                        if (_HasAvailableConnection(temp[i], temp[j]))
+                        //if (_HasAvailableConnection(temp.ElementAt(i).Key, temp.ElementAt(j).Key))
+                        {
+                            StartCoroutine(MakeConnection(points));
+                            isFounded = true;
+                            break;
+                        }
                     }
-
                 }
             }
         }
+    }
+
+    public void _BoosterSwap() //Swap: Người chơi chọn 2 ô, sau đó 2 ô đổi vị trí cho nhau
+    {
+        //activateSwap = true;
     }
 
     //can chinh sua
     public void _BoosterMagicWand() //Đũa thần: 2 kết quả hoàn thành
     {
         int numCouple = 0;
-        List<Transform> temp;
         Transform[] trans = new Transform[4];
         for (int index = 0; index < ResourceController.spritesDict.Count; index++)
         {
@@ -267,82 +281,125 @@ public class GameplayController : MonoBehaviour
             {
                 break;
             }
-            temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
-            if (temp.Count == 2)
+            List<Transform> temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
+            //Dictionary<Transform, int> temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
+
+            #region chia truong hop list 2 tile va 4 tile
+            //if (temp.Count == 2)
+            //{
+            //    if (_HasAvailableConnection(temp[0], temp[1]))
+            //    //if (_HasAvailableConnection(temp.ElementAt(0).Key, temp.ElementAt(1).Key))
+            //    {
+            //        trans[2 * numCouple] = temp[0];
+            //        trans[2 * numCouple + 1] = temp[1];
+            //        //trans[2 * numCouple] = temp.ElementAt(0).Key;
+            //        //trans[2 * numCouple + 1] = temp.ElementAt(1).Key;
+            //        numCouple++;
+            //    }
+            //}
+            //else if (temp.Count > 2)
+            //{
+            //    if (numCouple == 0)
+            //    {
+            //        trans = _ConnectableTilesFromList(temp);
+            //        for (int i = 0; i < temp.Count; i++)
+            //        {
+            //            if (temp.ElementAt(i).Value == -1)
+            //            {
+            //                numCouple++;
+            //            }
+            //        }
+            //        numCouple /= 2;
+            //    }
+            //    else
+            //    {
+            //for (int i = 0; i < (temp.Count - 1); i++)
+            //{
+            //    for (int j = (i + 1); j < temp.Count; j++)
+            //    {
+            //        if (_HasAvailableConnection(temp.ElementAt(i).Key, temp.ElementAt(j).Key))
+            //        {
+            //            trans[2 * numCouple] = temp.ElementAt(i).Key;
+            //            trans[2 * numCouple + 1] = temp.ElementAt(j).Key;
+            //            //StartCoroutine(MagicWand(temp.ElementAt(i).Key, temp.ElementAt(j).Key));
+            //            numCouple++;
+            //            goto check;
+            //        }
+            //    }
+            //}
+            //    }
+            //}
+            #endregion
+
+            if (temp.Count != 0)
             {
-                if (_HasAvailableConnection(temp[0], temp[1]))
-                {
-                    trans[2 * numCouple] = temp[0];
-                    trans[2 * numCouple + 1] = temp[1];
-                    numCouple++;
-                }
-            }
-            else if (temp.Count > 2)
-            {
-                if (numCouple == 0)
-                {
-                    trans = _ConnectableTilesFromList(temp, numCouple);
-                }
-                else
-                {
-                    for (int i = 0; i < (temp.Count - 1); i++)
-                    {
-                        for (int j = (i + 1); j < temp.Count; j++)
-                        {
-                            if (_HasAvailableConnection(temp[i], temp[j]))
-                            {
-                                trans[2 * numCouple] = temp[i];
-                                trans[2 * numCouple + 1] = temp[j];
-                                numCouple++;
-                                goto check;
-                            }
-                        }
-                    }
-                }
-                for (int j = 0; j < (temp.Count / 2); j++)
+                for (int i = 0; i < temp.Count / 2; i++)
                 {
                     if (numCouple == 2)
                     {
                         goto check;
                     }
-                    if (_HasAvailableConnection(temp[2 * j], temp[2 * j + 1])) //check theo tung cap lien tiep, neu co 2 cap deu an duoc thi add vao mang
-                                                                               //-> co bug: tile o cap nay noi dc tile o cap kia nhung k add dc
-                    {
-                        trans[2 * numCouple] = temp[2 * j];
-                        trans[2 * numCouple + 1] = temp[2 * j + 1];
-                        numCouple++;
-                    }
-                    /*
-                    neu couple = 1, chi can check 1 couple trong list 4tile
-                    neu couple = 0, check full list, neu co 2 couple an duoc thi add luon
 
-                     */
+                    //trans[2 * numCouple] = temp[2 * i];
+                    //trans[2 * numCouple + 1] = temp[2 * i + 1];
+                    StopAllCoroutines();
+                    StartCoroutine(DestroyTiles(temp[2 * i], temp[2 * i + 1]));
+                    numCouple++;
                 }
             }
         }
-        StartCoroutine(MagicWand(trans));
+        //StartCoroutine(MagicWand(trans));
     }
 
-    Transform[] _ConnectableTilesFromList(List<Transform> list, int num)
+    Transform[] _ConnectableTilesFromList(List<Transform> list)
     {
         Transform[] temp = new Transform[4];
-        num = 0;
+        int num = 0;
         for (int i = 0; i < (list.Count - 1); i++)
         {
             for (int j = (i + 1); j < list.Count; j++)
             {
                 if (num == 2)
                 {
-                    //goto check;
+                    goto end;
                 }
-                if (_HasAvailableConnection(list[i], list[j])) //check tren board hien tai, neu co 2 cap deu an duoc thi add vao mang -> co bug: tile trung nhau khi check nhung van add
+                if (_HasAvailableConnection(list[i], list[j]))
                 {
                     temp[2 * num] = list[i];
                     temp[2 * num + 1] = list[j];
+                    //StartCoroutine(MagicWand(dict.ElementAt(i).Key, dict.ElementAt(j).Key));
                     num++;
                 }
             }
         }
+    end:
+        return temp;
+    }
+    Transform[] _ConnectableTilesFromList(Dictionary<Transform, int> dict)
+    {
+        Transform[] temp = new Transform[4];
+        int num = 0;
+        for (int i = 0; i < (dict.Count - 1); i++)
+        {
+            for (int j = (i + 1); j < dict.Count; j++)
+            {
+                if (num == 2)
+                {
+                    goto end;
+                }
+                if (dict.ElementAt(i).Value != -1 && dict.ElementAt(j).Value != -1 &&
+                    _HasAvailableConnection(dict.ElementAt(i).Key, dict.ElementAt(j).Key))
+                {
+                    temp[2 * num] = dict.ElementAt(i).Key;
+                    temp[2 * num + 1] = dict.ElementAt(j).Key;
+                    //StartCoroutine(MagicWand(dict.ElementAt(i).Key, dict.ElementAt(j).Key));
+                    dict[dict.ElementAt(i).Key] = -1;
+                    dict[dict.ElementAt(j).Key] = -1;
+                    num++;
+                }
+            }
+        }
+    end:
         return temp;
     }
 
@@ -363,31 +420,30 @@ public class GameplayController : MonoBehaviour
         Time.timeScale = 1;
     }
 
-    public void _PreBoosterEarthquake() //Remove item: Mỗi 1 hình xoá 1 cặp ( tối đa 5 cặp ) Random
-    {
-        preBoosterPanel.SetActive(false);
-        int n = 0, numCouple = Random.Range(3, 6);
-        List<Transform> temp;
-        Transform[] trans = new Transform[2 * numCouple];
-        for (int i = 0; i < ResourceController.spritesDict.Count; i++)
-        {
-            if (n == numCouple)
-            {
-                break;
-            }
-            temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(i).Key);
-            if (temp.Count != 0)
-            {
-                trans[2 * n] = temp[0];
-                trans[2 * n + 1] = temp[1];
-                n++;
-            }
-        }
-        StartCoroutine(Earthquake(trans));
-        Time.timeScale = 1;
-    }
+    //public void _PreBoosterEarthquake() //Remove item: Mỗi 1 hình xoá 1 cặp ( tối đa 5 cặp ) Random
+    //{
+    //    preBoosterPanel.SetActive(false);
+    //    int n = 0, numCouple = Random.Range(3, 6);
+    //    Transform[] trans = new Transform[2 * numCouple];
+    //    for (int i = 0; i < ResourceController.spritesDict.Count; i++)
+    //    {
+    //        if (n == numCouple)
+    //        {
+    //            break;
+    //        }
+    //        Dictionary<Transform, int> temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(i).Key);
+    //        if (temp.Count != 0)
+    //        {
+    //            trans[2 * n] = temp.ElementAt(0).Key;
+    //            trans[2 * n + 1] = temp.ElementAt(1).Key;
+    //            n++;
+    //        }
+    //    }
+    //    StartCoroutine(Earthquake(trans));
+    //    Time.timeScale = 1;
+    //}
 
-    public void _PreBoosterLaserBeam() //Remove All: Xoá 1 hình bất kỳ
+    public void _PreBoosterEarthquake() //Remove All: Xoá 1 hình bất kỳ
     {
         preBoosterPanel.SetActive(false);
         bool isFounded = false;
@@ -395,15 +451,24 @@ public class GameplayController : MonoBehaviour
         {
             int index = Random.Range(0, ResourceController.spritesDict.Count);
             List<Transform> temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
+            //Dictionary<Transform, int> temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
             if (temp.Count != 0)
             {
                 for (int i = 0; i < temp.Count; i++)
                 {
                     StartCoroutine(DestroyTiles(temp[i]));
+                    //StartCoroutine(DestroyTiles(temp.ElementAt(i).Key));
                 }
                 isFounded = true;
             }
         }
+        Time.timeScale = 1;
+    }
+
+    public void _PreBoosterMirror() //Mirror: gấp đôi số sao đạt được
+    {
+        preBoosterPanel.SetActive(false);
+        
         Time.timeScale = 1;
     }
 
@@ -449,7 +514,7 @@ public class GameplayController : MonoBehaviour
         //        linePositions[i].transform.DOScale(Vector3.zero, 1f).SetEase(Ease.InOutQuad);
         //    }
         //}
-        yield return new WaitForSeconds(0.75f);
+        //yield return new WaitForSeconds(0.75f);
         for (int i = 0; i < n; i++)
         {
             if (i == 0 || i == n - 1)
@@ -458,21 +523,32 @@ public class GameplayController : MonoBehaviour
                 BoardController.instance._DeactivateTile(linePositions[i]);
             }
         }
-
+        yield return new WaitForSeconds(0.75f);
         BoardController.instance._ActivateGravity();
         BoardController.instance._ShuffleWhenNoPossibleLink();
     }
 
+    //IEnumerator MagicWand(params Transform[] transforms)
+    //{
+    //    for (int i = 0; i < (transforms.Length / 2); i++)
+    //    {
+    //        if (_HasAvailableConnection(transforms[2 * i], transforms[2 * i + 1]))
+    //        {
+    //            StopAllCoroutines();
+    //            StartCoroutine(MakeConnection(points));
+    //            StartCoroutine(DestroyTiles(points));
+    //        }
+    //        yield return new WaitForSeconds(0.75f);
+    //    }
+    //}
+
     IEnumerator MagicWand(params Transform[] transforms)
     {
+        yield return new WaitForSeconds(0);
         for (int i = 0; i < (transforms.Length / 2); i++)
         {
-            if (_HasAvailableConnection(transforms[2 * i], transforms[2 * i + 1]))
-            {
-                StartCoroutine(MakeConnection(points));
-                StartCoroutine(DestroyTiles(points));
-            }
-            yield return new WaitForSeconds(0.75f);
+            StopAllCoroutines();
+            StartCoroutine(DestroyTiles(transforms[2 * i], transforms[2 * i + 1]));
         }
     }
 
@@ -481,15 +557,6 @@ public class GameplayController : MonoBehaviour
         TimeController.instance._FreezeTime(true);
         yield return new WaitForSeconds(10);
         TimeController.instance._FreezeTime(false);
-    }
-
-    IEnumerator Earthquake(params Transform[] transforms)
-    {
-        yield return new WaitForSeconds(0);
-        for (int i = 0; i < (transforms.Length / 2); i++)
-        {
-            StartCoroutine(DestroyTiles(transforms[2 * i], transforms[2 * i + 1]));
-        }
     }
 
     #endregion

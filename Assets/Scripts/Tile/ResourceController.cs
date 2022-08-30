@@ -17,10 +17,11 @@ public class ResourceController : MonoBehaviour
     public List<Sprite> Makeups;
     public List<Sprite> Pokemons;
     public List<Sprite> Vegetables;
+    public List<Sprite> demo;
 
     [HideInInspector]
     public static Dictionary<Sprite, int> spritesDict = new Dictionary<Sprite, int>();
-    private int idElement;
+    private int idElement = 0;
 
     void _MakeInstance()
     {
@@ -36,25 +37,28 @@ public class ResourceController : MonoBehaviour
     }
 
     void Start()
-    {
-        idElement = 0;
-        _CreateDictionary();
+    { 
+        _CreateDictionary(AfternoonTeas);
     }
 
-    public void _CreateDictionary()
+    public void _CreateDictionary(List<Sprite> list)
     {
-        foreach (Sprite sprite in AfternoonTeas)
+        Dictionary<Sprite, int> temp = new Dictionary<Sprite, int>();
+        foreach (Sprite sprite in list)
         {
-            if (spritesDict.ContainsKey(sprite))
-            {
-                spritesDict[sprite] = idElement;
-            }
-            else
-            {
-                spritesDict.Add(sprite, idElement);
-            }
+            //if (spritesDict.ContainsKey(sprite))
+            //{
+            //    spritesDict[sprite] = idElement;
+            //}
+            //else
+            //{
+            //    spritesDict.Add(sprite, idElement);
+            //}
+            temp.Add(sprite, idElement);
             idElement++;
         }
+        spritesDict = temp;
+        idElement = 0;
     }
 
 }

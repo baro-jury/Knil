@@ -32,8 +32,8 @@ public class MenuController : MonoBehaviour
 
     public void _PlayNewGame()
     {
-        LevelController.instance._UnlockLevel(1);
         LevelController.instance._PlayLv1();
+        ProgressController.instance._MarkCurrentLevel(1);
     }
 
     public void _PlaySavedGame()
@@ -44,6 +44,7 @@ public class MenuController : MonoBehaviour
     public void _ChooseLevel()
     {
         menuPanel.SetActive(false);
+        LevelController.instance._UnlockLevel(ProgressController.instance._GetMarkedLevel());
     }
 
     public void _BackToMenu()

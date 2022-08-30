@@ -132,6 +132,18 @@ public class LevelController : MonoBehaviour
         level = 10;
         _PlayLevel(level);
     }
+
+    public void _PlayLv11()
+    {
+        level = 11;
+        _PlayLevel(level);
+    }
+
+    public void _PlayLv12()
+    {
+        level = 12;
+        _PlayLevel(level);
+    }
     #endregion
 
     #region test
