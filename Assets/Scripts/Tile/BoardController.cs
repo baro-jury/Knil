@@ -276,15 +276,20 @@ public class BoardController : MonoBehaviour
 
         if (buttonList.Count == 0)
         {
-            if (dataLevel.level < 12)
+            if (dataLevel.level < 12 && dataLevel.level == ProgressController.instance._GetMarkedLevel())
             {
                 ProgressController.instance._MarkCurrentLevel(dataLevel.level + 1);
             }
             orderOfPullingDirection = 0;
 
-            new WaitForSeconds(0.75f);
-            GameplayController.instance._CompleteLevel();
+            StartCoroutine(ShowPopupWhenComplete());
         }
+    }
+
+    IEnumerator ShowPopupWhenComplete()
+    {
+        yield return new WaitForSeconds(0.75f);
+        GameplayController.instance._CompleteLevel();
     }
 
     public List<Transform> _SearchTiles(Sprite sprite) // tìm Tiles giống nhau
