@@ -38,7 +38,7 @@ public class ResourceController : MonoBehaviour
 
     void Start()
     { 
-        _CreateDictionary(AfternoonTeas);
+        _CreateDictionary(demo);
     }
 
     public void _CreateDictionary(List<Sprite> list)

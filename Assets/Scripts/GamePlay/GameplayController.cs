@@ -14,27 +14,24 @@ public class GameplayController : MonoBehaviour
     private bool isCoupled = true, activateSwap = false;
     private int siblingIndex;
     private Transform[] points = new Transform[4];
+    private Transform tile;
 
     [SerializeField]
-    private Transform tile;
+    private Button settingButton;
     [SerializeField]
-    private Button pauseButton;
-    [SerializeField]
-    private GameObject preBoosterPanel;
+    private GameObject boosterPanel;
     [SerializeField]
     private GameObject pausePanel;
     [SerializeField]
-    private GameObject settingPanel;
-    [SerializeField]
-    private GameObject guidePanel;
-    [SerializeField]
-    private GameObject exitPanel;
+    private GameObject quitPanel;
     [SerializeField]
     private GameObject gameOverPanel;
     [SerializeField]
     private GameObject winPanel;
     [SerializeField]
     private Transform tempAlignWithLeft, tempAlignWithRight, tempAlignWithTop, tempAlignWithBottom, tempAlignWithStart, tempAlignWithEnd;
+    [SerializeField]
+    private Ease ease = Ease.InOutQuad;
 
     void _MakeInstance()
     {
@@ -55,11 +52,24 @@ public class GameplayController : MonoBehaviour
     public void _Pause()
     {
         pausePanel.SetActive(true);
+
+        settingButton.transform.GetChild(0).GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
+        settingButton.transform.GetChild(1).GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
+        settingButton.transform.GetChild(2).GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
+
+        settingButton.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPosY(-150, .5f).SetEase(ease).SetUpdate(true);
+        settingButton.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(-300, .5f).SetEase(ease).SetUpdate(true);
+        settingButton.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(-450, .5f).SetEase(ease).SetUpdate(true).OnComplete(() =>
+        {
+            settingButton.enabled = true;
+        });
+        
         Time.timeScale = 0;
     }
 
     public void _Resume()
     {
+        settingButton.enabled = false;
         pausePanel.SetActive(false);
         Time.timeScale = 1;
     }
@@ -69,34 +79,28 @@ public class GameplayController : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
-    public void _GoToSetting()
+    public void _TurnOffSound()
     {
-        settingPanel.SetActive(true);
+        pausePanel.transform.GetChild(0).transform.GetChild(0).transform.GetChild(0).gameObject.SetActive(true);
+        //               setting button      sound on button      sound off button
     }
 
-    public void _TurnOffVolume()
+    public void _TurnOnSound()
     {
-
+        pausePanel.transform.GetChild(0).transform.GetChild(0).transform.GetChild(0).gameObject.SetActive(false);
+        //               setting button      sound on button      sound off button
     }
 
-    public void _TurnOnVolume()
+    public void _TurnOffMusic()
     {
-
+        pausePanel.transform.GetChild(0).transform.GetChild(1).transform.GetChild(0).gameObject.SetActive(true);
+        //               setting button      music on button      music off button
     }
 
-    public void _ShowHowToPlay()
+    public void _TurnOnMusic()
     {
-        guidePanel.SetActive(true);
-    }
-
-    public void _TurnOffGuidePanel()
-    {
-        guidePanel.SetActive(false);
-    }
-
-    public void _TurnOffSettingPanel()
-    {
-        settingPanel.SetActive(false);
+        pausePanel.transform.GetChild(0).transform.GetChild(1).transform.GetChild(0).gameObject.SetActive(false);
+        //               setting button      music on button      music off button
     }
 
     public void _Replay()
@@ -104,30 +108,25 @@ public class GameplayController : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    public void _ExitConfirmation()
+    public void _QuitConfirmation()
     {
-        exitPanel.SetActive(true);
+        quitPanel.SetActive(true);
     }
 
-    public void _ExitGame()
+    public void _QuitLevel()
     {
-        Application.Quit();
+        //Application.Quit();
+        SceneManager.LoadScene(0);
     }
 
     public void _NotExit()
     {
-        exitPanel.SetActive(false);
+        quitPanel.SetActive(false);
     }
 
     public void _GameOver()
     {
         gameOverPanel.SetActive(true);
-        //string[] curLv = currentLevel.Split("_");
-        //string[] markedLv = ProgressController.instance._GetMarkedLevel().Split("_");
-        //if (Convert.ToInt32(curLv[1]) > Convert.ToInt32(markedLv[1]))
-        //{
-        //    ProgressController.instance._MarkCurrentLevel(currentLevel);
-        //}
     }
 
     public void _WatchAds()
@@ -230,14 +229,14 @@ public class GameplayController : MonoBehaviour
     }
     #endregion
 
-    #region Booster
+    #region Supporter
 
-    public void _BoosterShuffle() //Đổi vị trí: Khi người chơi sử dụng, các item thay đổi vị trí cho nhau.
+    public void _SupporterShuffle() //Đổi vị trí: Khi người chơi sử dụng, các item thay đổi vị trí cho nhau.
     {
         BoardController.instance._RearrangeTiles();
     }
 
-    public void _BoosterHint() //Hint: Khi sử dụng sẽ gợi ý 1 kết quả
+    public void _SupporterHint() //Hint: Khi sử dụng sẽ gợi ý 1 kết quả
     {
         bool isFounded = false;
         while (!isFounded)
@@ -264,13 +263,12 @@ public class GameplayController : MonoBehaviour
         }
     }
 
-    public void _BoosterSwap() //Swap: Người chơi chọn 2 ô, sau đó 2 ô đổi vị trí cho nhau
+    public void _SupporterSwap() //Swap: Người chơi chọn 2 ô, sau đó 2 ô đổi vị trí cho nhau
     {
         //activateSwap = true;
     }
 
-    //can chinh sua
-    public void _BoosterMagicWand() //Đũa thần: 2 kết quả hoàn thành
+    public void _SupporterMagicWand() //Đũa thần: 2 kết quả hoàn thành
     {
         int numCouple = 0;
         Transform[] trans = new Transform[4];
@@ -348,6 +346,7 @@ public class GameplayController : MonoBehaviour
                 }
             }
         }
+        LineController.instance._EraseLine();
         //StartCoroutine(MagicWand(trans));
     }
 
@@ -403,7 +402,7 @@ public class GameplayController : MonoBehaviour
         return temp;
     }
 
-    public void _BoosterFreezeTime() //Snow: Đóng băng thời gian 10 giây
+    public void _SupporterFreezeTime() //Snow: Đóng băng thời gian 10 giây
     {
         Debug.Log("Đóng băng thời gian 10 giây");
         StartCoroutine(FreezeTime());
@@ -411,18 +410,18 @@ public class GameplayController : MonoBehaviour
 
     #endregion
 
-    #region PreBooster
+    #region Booster
 
-    public void _PreBoosterTimeWizard() //Time : Tăng 10 giây khi sử dụng
+    public void _BoosterTimeWizard() //Time : Tăng 10 giây khi sử dụng
     {
-        preBoosterPanel.SetActive(false);
+        boosterPanel.SetActive(false);
         TimeController.instance._SetTimeForSlider(true);
         Time.timeScale = 1;
     }
 
-    //public void _PreBoosterEarthquake() //Remove item: Mỗi 1 hình xoá 1 cặp ( tối đa 5 cặp ) Random
+    //public void _BoosterEarthquake() //Remove item: Mỗi 1 hình xoá 1 cặp ( tối đa 5 cặp ) Random
     //{
-    //    preBoosterPanel.SetActive(false);
+    //    boosterPanel.SetActive(false);
     //    int n = 0, numCouple = Random.Range(3, 6);
     //    Transform[] trans = new Transform[2 * numCouple];
     //    for (int i = 0; i < ResourceController.spritesDict.Count; i++)
@@ -443,9 +442,9 @@ public class GameplayController : MonoBehaviour
     //    Time.timeScale = 1;
     //}
 
-    public void _PreBoosterEarthquake() //Remove All: Xoá 1 hình bất kỳ
+    public void _BoosterEarthquake() //Remove All: Xoá 1 hình bất kỳ
     {
-        preBoosterPanel.SetActive(false);
+        boosterPanel.SetActive(false);
         bool isFounded = false;
         while (!isFounded)
         {
@@ -465,16 +464,16 @@ public class GameplayController : MonoBehaviour
         Time.timeScale = 1;
     }
 
-    public void _PreBoosterMirror() //Mirror: gấp đôi số sao đạt được
+    public void _BoosterMirror() //Mirror: gấp đôi số sao đạt được
     {
-        preBoosterPanel.SetActive(false);
-        
+        boosterPanel.SetActive(false);
+
         Time.timeScale = 1;
     }
 
-    public void _NoPreBooster()
+    public void _NoBooster()
     {
-        preBoosterPanel.SetActive(false);
+        boosterPanel.SetActive(false);
         Time.timeScale = 1;
     }
 
@@ -484,7 +483,7 @@ public class GameplayController : MonoBehaviour
 
     IEnumerator MakeConnection(params Transform[] linePositions)
     {
-        LineController.instance._DrawLine(0.3f * tile.gameObject.GetComponent<RectTransform>().sizeDelta.x / 100, linePositions);
+        LineController.instance._DrawLine(0.15f * tile.gameObject.GetComponent<RectTransform>().sizeDelta.x / 100, linePositions);
 
         yield return new WaitForSeconds(0.75f);
 
@@ -514,7 +513,7 @@ public class GameplayController : MonoBehaviour
         //        linePositions[i].transform.DOScale(Vector3.zero, 1f).SetEase(Ease.InOutQuad);
         //    }
         //}
-        //yield return new WaitForSeconds(0.75f);
+
         for (int i = 0; i < n; i++)
         {
             if (i == 0 || i == n - 1)

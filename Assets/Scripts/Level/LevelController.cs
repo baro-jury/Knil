@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-using SimpleJSON;
 using Newtonsoft.Json;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -144,52 +143,7 @@ public class LevelController : MonoBehaviour
         level = 12;
         _PlayLevel(level);
     }
+
     #endregion
 
-    #region test
-    private string levelsUrl;
-    private RectTransform content;
-    private GameObject itemPrefab;
-
-    IEnumerator _GetData()
-    {
-        UnityWebRequest req = UnityWebRequest.Get(levelsUrl);
-        yield return req.SendWebRequest();
-
-        if (req.result == UnityWebRequest.Result.Success)
-        {
-            string data = req.downloadHandler.text;
-            _InstantiateItem(data);
-        }
-        else
-        {
-            Debug.Log(req.error);
-        }
-    }
-
-    private void _InstantiateItem(string data)
-    {
-        JSONArray array = JSON.Parse(data) as JSONArray;
-        JSONObject obj = new JSONObject();
-
-        for (int i = 0; i < array.Count; i++)
-        {
-            obj = array[i].AsObject;
-            float x = obj["X"];
-            float y = obj["Y"];
-            int lv = obj["level"];
-            int row = obj["row"];
-            int column = obj["column"];
-
-            GameObject item = Instantiate(itemPrefab, content);
-            Vector3 pos = Camera.main.ViewportToScreenPoint(new Vector3(x, y, 0));
-            item.transform.position = pos;
-            if (content.childCount > 1)
-            {
-                float distance = Mathf.Abs(item.transform.position.y - content.GetChild(i - 1).position.y);
-                content.sizeDelta = new Vector2(content.sizeDelta.x, content.sizeDelta.y + distance);
-            }
-        }
-    }
-    #endregion
 }
