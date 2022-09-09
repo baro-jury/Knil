@@ -7,9 +7,9 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class GameplayController : MonoBehaviour
+public class GameplayTrial : MonoBehaviour
 {
-    public static GameplayController instance;
+    public static GameplayTrial instance;
 
     private bool isCoupled = true, activateSwap = false;
     private int siblingIndex;
@@ -17,21 +17,9 @@ public class GameplayController : MonoBehaviour
     private Transform tile;
 
     [SerializeField]
-    private Button settingButton;
-    [SerializeField]
-    private GameObject boosterPanel;
-    [SerializeField]
-    private GameObject pausePanel;
-    [SerializeField]
-    private GameObject quitPanel;
-    [SerializeField]
-    private GameObject gameOverPanel;
-    [SerializeField]
-    private GameObject winPanel;
+    private Button pauseButton;
     [SerializeField]
     private Transform tempAlignWithLeft, tempAlignWithRight, tempAlignWithTop, tempAlignWithBottom, tempAlignWithStart, tempAlignWithEnd;
-    [SerializeField]
-    private Ease ease = Ease.InOutQuad;
 
     void _MakeInstance()
     {
@@ -47,123 +35,22 @@ public class GameplayController : MonoBehaviour
         Time.timeScale = 0;
     }
 
-    #region Ingame
-
+    #region Play trial
     public void _Pause()
     {
-        pausePanel.SetActive(true);
-
-        settingButton.transform.GetChild(0).GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
-        settingButton.transform.GetChild(1).GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
-        settingButton.transform.GetChild(2).GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
-
-        settingButton.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPosY(-150, .5f).SetEase(ease).SetUpdate(true);
-        settingButton.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(-300, .5f).SetEase(ease).SetUpdate(true);
-        settingButton.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(-450, .5f).SetEase(ease).SetUpdate(true).OnComplete(() =>
-        {
-            settingButton.enabled = true;
-        });
-        
+        pauseButton.transform.GetChild(0).gameObject.SetActive(true);
         Time.timeScale = 0;
     }
 
     public void _Resume()
     {
-        settingButton.enabled = false;
-        pausePanel.SetActive(false);
+        pauseButton.transform.GetChild(0).gameObject.SetActive(false);
         Time.timeScale = 1;
     }
 
-    public void _GoToMenu()
+    public void _ClickTile(Transform currentTile)
     {
-        SceneManager.LoadScene(0);
-    }
-
-    public void _TurnOffSound()
-    {
-        pausePanel.transform.GetChild(0).transform.GetChild(0).transform.GetChild(0).gameObject.SetActive(true);
-        //               setting button      sound on button      sound off button
-    }
-
-    public void _TurnOnSound()
-    {
-        pausePanel.transform.GetChild(0).transform.GetChild(0).transform.GetChild(0).gameObject.SetActive(false);
-        //               setting button      sound on button      sound off button
-    }
-
-    public void _TurnOffMusic()
-    {
-        pausePanel.transform.GetChild(0).transform.GetChild(1).transform.GetChild(0).gameObject.SetActive(true);
-        //               setting button      music on button      music off button
-    }
-
-    public void _TurnOnMusic()
-    {
-        pausePanel.transform.GetChild(0).transform.GetChild(1).transform.GetChild(0).gameObject.SetActive(false);
-        //               setting button      music on button      music off button
-    }
-
-    public void _Replay()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public void _QuitConfirmation()
-    {
-        quitPanel.SetActive(true);
-    }
-
-    public void _QuitLevel()
-    {
-        //Application.Quit();
-        SceneManager.LoadScene(0);
-    }
-
-    public void _NotExit()
-    {
-        quitPanel.SetActive(false);
-    }
-
-    public void _GameOver()
-    {
-        gameOverPanel.SetActive(true);
-    }
-
-    public void _WatchAds()
-    {
-
-    }
-
-    public void _CompleteLevel()
-    {
-        Time.timeScale = 0;
-        winPanel.SetActive(true);
-
-    }
-
-    public void _GoToNextLevel()
-    {
-        if (LevelController.level == 12)
-        {
-            _GoToMenu();
-        }
-        else
-        {
-            LevelController.level = LevelController.level + 1;
-            LevelController.instance._PlayLevel(LevelController.level);
-        }
-    }
-
-    public void _ShareResult()
-    {
-
-    }
-
-    #endregion
-
-    #region Click Tiles
-    public void _ClickTile(Transform currentTile) //edit
-    {
+        Time.timeScale = 1;
         isCoupled = !isCoupled;
         if (!isCoupled)
         {
@@ -220,17 +107,9 @@ public class GameplayController : MonoBehaviour
             == ResourceController.spritesDict[tile2.GetChild(0).GetComponent<Image>().sprite];
     }
 
-    void _SetLinePositions(Transform t0, Transform t1, Transform t2, Transform t3)
-    {
-        points[0] = t0;
-        points[1] = t1;
-        points[2] = t2;
-        points[3] = t3;
-    }
     #endregion
 
-    #region Supporter
-
+    #region Supporter & Booster
     public void _SupporterShuffle() //Đổi vị trí: Khi người chơi sử dụng, các item thay đổi vị trí cho nhau.
     {
         BoardController.instance._RearrangeTiles();
@@ -242,8 +121,7 @@ public class GameplayController : MonoBehaviour
         while (!isFounded)
         {
             int index = Random.Range(0, ResourceController.spritesDict.Count);
-            List<Transform> temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
-            //Dictionary<Transform, int> temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
+            List<Transform> temp = BoardController.instance._SearchSameTiles(ResourceController.spritesDict.ElementAt(index).Key);
             if (temp.Count != 0)
             {
                 for (int i = 0; i < (temp.Count - 1); i++)
@@ -251,7 +129,6 @@ public class GameplayController : MonoBehaviour
                     for (int j = (i + 1); j < temp.Count; j++)
                     {
                         if (_HasAvailableConnection(temp[i], temp[j]))
-                        //if (_HasAvailableConnection(temp.ElementAt(i).Key, temp.ElementAt(j).Key))
                         {
                             StartCoroutine(MakeConnection(points));
                             isFounded = true;
@@ -261,11 +138,6 @@ public class GameplayController : MonoBehaviour
                 }
             }
         }
-    }
-
-    public void _SupporterSwap() //Swap: Người chơi chọn 2 ô, sau đó 2 ô đổi vị trí cho nhau
-    {
-        //activateSwap = true;
     }
 
     public void _SupporterMagicWand() //Đũa thần: 2 kết quả hoàn thành
@@ -279,55 +151,7 @@ public class GameplayController : MonoBehaviour
             {
                 break;
             }
-            List<Transform> temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
-            //Dictionary<Transform, int> temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
-
-            #region chia truong hop list 2 tile va 4 tile
-            //if (temp.Count == 2)
-            //{
-            //    if (_HasAvailableConnection(temp[0], temp[1]))
-            //    //if (_HasAvailableConnection(temp.ElementAt(0).Key, temp.ElementAt(1).Key))
-            //    {
-            //        trans[2 * numCouple] = temp[0];
-            //        trans[2 * numCouple + 1] = temp[1];
-            //        //trans[2 * numCouple] = temp.ElementAt(0).Key;
-            //        //trans[2 * numCouple + 1] = temp.ElementAt(1).Key;
-            //        numCouple++;
-            //    }
-            //}
-            //else if (temp.Count > 2)
-            //{
-            //    if (numCouple == 0)
-            //    {
-            //        trans = _ConnectableTilesFromList(temp);
-            //        for (int i = 0; i < temp.Count; i++)
-            //        {
-            //            if (temp.ElementAt(i).Value == -1)
-            //            {
-            //                numCouple++;
-            //            }
-            //        }
-            //        numCouple /= 2;
-            //    }
-            //    else
-            //    {
-            //for (int i = 0; i < (temp.Count - 1); i++)
-            //{
-            //    for (int j = (i + 1); j < temp.Count; j++)
-            //    {
-            //        if (_HasAvailableConnection(temp.ElementAt(i).Key, temp.ElementAt(j).Key))
-            //        {
-            //            trans[2 * numCouple] = temp.ElementAt(i).Key;
-            //            trans[2 * numCouple + 1] = temp.ElementAt(j).Key;
-            //            //StartCoroutine(MagicWand(temp.ElementAt(i).Key, temp.ElementAt(j).Key));
-            //            numCouple++;
-            //            goto check;
-            //        }
-            //    }
-            //}
-            //    }
-            //}
-            #endregion
+            List<Transform> temp = BoardController.instance._SearchSameTiles(ResourceController.spritesDict.ElementAt(index).Key);
 
             if (temp.Count != 0)
             {
@@ -338,8 +162,6 @@ public class GameplayController : MonoBehaviour
                         goto check;
                     }
 
-                    //trans[2 * numCouple] = temp[2 * i];
-                    //trans[2 * numCouple + 1] = temp[2 * i + 1];
                     StopAllCoroutines();
                     StartCoroutine(DestroyTiles(temp[2 * i], temp[2 * i + 1]));
                     numCouple++;
@@ -347,59 +169,6 @@ public class GameplayController : MonoBehaviour
             }
         }
         LineController.instance._EraseLine();
-        //StartCoroutine(MagicWand(trans));
-    }
-
-    Transform[] _ConnectableTilesFromList(List<Transform> list)
-    {
-        Transform[] temp = new Transform[4];
-        int num = 0;
-        for (int i = 0; i < (list.Count - 1); i++)
-        {
-            for (int j = (i + 1); j < list.Count; j++)
-            {
-                if (num == 2)
-                {
-                    goto end;
-                }
-                if (_HasAvailableConnection(list[i], list[j]))
-                {
-                    temp[2 * num] = list[i];
-                    temp[2 * num + 1] = list[j];
-                    //StartCoroutine(MagicWand(dict.ElementAt(i).Key, dict.ElementAt(j).Key));
-                    num++;
-                }
-            }
-        }
-    end:
-        return temp;
-    }
-    Transform[] _ConnectableTilesFromList(Dictionary<Transform, int> dict)
-    {
-        Transform[] temp = new Transform[4];
-        int num = 0;
-        for (int i = 0; i < (dict.Count - 1); i++)
-        {
-            for (int j = (i + 1); j < dict.Count; j++)
-            {
-                if (num == 2)
-                {
-                    goto end;
-                }
-                if (dict.ElementAt(i).Value != -1 && dict.ElementAt(j).Value != -1 &&
-                    _HasAvailableConnection(dict.ElementAt(i).Key, dict.ElementAt(j).Key))
-                {
-                    temp[2 * num] = dict.ElementAt(i).Key;
-                    temp[2 * num + 1] = dict.ElementAt(j).Key;
-                    //StartCoroutine(MagicWand(dict.ElementAt(i).Key, dict.ElementAt(j).Key));
-                    dict[dict.ElementAt(i).Key] = -1;
-                    dict[dict.ElementAt(j).Key] = -1;
-                    num++;
-                }
-            }
-        }
-    end:
-        return temp;
     }
 
     public void _SupporterFreezeTime() //Snow: Đóng băng thời gian 10 giây
@@ -408,79 +177,38 @@ public class GameplayController : MonoBehaviour
         StartCoroutine(FreezeTime());
     }
 
-    #endregion
-
-    #region Booster
-
     public void _BoosterTimeWizard() //Time : Tăng 10 giây khi sử dụng
     {
-        boosterPanel.SetActive(false);
-        TimeController.instance._SetTimeForSlider(true);
-        Time.timeScale = 1;
+        
+        TimeController.time += 10;
     }
-
-    //public void _BoosterEarthquake() //Remove item: Mỗi 1 hình xoá 1 cặp ( tối đa 5 cặp ) Random
-    //{
-    //    boosterPanel.SetActive(false);
-    //    int n = 0, numCouple = Random.Range(3, 6);
-    //    Transform[] trans = new Transform[2 * numCouple];
-    //    for (int i = 0; i < ResourceController.spritesDict.Count; i++)
-    //    {
-    //        if (n == numCouple)
-    //        {
-    //            break;
-    //        }
-    //        Dictionary<Transform, int> temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(i).Key);
-    //        if (temp.Count != 0)
-    //        {
-    //            trans[2 * n] = temp.ElementAt(0).Key;
-    //            trans[2 * n + 1] = temp.ElementAt(1).Key;
-    //            n++;
-    //        }
-    //    }
-    //    StartCoroutine(Earthquake(trans));
-    //    Time.timeScale = 1;
-    //}
 
     public void _BoosterEarthquake() //Remove All: Xoá 1 hình bất kỳ
     {
-        boosterPanel.SetActive(false);
         bool isFounded = false;
         while (!isFounded)
         {
             int index = Random.Range(0, ResourceController.spritesDict.Count);
-            List<Transform> temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
-            //Dictionary<Transform, int> temp = BoardController.instance._SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
+            List<Transform> temp = BoardController.instance._SearchSameTiles(ResourceController.spritesDict.ElementAt(index).Key);
             if (temp.Count != 0)
             {
                 for (int i = 0; i < temp.Count; i++)
                 {
                     StartCoroutine(DestroyTiles(temp[i]));
-                    //StartCoroutine(DestroyTiles(temp.ElementAt(i).Key));
                 }
                 isFounded = true;
             }
         }
-        Time.timeScale = 1;
     }
 
     public void _BoosterMirror() //Mirror: gấp đôi số sao đạt được
     {
-        boosterPanel.SetActive(false);
 
-        Time.timeScale = 1;
-    }
-
-    public void _NoBooster()
-    {
-        boosterPanel.SetActive(false);
-        Time.timeScale = 1;
     }
 
     #endregion
 
     #region IEnumerator
-
     IEnumerator MakeConnection(params Transform[] linePositions)
     {
         LineController.instance._DrawLine(0.15f * tile.gameObject.GetComponent<RectTransform>().sizeDelta.x / 100, linePositions);
@@ -500,19 +228,6 @@ public class GameplayController : MonoBehaviour
                 n--;
             }
         }
-        //for (int i = 0; i < n; i++)
-        //{
-        //    if (i == 0 || i == n - 1)
-        //    {
-        //        //linePositions[i].transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InOutQuad).OnComplete(() =>
-        //        //{
-        //        //    linePositions[i].gameObject.SetActive(false);
-        //        //    BoardController.instance._DeactivateTile(linePositions[i]);
-        //        //});
-
-        //        linePositions[i].transform.DOScale(Vector3.zero, 1f).SetEase(Ease.InOutQuad);
-        //    }
-        //}
 
         for (int i = 0; i < n; i++)
         {
@@ -527,30 +242,6 @@ public class GameplayController : MonoBehaviour
         BoardController.instance._ShuffleWhenNoPossibleLink();
     }
 
-    //IEnumerator MagicWand(params Transform[] transforms)
-    //{
-    //    for (int i = 0; i < (transforms.Length / 2); i++)
-    //    {
-    //        if (_HasAvailableConnection(transforms[2 * i], transforms[2 * i + 1]))
-    //        {
-    //            StopAllCoroutines();
-    //            StartCoroutine(MakeConnection(points));
-    //            StartCoroutine(DestroyTiles(points));
-    //        }
-    //        yield return new WaitForSeconds(0.75f);
-    //    }
-    //}
-
-    IEnumerator MagicWand(params Transform[] transforms)
-    {
-        yield return new WaitForSeconds(0);
-        for (int i = 0; i < (transforms.Length / 2); i++)
-        {
-            StopAllCoroutines();
-            StartCoroutine(DestroyTiles(transforms[2 * i], transforms[2 * i + 1]));
-        }
-    }
-
     IEnumerator FreezeTime()
     {
         TimeController.instance._FreezeTime(true);
@@ -561,6 +252,13 @@ public class GameplayController : MonoBehaviour
     #endregion
 
     #region Algorithm
+    void _SetLinePositions(Transform t0, Transform t1, Transform t2, Transform t3)
+    {
+        points[0] = t0;
+        points[1] = t1;
+        points[2] = t2;
+        points[3] = t3;
+    }
 
     public bool _HasAvailableConnection(Transform tile1, Transform tile2)
     {

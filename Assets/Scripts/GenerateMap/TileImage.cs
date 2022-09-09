@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ResourceController : MonoBehaviour
+public class TileImage : MonoBehaviour
 {
-    public static ResourceController instance;
+    public static TileImage instance;
 
     public List<Sprite> AfternoonTeas;
     public List<Sprite> Butterflies;
@@ -21,7 +21,7 @@ public class ResourceController : MonoBehaviour
 
     [HideInInspector]
     public static Dictionary<Sprite, int> spritesDict = new Dictionary<Sprite, int>();
-    private int idElement = 0;
+    private int idElement = 1;
 
     void _MakeInstance()
     {
@@ -37,7 +37,7 @@ public class ResourceController : MonoBehaviour
     }
 
     void Start()
-    { 
+    {
         _CreateDictionary(demo);
     }
 
@@ -58,7 +58,6 @@ public class ResourceController : MonoBehaviour
             idElement++;
         }
         spritesDict = temp;
-        idElement = 0;
+        idElement = 1;
     }
-
 }

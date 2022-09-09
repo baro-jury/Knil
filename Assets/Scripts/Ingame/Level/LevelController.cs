@@ -15,6 +15,8 @@ public class LevelController : MonoBehaviour
     private List<Button> lvButtons = new List<Button>();
     [SerializeField]
     private List<DataLevels> dataLevels = new List<DataLevels>();
+    [SerializeField]
+    private DataLevels dataLv = new DataLevels();
 
     void _MakeInstance()
     {
@@ -24,12 +26,6 @@ public class LevelController : MonoBehaviour
         }
     }
 
-    private void _LoadDataLevel()
-    {
-        var dataStr = Resources.Load("Levels") as TextAsset;
-        dataLevels = JsonConvert.DeserializeObject<List<DataLevels>>(dataStr.text);
-    }
-
     void Awake()
     {
         _MakeInstance();
@@ -37,23 +33,36 @@ public class LevelController : MonoBehaviour
 
     void Start()
     {
-        //StartCoroutine("_GetData");
-        _LoadDataLevel();
+        //_LoadDataLevel();
     }
+
+    //void _LoadDataLevel()
+    //{
+    //    var dataStr = Resources.Load("Levels") as TextAsset;
+    //    dataLevels = JsonConvert.DeserializeObject<List<DataLevels>>(dataStr.text);
+    //}
+
+    //public DataLevels _GetDataLevel(int level)
+    //{
+    //    var temp = dataLevels.Find(l => l.level == level);
+    //    if (temp != null)
+    //    {
+    //        return temp;
+    //    }
+    //    return default;
+    //}
 
     public DataLevels _GetDataLevel(int level)
     {
-        var temp = dataLevels.Find(l => l.level == level);
-        if (temp != null)
-        {
-            return temp;
-        }
-        return default;
+        var dataStr = Resources.Load("Level_" + level) as TextAsset;
+        DataLevels temp = JsonUtility.FromJson<DataLevels>(dataStr.text);
+        return temp;
     }
 
+    #region Play
     public void _UnlockLevel(int lv)
     {
-        for(int i = 0; i < lvButtons.Count; i++)
+        for (int i = 0; i < lvButtons.Count; i++)
         {
             if (i < lv)
             {
@@ -66,7 +75,6 @@ public class LevelController : MonoBehaviour
         }
     }
 
-    #region Play
     public void _PlayLevel(int lv)
     {
         BoardController.dataLevel = _GetDataLevel(lv);

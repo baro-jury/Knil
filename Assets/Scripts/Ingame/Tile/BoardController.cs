@@ -29,8 +29,6 @@ public class BoardController : MonoBehaviour
 
     void _InstantiateLevel()
     {
-        //ProgressController.instance._MarkCurrentLevel(dataLevel.level);
-
         row = dataLevel.row;
         column = dataLevel.column;
         TimeController.time = dataLevel.time;
@@ -58,8 +56,6 @@ public class BoardController : MonoBehaviour
         }
         _RearrangeTiles();
         _ShuffleWhenNoPossibleLink();
-
-        //Debug.Log("Child = " + gameObject.transform.childCount + "\nList = " + buttonList.Count);
     }
 
     #region Khởi tạo màn chơi
@@ -163,27 +159,6 @@ public class BoardController : MonoBehaviour
         return num;
     }
 
-    //void _GenerateTilesWithGrid()
-    //{
-    //    int NumberOfSameTiles;
-    //    for (int i = 0; i < 15; i++)
-    //    {
-    //        NumberOfSameTiles = Random.Range(2, 5);
-    //        while (NumberOfSameTiles % 2 == 1)
-    //        {
-    //            NumberOfSameTiles = Random.Range(2, 5);
-    //        }
-    //        for (int j = 0; j < NumberOfSameTiles; j++)
-    //        {
-    //            if (gameObject.transform.childCount == 30)
-    //            {
-    //                break;
-    //            }
-    //            Tile.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict.ElementAt(i).Key;
-    //            Instantiate(Tile, gameObject.transform);
-    //        }
-    //    }
-    //}
     #endregion
 
     #region Sắp xếp Tiles
@@ -195,8 +170,7 @@ public class BoardController : MonoBehaviour
         }
         for (int index = 0; index < ResourceController.spritesDict.Count; index++)
         {
-            List<Transform> temp = _SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
-            //Dictionary<Transform, int> temp = _SearchTiles(ResourceController.spritesDict.ElementAt(index).Key);
+            List<Transform> temp = _SearchSameTiles(ResourceController.spritesDict.ElementAt(index).Key);
             if (temp.Count != 0)
             {
                 for (int i = 0; i < (temp.Count - 1); i++)
@@ -204,8 +178,6 @@ public class BoardController : MonoBehaviour
                     for (int j = (i + 1); j < temp.Count; j++)
                     {
                         if (GameplayController.instance._HasAvailableConnection(temp[i], temp[j]))
-                        //if (/*temp.ElementAt(i).Value != -1 && temp.ElementAt(j).Value != -1 &&*/
-                        //    GameplayController.instance._HasAvailableConnection(temp.ElementAt(i).Key, temp.ElementAt(j).Key))
                         {
                             return true;
                         }
@@ -326,17 +298,15 @@ public class BoardController : MonoBehaviour
         GameplayController.instance._CompleteLevel();
     }
 
-    public List<Transform> _SearchTiles(Sprite sprite) // tìm Tiles giống nhau
+    public List<Transform> _SearchSameTiles(Sprite sprite)
     {
         List<Transform> list = new List<Transform>();
-        //Dictionary<Transform, int> dict = new Dictionary<Transform, int>();
         int value = 0;
         foreach (Transform trans in buttonList)
         {
             if (trans.GetChild(0).GetComponent<Image>().sprite == sprite)
             {
                 list.Add(trans);
-                //dict.Add(trans, value);
                 value++;
             }
         }
