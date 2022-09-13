@@ -1,1 +1,15 @@
-{"level":2,"row":3,"column":4,"time":100.0,"pullDown":false,"pullUp":false,"pullLeft":false,"pullRight":false}
+{
+    "level": 2,
+    "theme": 1,
+    "time": 100.0,
+    "process": [
+        {
+            "row": 3,
+            "column": 4,
+            "pullDown": false,
+            "pullUp": false,
+            "pullLeft": false,
+            "pullRight": false
+        }
+    ]
+}

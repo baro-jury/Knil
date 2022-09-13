@@ -8,8 +8,8 @@ using UnityEngine.UI;
 public class Board : MonoBehaviour
 {
     public static Board instance;
-    public static DataLevels dataLevel;
-    private int row, column, orderOfPullingDirection;
+    public static LevelData levelData;
+    private int process, row, column, orderOfPullingDirection;
     private bool pullDown, pullUp, pullLeft, pullRight;
     private List<Transform> buttonList = new List<Transform>();
     private int[,] Matrix;
@@ -39,10 +39,6 @@ public class Board : MonoBehaviour
         _ResetBoard();
         _InstantiateLevel();
         _GenerateTiles();
-        //for (int i = 0; i < gameObject.transform.childCount; i++)
-        //{
-        //    buttonList.Add(gameObject.transform.GetChild(i));
-        //}
         //_RearrangeTiles();
         //_ShuffleWhenNoPossibleLink();
     }
@@ -58,13 +54,15 @@ public class Board : MonoBehaviour
 
     void _InstantiateLevel()
     {
-        row = dataLevel.row;
-        column = dataLevel.column;
-        TimeController.time = dataLevel.time;
-        pullDown = dataLevel.pullDown;
-        pullUp = dataLevel.pullUp;
-        pullLeft = dataLevel.pullLeft;
-        pullRight = dataLevel.pullRight;
+        TimeController.time = levelData.time;
+
+        //process = orderNumber;
+        row = levelData.process[0].row;
+        column = levelData.process[0].column;
+        pullDown = levelData.process[0].pullDown;
+        pullUp = levelData.process[0].pullUp;
+        pullLeft = levelData.process[0].pullLeft;
+        pullRight = levelData.process[0].pullRight;
 
         //TimeController.instance._SetTimeForSlider(false);
     }
@@ -121,7 +119,7 @@ public class Board : MonoBehaviour
                 Vector3 tilePos = new Vector3(x, y, 0) / 40;
                 var objBtn = Instantiate(Tile, tilePos, Quaternion.identity, gameObject.transform);
                 objBtn.transform.localPosition = tilePos * 40;
-                //PrefabUtility.UnpackPrefabInstance(objBtn.gameObject, PrefabUnpackMode.Completely, 0);
+                //buttonList.Add(objBtn.transform);
             }
         }
         #endregion
@@ -132,6 +130,7 @@ public class Board : MonoBehaviour
         //    for (int x = 0; x < column; x++)
         //    {
         //        Vector3 tilePos = new Vector3((x * sideTile - (boardWidth - sideTile) / 2), ((boardHeight - sideTile) / 2 - y * sideTile), 0) / 40;
+        //        //Vector3 tilePos = _ConvertMatrixIndexToPosition(y, x, boardWidth, boardHeight, sideTile) / 40;
         //        var objBtn = Instantiate(Tile, tilePos, Quaternion.identity, gameObject.transform);
         //        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict.ElementAt(index).Key;
         //        objBtn.transform.localPosition = tilePos * 40;
@@ -148,14 +147,19 @@ public class Board : MonoBehaviour
         #endregion
     }
 
-    void _ConvertPositionToMatrixIndex(float x, float y)
+    int[] _ConvertPositionToMatrixIndex(float x, float y, float boardWidth, float boardHeight, float tileSize)
     {
+        int[] temp = new int[2];
 
+        temp[0] = (int)(((boardHeight - tileSize) / 2 - y) / tileSize);  //row
+        temp[1] = (int)(((boardWidth - tileSize) / 2 + x) / tileSize); //column
+        
+        return temp;
     }
 
-    void _ConvertMatrixIndexToPosition(int r, int c)
+    Vector3 _ConvertMatrixIndexToPosition(int row, int col, float boardWidth, float boardHeight, float tileSize)
     {
-
+        return new Vector3((col * tileSize - (boardWidth - tileSize) / 2), ((boardHeight - tileSize) / 2 - row * tileSize), 0);
     }
 
     #endregion
@@ -206,18 +210,27 @@ public class Board : MonoBehaviour
             buttonList[i].localPosition = buttonList[randomIndex].localPosition;
             buttonList[randomIndex].localPosition = temp;
 
-            int rTempI = (int)(
-                ((row * side - side) / 2 - buttonList[i].localPosition.y) / side
-                );
-            int cTempI = (int)(
-                ((column * side - side) / 2 + buttonList[i].localPosition.x) / side
-                );
-            int rTempRanI = (int)(
-                ((row * side - side) / 2 - buttonList[randomIndex].localPosition.y) / side
-                );
-            int cTempRanI = (int)(
-                ((column * side - side) / 2 + buttonList[randomIndex].localPosition.x) / side
-                );
+            int rTempI = _ConvertPositionToMatrixIndex(
+                buttonList[i].localPosition.x, buttonList[i].localPosition.y, column * side, row * side, side)[0];
+            int cTempI = _ConvertPositionToMatrixIndex(
+                buttonList[i].localPosition.x, buttonList[i].localPosition.y, column * side, row * side, side)[1];
+            int rTempRanI = _ConvertPositionToMatrixIndex(
+                buttonList[i].localPosition.x, buttonList[randomIndex].localPosition.y, column * side, row * side, side)[0];
+            int cTempRanI = _ConvertPositionToMatrixIndex(
+                buttonList[i].localPosition.x, buttonList[randomIndex].localPosition.y, column * side, row * side, side)[1]; ;
+
+            //int rTempI = (int)(
+            //    ((row * side - side) / 2 - buttonList[i].localPosition.y) / side
+            //    );
+            //int cTempI = (int)(
+            //    ((column * side - side) / 2 + buttonList[i].localPosition.x) / side
+            //    );
+            //int rTempRanI = (int)(
+            //    ((row * side - side) / 2 - buttonList[randomIndex].localPosition.y) / side
+            //    );
+            //int cTempRanI = (int)(
+            //    ((column * side - side) / 2 + buttonList[randomIndex].localPosition.x) / side
+            //    );
 
             int tempI = Matrix[rTempI, cTempI];
             Matrix[rTempI, cTempI] = Matrix[rTempRanI, cTempRanI];
@@ -281,9 +294,9 @@ public class Board : MonoBehaviour
 
         if (buttonList.Count == 0)
         {
-            if (dataLevel.level < 12 && dataLevel.level == ProgressController.instance._GetMarkedLevel())
+            if (levelData.level < 12 && levelData.level == ProgressController.instance._GetMarkedLevel())
             {
-                ProgressController.instance._MarkCurrentLevel(dataLevel.level + 1);
+                ProgressController.instance._MarkCurrentLevel(levelData.level + 1);
             }
             orderOfPullingDirection = 0;
 
@@ -427,7 +440,7 @@ public class Board : MonoBehaviour
                     _PullTilesToLeft(0, column - 1);
                     break;
             }
-            if (dataLevel.level % 2 == 0)
+            if (levelData.level % 2 == 0)
             {
                 orderOfPullingDirection++;
             }

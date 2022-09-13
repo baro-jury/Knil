@@ -1,1 +1,31 @@
-{"level":12,"row":12,"column":9,"time":420.0,"pullDown":true,"pullUp":true,"pullLeft":true,"pullRight":true}
+{
+    "level": 12,
+    "theme": 1,
+    "time": 600.0,
+    "process": [
+        {
+            "row": 2,
+            "column": 3,
+            "pullDown": false,
+            "pullUp": false,
+            "pullLeft": false,
+            "pullRight": false
+        },
+        {
+            "row": 3,
+            "column": 4,
+            "pullDown": false,
+            "pullUp": false,
+            "pullLeft": false,
+            "pullRight": false
+        },
+        {
+            "row": 12,
+            "column": 9,
+            "pullDown": true,
+            "pullUp": true,
+            "pullLeft": true,
+            "pullRight": true
+        }
+    ]
+}

@@ -12,7 +12,6 @@ public class SetUpMap : MonoBehaviour
 {
     public static SetUpMap instance;
 
-    private DataLevels dataLv = new DataLevels();
     private LevelData levelData = new LevelData();
     private ProcessData processData = new ProcessData();
     private List<OptionData> tileImages = new List<OptionData>(); 
@@ -72,28 +71,22 @@ public class SetUpMap : MonoBehaviour
 
     void Start()
     {
-        //List<ProcessData> temp = new List<ProcessData>() { new ProcessData(3, 4, false, false, false, false), new ProcessData(8, 9, true, true, true, true) };
-        //ProcessData[] tempp = { new ProcessData(3, 4, false, false, false, false), new ProcessData(8, 9, true, true, true, true) };
-        //LevelData lv = new LevelData(11, 1, 420, JsonConvert.SerializeObject(tempp));
-        //string json = JsonUtility.ToJson(lv); // <-
-        //File.WriteAllText(Application.dataPath + "/Resources/demo.json", json);
+        //List<ProcessData> temp = new List<ProcessData>() { new ProcessData(3, 4, false, false, false, false), new ProcessData(12, 9, true, true, true, true) };
+        ////LevelData lv = new LevelData(11, 1, 420, JsonConvert.SerializeObject(tempp));
+        ////string json = JsonUtility.ToJson(lv); // <-
+        //string json = JsonConvert.SerializeObject(new LevelData(12, 1, 550, temp));
+        ////File.WriteAllText(Application.dataPath + "/Resources/demo.json", json);
+        //File.WriteAllText(Application.dataPath + "/Resources/Level_12.json", json);
 
-        //LevelData loadLv = JsonUtility.FromJson<LevelData>(json); // <-
-        //foreach (ProcessData pro in JsonConvert.DeserializeObject<ProcessData[]>(loadLv.process))
+        ////LevelData loadLv = JsonUtility.FromJson<LevelData>(json); // <-
+        //LevelData loadLv = JsonConvert.DeserializeObject<LevelData>(json);
+        //foreach (ProcessData pro in loadLv.process)
         //{
         //    Debug.Log(pro.ToString());
         //}
 
-        //int numlv = 12;
-        //DataLevels lev = new DataLevels(numlv, 12, 9, 420, true, true, true, true);
-        //string js = JsonUtility.ToJson(lev);
-        //File.WriteAllText(Application.dataPath + "/Resources/Level_" + numlv + ".json", js);
 
-        //level.text = "1";
-        //process.text = "1";
-        //row.text = "1";
-        //column.text = "1";
-        for(int i = 0; i < TileImage.spritesDict.Count; i++)
+        for (int i = 0; i < TileImage.spritesDict.Count; i++)
         {
             tileImages.Add(new OptionData(TileImage.spritesDict.ElementAt(i).Value.ToString(), TileImage.spritesDict.ElementAt(i).Key));
         }
@@ -112,19 +105,29 @@ public class SetUpMap : MonoBehaviour
 
     public void _SetBaseProperties()
     {
-        dataLv.level = int.Parse(level.text); //1
-        dataLv.row = int.Parse(row.text); //2
-        dataLv.column = int.Parse(column.text); //4
-        dataLv.time = float.Parse(time.text); //100
-        dataLv.pullDown = bool.Parse(pullDown.options[pullDown.value].text); //f
-        dataLv.pullUp = bool.Parse(pullUp.options[pullUp.value].text); //f
-        dataLv.pullLeft = bool.Parse(pullLeft.options[pullLeft.value].text); //f
-        dataLv.pullRight = bool.Parse(pullRight.options[pullRight.value].text); //f
+        levelData.level = int.Parse(level.text);
+        levelData.theme = 1;
+        levelData.time = float.Parse(time.text);
+        levelData.process = new List<ProcessData>();
+        levelData.process.Add(new ProcessData(
+            int.Parse(row.text), int.Parse(column.text), 
+            bool.Parse(pullDown.options[pullDown.value].text),
+            bool.Parse(pullUp.options[pullUp.value].text), 
+            bool.Parse(pullLeft.options[pullLeft.value].text),
+            bool.Parse(pullRight.options[pullRight.value].text)
+            ));
+        //processData.row = int.Parse(row.text);
+        //processData.column = int.Parse(column.text);
+        //processData.pullDown = bool.Parse(pullDown.options[pullDown.value].text);
+        //processData.pullUp = bool.Parse(pullUp.options[pullUp.value].text);
+        //processData.pullLeft = bool.Parse(pullLeft.options[pullLeft.value].text);
+        //processData.pullRight = bool.Parse(pullRight.options[pullRight.value].text);
+        //levelData.process.Add(processData);
 
-        //string json = JsonUtility.ToJson(dataLv);
-        //File.WriteAllText(Application.dataPath + "/Resources/Level_" + dataLv.level + ".json", json);
+        //string json = JsonConvert.SerializeObject(levelData);
+        //File.WriteAllText(Application.dataPath + "/Resources/Level_" + levelData.level + ".json", json);
 
-        Board.dataLevel = dataLv;
+        Board.levelData = levelData;
         Board.instance._StartCreating();
         _SelectBackground(theme);
 
@@ -177,10 +180,10 @@ public class SetUpMap : MonoBehaviour
     #region Setting Up
     public void _EditMap()
     {
-        dataLv.row = int.Parse(rowWhileEditing.text);
-        dataLv.column = int.Parse(columnWhileEditing.text);
+        levelData.process[0].row = int.Parse(rowWhileEditing.text);
+        levelData.process[0].column = int.Parse(columnWhileEditing.text);
 
-        Board.dataLevel = dataLv;
+        Board.levelData = levelData;
         Board.instance._StartCreating();
         _SelectBackground(themeWhileEditing);
     }

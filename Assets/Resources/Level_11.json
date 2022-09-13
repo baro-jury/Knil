@@ -1,1 +1,23 @@
-{"level":11,"row":12,"column":9,"time":420.0,"pullDown":true,"pullUp":true,"pullLeft":true,"pullRight":true}
+{
+    "level": 11,
+    "theme": 1,
+    "time": 550.0,
+    "process": [
+        {
+            "row": 3,
+            "column": 4,
+            "pullDown": false,
+            "pullUp": false,
+            "pullLeft": false,
+            "pullRight": false
+        },
+        {
+            "row": 12,
+            "column": 9,
+            "pullDown": true,
+            "pullUp": true,
+            "pullLeft": true,
+            "pullRight": true
+        }
+    ]
+}

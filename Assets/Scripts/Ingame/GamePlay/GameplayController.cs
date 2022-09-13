@@ -362,6 +362,7 @@ public class GameplayController : MonoBehaviour
         yield return new WaitForSeconds(0.75f);
         BoardController.instance._ActivateGravity();
         BoardController.instance._ShuffleWhenNoPossibleLink();
+        BoardController.instance._CheckProcess();
     }
 
     IEnumerator MagicWand(params Transform[] transforms)

@@ -13,10 +13,6 @@ public class LevelController : MonoBehaviour
     public static int level;
     [SerializeField]
     private List<Button> lvButtons = new List<Button>();
-    [SerializeField]
-    private List<DataLevels> dataLevels = new List<DataLevels>();
-    [SerializeField]
-    private DataLevels dataLv = new DataLevels();
 
     void _MakeInstance()
     {
@@ -29,11 +25,6 @@ public class LevelController : MonoBehaviour
     void Awake()
     {
         _MakeInstance();
-    }
-
-    void Start()
-    {
-        //_LoadDataLevel();
     }
 
     //void _LoadDataLevel()
@@ -52,10 +43,10 @@ public class LevelController : MonoBehaviour
     //    return default;
     //}
 
-    public DataLevels _GetDataLevel(int level)
+    public LevelData _GetLevelData(int level)
     {
         var dataStr = Resources.Load("Level_" + level) as TextAsset;
-        DataLevels temp = JsonUtility.FromJson<DataLevels>(dataStr.text);
+        LevelData temp = JsonConvert.DeserializeObject<LevelData>(dataStr.text);
         return temp;
     }
 
@@ -77,7 +68,7 @@ public class LevelController : MonoBehaviour
 
     public void _PlayLevel(int lv)
     {
-        BoardController.dataLevel = _GetDataLevel(lv);
+        BoardController.levelData = _GetLevelData(lv);
         SceneManager.LoadScene(1);
     }
 
