@@ -20,7 +20,7 @@ public class ResourceController : MonoBehaviour
     public List<Sprite> demo;
 
     [HideInInspector]
-    public static Dictionary<Sprite, int> spritesDict = new Dictionary<Sprite, int>();
+    public static Dictionary<Sprite, string> spritesDict = new Dictionary<Sprite, string>();
     private int idElement = 1;
 
     void _MakeInstance()
@@ -43,7 +43,7 @@ public class ResourceController : MonoBehaviour
 
     public void _CreateDictionary(List<Sprite> list)
     {
-        Dictionary<Sprite, int> temp = new Dictionary<Sprite, int>();
+        Dictionary<Sprite, string> temp = new Dictionary<Sprite, string>();
         foreach (Sprite sprite in list)
         {
             //if (spritesDict.ContainsKey(sprite))
@@ -54,7 +54,7 @@ public class ResourceController : MonoBehaviour
             //{
             //    spritesDict.Add(sprite, idElement);
             //}
-            temp.Add(sprite, idElement);
+            temp.Add(sprite, idElement.ToString());
             idElement++;
         }
         spritesDict = temp;

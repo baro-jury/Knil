@@ -23,7 +23,7 @@
         "level": 3,
         "row": 4,
         "column": 4,
-        "time": 100,
+        "time": 150,
         "pullDown": false,
         "pullUp": false,
         "pullLeft": false,
@@ -43,7 +43,7 @@
         "level": 5,
         "row": 6,
         "column": 5,
-        "time": 150,
+        "time": 200,
         "pullDown": true,
         "pullUp": false,
         "pullLeft": false,
@@ -53,7 +53,7 @@
         "level": 6,
         "row": 8,
         "column": 5,
-        "time": 150,
+        "time": 200,
         "pullDown": false,
         "pullUp": true,
         "pullLeft": false,
@@ -63,7 +63,7 @@
         "level": 7,
         "row": 6,
         "column": 8,
-        "time": 150,
+        "time": 200,
         "pullDown": false,
         "pullUp": false,
         "pullLeft": true,
@@ -83,7 +83,7 @@
         "level": 9,
         "row": 8,
         "column": 8,
-        "time": 200,
+        "time": 250,
         "pullDown": true,
         "pullUp": true,
         "pullLeft": false,
@@ -101,22 +101,56 @@
     },
     {
         "level": 11,
-        "row": 12,
-        "column": 9,
-        "time": 420,
-        "pullDown": true,
-        "pullUp": true,
-        "pullLeft": true,
-        "pullRight": true
+        "theme": 1,
+        "time": 550.0,
+        "process": [
+            {
+                "row": 3,
+                "column": 4,
+                "pullDown": false,
+                "pullUp": false,
+                "pullLeft": false,
+                "pullRight": false
+            },
+            {
+                "row": 12,
+                "column": 9,
+                "pullDown": true,
+                "pullUp": true,
+                "pullLeft": true,
+                "pullRight": true
+            }
+        ]
     },
     {
         "level": 12,
-        "row": 12,
-        "column": 9,
-        "time": 420,
-        "pullDown": true,
-        "pullUp": true,
-        "pullLeft": true,
-        "pullRight": true
+        "theme": 1,
+        "time": 600.0,
+        "process": [
+            {
+                "row": 2,
+                "column": 3,
+                "pullDown": false,
+                "pullUp": false,
+                "pullLeft": false,
+                "pullRight": false
+            },
+            {
+                "row": 3,
+                "column": 4,
+                "pullDown": false,
+                "pullUp": false,
+                "pullLeft": false,
+                "pullRight": false
+            },
+            {
+                "row": 12,
+                "column": 9,
+                "pullDown": true,
+                "pullUp": true,
+                "pullLeft": true,
+                "pullRight": true
+            }
+        ]
     }
 ]

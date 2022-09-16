@@ -1,7 +1,12 @@
 {
     "level": 5,
     "theme": 1,
-    "time": 150.0,
+    "time": [
+        200.0,
+        0.0,
+        0.0,
+        0.0
+    ],
     "process": [
         {
             "row": 6,
@@ -9,7 +14,51 @@
             "pullDown": true,
             "pullUp": false,
             "pullLeft": false,
-            "pullRight": false
+            "pullRight": false,
+            "matrix": [
+                [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                ],
+                [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                ],
+                [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                ],
+                [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                ],
+                [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                ],
+                [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                ]
+            ]
         }
     ]
 }

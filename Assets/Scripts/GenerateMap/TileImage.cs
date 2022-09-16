@@ -20,7 +20,7 @@ public class TileImage : MonoBehaviour
     public List<Sprite> demo;
 
     [HideInInspector]
-    public static Dictionary<Sprite, int> spritesDict = new Dictionary<Sprite, int>();
+    public static Dictionary<Sprite, string> spritesDict = new Dictionary<Sprite, string>();
     private int idElement = 1;
 
     void _MakeInstance()
@@ -34,16 +34,12 @@ public class TileImage : MonoBehaviour
     void Awake()
     {
         _MakeInstance();
-    }
-
-    void Start()
-    {
         _CreateDictionary(demo);
     }
 
     public void _CreateDictionary(List<Sprite> list)
     {
-        Dictionary<Sprite, int> temp = new Dictionary<Sprite, int>();
+        Dictionary<Sprite, string> temp = new Dictionary<Sprite, string>();
         foreach (Sprite sprite in list)
         {
             //if (spritesDict.ContainsKey(sprite))
@@ -54,7 +50,7 @@ public class TileImage : MonoBehaviour
             //{
             //    spritesDict.Add(sprite, idElement);
             //}
-            temp.Add(sprite, idElement);
+            temp.Add(sprite, idElement.ToString());
             idElement++;
         }
         spritesDict = temp;

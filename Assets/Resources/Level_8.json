@@ -1,7 +1,12 @@
 {
     "level": 8,
     "theme": 1,
-    "time": 200.0,
+    "time": [
+        200.0,
+        0.0,
+        0.0,
+        0.0
+    ],
     "process": [
         {
             "row": 7,
@@ -9,7 +14,79 @@
             "pullDown": false,
             "pullUp": false,
             "pullLeft": false,
-            "pullRight": true
+            "pullRight": true,
+            "matrix": [
+                [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                ],
+                [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                ],
+                [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                ],
+                [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                ],
+                [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                ],
+                [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                ],
+                [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                ]
+            ]
         }
     ]
 }

@@ -1,19 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Board : MonoBehaviour
+public class TrialBoard : MonoBehaviour
 {
-    public static Board instance;
+    public static TrialBoard instance;
     public static LevelData levelData;
+    private List<Transform> buttonList = new List<Transform>();
+    private List<Transform> buttonListWithoutBlocker = new List<Transform>();
+    public int sideSmallTile = 112, sideMediumTile = 130, sideLargeTile = 180;
     private int process, row, column, orderOfPullingDirection;
     private bool pullDown, pullUp, pullLeft, pullRight;
-    private List<Transform> buttonList = new List<Transform>();
-    private int[,] Matrix;
-    public int sideSmallTile = 112, sideMediumTile = 130, sideLargeTile = 180;
+    private string[,] matrix;
 
     [SerializeField]
     private Button Tile;
@@ -33,43 +33,36 @@ public class Board : MonoBehaviour
         _MakeInstance();
     }
 
-    public void _StartCreating()
+    #region Khởi tạo màn chơi
+    void _InstantiateProcess(int orderNumber)
     {
-        //orderOfPullingDirection = 0;
-        _ResetBoard();
-        _InstantiateLevel();
-        _GenerateTiles();
-        //_RearrangeTiles();
-        //_ShuffleWhenNoPossibleLink();
+        process = orderNumber;
+        row = levelData.process[orderNumber - 1].row;
+        column = levelData.process[orderNumber - 1].column;
+        pullDown = levelData.process[orderNumber - 1].pullDown;
+        pullUp = levelData.process[orderNumber - 1].pullUp;
+        pullLeft = levelData.process[orderNumber - 1].pullLeft;
+        pullRight = levelData.process[orderNumber - 1].pullRight;
+        matrix = levelData.process[orderNumber - 1].matrix;
     }
 
-    #region Khởi tạo creative map
-    void _ResetBoard()
+    public void _GoToProcess(int order)
     {
-        foreach (Transform child in transform)
+        for (int i = 0; i < gameObject.transform.childCount; i++)
         {
-            GameObject.Destroy(child.gameObject);
+            Destroy(gameObject.transform.GetChild(i).gameObject);
         }
+        orderOfPullingDirection = 0;
+        _InstantiateProcess(order);
+        _GenerateTiles();
     }
+    #endregion
 
-    void _InstantiateLevel()
-    {
-        TimeController.time = levelData.time;
-
-        //process = orderNumber;
-        row = levelData.process[0].row;
-        column = levelData.process[0].column;
-        pullDown = levelData.process[0].pullDown;
-        pullUp = levelData.process[0].pullUp;
-        pullLeft = levelData.process[0].pullLeft;
-        pullRight = levelData.process[0].pullRight;
-
-        //TimeController.instance._SetTimeForSlider(false);
-    }
-
+    #region Tạo Tiles
     void _GenerateTiles()
     {
-        Matrix = new int[row, column];
+        int num = NumberOfSameTiles();
+        int repeat = 0, index = ResourceController.spritesDict.Count - 1;
 
         float sideTile = gameObject.GetComponent<RectTransform>().sizeDelta.x / column;
         float temp = gameObject.GetComponent<RectTransform>().sizeDelta.y / row;
@@ -111,40 +104,52 @@ public class Board : MonoBehaviour
         FirstAnchor.GetComponent<RectTransform>().sizeDelta = new Vector2(sideTile, sideTile);
         LastAnchor.GetComponent<RectTransform>().sizeDelta = new Vector2(sideTile, sideTile);
 
-        #region Generate theo toa do
-        for (float y = (boardHeight - sideTile) / 2; y > -boardHeight / 2; y -= sideTile)
+        #region Generate tile & phan tu ma tran + add vao buttonList
+        for (int r = 0; r < row; r++)
         {
-            for (float x = -(boardWidth - sideTile) / 2; x < boardWidth / 2; x += sideTile)
+            for (int c = 0; c < column; c++)
             {
-                Vector3 tilePos = new Vector3(x, y, 0) / 40;
-                var objBtn = Instantiate(Tile, tilePos, Quaternion.identity, gameObject.transform);
-                objBtn.transform.localPosition = tilePos * 40;
-                //buttonList.Add(objBtn.transform);
+                if (matrix[r, c] != null && matrix[r, c] != "")
+                {
+                    Vector3 tilePos = _ConvertMatrixIndexToPosition(r, c, boardWidth, boardHeight, sideTile) / 40;
+                    var objBtn = Instantiate(Tile, tilePos, Quaternion.identity, gameObject.transform);
+                    if (matrix[r, c] == "?")
+                    {
+                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict.ElementAt(index).Key;
+                        repeat++;
+                    }
+                    else if (matrix[r, c] == "0")
+                    {
+                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict.ElementAt(int.Parse(matrix[r, c])).Key;
+                        objBtn.interactable = false;
+                    }
+                    else
+                    {
+                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict.ElementAt(int.Parse(matrix[r, c])).Key;
+                        buttonListWithoutBlocker.Add(objBtn.transform);
+                    }
+                    objBtn.transform.localPosition = tilePos * 40;
+                    buttonList.Add(objBtn.transform);
+                    if (repeat == num)
+                    {
+                        repeat = 0;
+                        index--;
+                        num = NumberOfSameTiles();
+                    }
+                }
             }
         }
         #endregion
+    }
 
-        #region Generate tile & phan tu ma tran
-        //for (int y = 0; y < row; y++)
-        //{
-        //    for (int x = 0; x < column; x++)
-        //    {
-        //        Vector3 tilePos = new Vector3((x * sideTile - (boardWidth - sideTile) / 2), ((boardHeight - sideTile) / 2 - y * sideTile), 0) / 40;
-        //        //Vector3 tilePos = _ConvertMatrixIndexToPosition(y, x, boardWidth, boardHeight, sideTile) / 40;
-        //        var objBtn = Instantiate(Tile, tilePos, Quaternion.identity, gameObject.transform);
-        //        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict.ElementAt(index).Key;
-        //        objBtn.transform.localPosition = tilePos * 40;
-        //        Matrix[y, x] = ResourceController.spritesDict[objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite];
-        //        repeat++;
-        //        if (repeat == num)
-        //        {
-        //            repeat = 0;
-        //            num = NumberOfSameTiles();
-        //            index++;
-        //        }
-        //    }
-        //}
-        #endregion
+    int NumberOfSameTiles()
+    {
+        int num = Random.Range(2, 5);
+        while (num % 2 == 1)
+        {
+            num = Random.Range(2, 5);
+        }
+        return num;
     }
 
     int[] _ConvertPositionToMatrixIndex(float x, float y, float boardWidth, float boardHeight, float tileSize)
@@ -153,7 +158,7 @@ public class Board : MonoBehaviour
 
         temp[0] = (int)(((boardHeight - tileSize) / 2 - y) / tileSize);  //row
         temp[1] = (int)(((boardWidth - tileSize) / 2 + x) / tileSize); //column
-        
+
         return temp;
     }
 
@@ -180,7 +185,7 @@ public class Board : MonoBehaviour
                 {
                     for (int j = (i + 1); j < temp.Count; j++)
                     {
-                        if (GameplayController.instance._HasAvailableConnection(temp[i], temp[j]))
+                        if (GameplayTrial.instance._HasAvailableConnection(temp[i], temp[j]))
                         {
                             return true;
                         }
@@ -206,62 +211,21 @@ public class Board : MonoBehaviour
         {
             int randomIndex = Random.Range(i + 1, buttonList.Count);
 
-            Vector3 temp = buttonList[i].localPosition;
+            Vector3 tempPos = buttonList[i].localPosition;
             buttonList[i].localPosition = buttonList[randomIndex].localPosition;
-            buttonList[randomIndex].localPosition = temp;
+            buttonList[randomIndex].localPosition = tempPos;
 
-            int rTempI = _ConvertPositionToMatrixIndex(
-                buttonList[i].localPosition.x, buttonList[i].localPosition.y, column * side, row * side, side)[0];
-            int cTempI = _ConvertPositionToMatrixIndex(
-                buttonList[i].localPosition.x, buttonList[i].localPosition.y, column * side, row * side, side)[1];
-            int rTempRanI = _ConvertPositionToMatrixIndex(
-                buttonList[i].localPosition.x, buttonList[randomIndex].localPosition.y, column * side, row * side, side)[0];
-            int cTempRanI = _ConvertPositionToMatrixIndex(
-                buttonList[i].localPosition.x, buttonList[randomIndex].localPosition.y, column * side, row * side, side)[1]; ;
+            int[] tempI = _ConvertPositionToMatrixIndex(buttonList[i].localPosition.x, buttonList[i].localPosition.y, column * side, row * side, side);
+            int rTempI = tempI[0];
+            int cTempI = tempI[1];
+            int[] tempRanI = _ConvertPositionToMatrixIndex(buttonList[i].localPosition.x, buttonList[randomIndex].localPosition.y, column * side, row * side, side);
+            int rTempRanI = tempRanI[0];
+            int cTempRanI = tempRanI[1]; ;
 
-            //int rTempI = (int)(
-            //    ((row * side - side) / 2 - buttonList[i].localPosition.y) / side
-            //    );
-            //int cTempI = (int)(
-            //    ((column * side - side) / 2 + buttonList[i].localPosition.x) / side
-            //    );
-            //int rTempRanI = (int)(
-            //    ((row * side - side) / 2 - buttonList[randomIndex].localPosition.y) / side
-            //    );
-            //int cTempRanI = (int)(
-            //    ((column * side - side) / 2 + buttonList[randomIndex].localPosition.x) / side
-            //    );
-
-            int tempI = Matrix[rTempI, cTempI];
-            Matrix[rTempI, cTempI] = Matrix[rTempRanI, cTempRanI];
-            Matrix[rTempRanI, cTempRanI] = tempI;
+            string tempStr = matrix[rTempI, cTempI];
+            matrix[rTempI, cTempI] = matrix[rTempRanI, cTempRanI];
+            matrix[rTempRanI, cTempRanI] = tempStr;
         }
-    }
-
-    public void _SwapTiles(Transform t1, Transform t2)
-    {
-        float side = Tile.gameObject.GetComponent<RectTransform>().sizeDelta.x;
-
-        Vector3 temp = t1.localPosition;
-        t1.localPosition = t2.localPosition;
-        t2.localPosition = temp;
-
-        int rTemp1 = (int)(
-            ((row * side - side) / 2 - t1.localPosition.y) / side
-            );
-        int cTemp1 = (int)(
-            ((column * side - side) / 2 + t1.localPosition.x) / side
-            );
-        int rTemp2 = (int)(
-            ((row * side - side) / 2 - t2.localPosition.y) / side
-            );
-        int cTemp2 = (int)(
-            ((column * side - side) / 2 + t2.localPosition.x) / side
-            );
-
-        int temp1 = Matrix[rTemp1, cTemp1];
-        Matrix[rTemp1, cTemp1] = Matrix[rTemp2, cTemp2];
-        Matrix[rTemp2, cTemp2] = temp1;
     }
 
     #endregion
@@ -289,32 +253,31 @@ public class Board : MonoBehaviour
             ((column * side - side) / 2 + t.localPosition.x) / side
             );
 
-        Matrix[rTemp, cTemp] = -1;
+        matrix[rTemp, cTemp] = "";
         buttonList.Remove(t);
-
-        if (buttonList.Count == 0)
-        {
-            if (levelData.level < 12 && levelData.level == ProgressController.instance._GetMarkedLevel())
-            {
-                ProgressController.instance._MarkCurrentLevel(levelData.level + 1);
-            }
-            orderOfPullingDirection = 0;
-
-            StartCoroutine(ShowPopupWhenComplete());
-        }
+        buttonListWithoutBlocker.Remove(t);
     }
 
-    IEnumerator ShowPopupWhenComplete()
+    public void _CheckProcess()
     {
-        yield return new WaitForSeconds(0.75f);
-        GameplayController.instance._CompleteLevel();
+        if (buttonListWithoutBlocker.Count == 0)
+        {
+            if (process != levelData.process.Count)
+            {
+                _GoToProcess(process + 1);
+            }
+            else
+            {
+                Time.timeScale = 0;
+            }
+        }
     }
 
     public List<Transform> _SearchSameTiles(Sprite sprite)
     {
         List<Transform> list = new List<Transform>();
         int value = 0;
-        foreach (Transform trans in buttonList)
+        foreach (Transform trans in buttonListWithoutBlocker)
         {
             if (trans.GetChild(0).GetComponent<Image>().sprite == sprite)
             {
@@ -328,64 +291,10 @@ public class Board : MonoBehaviour
     #endregion
 
     #region Xử lý quy luật sau khi ăn Tiles
-
-    #region MergeSort
-    void MergeArray(int[] array, int left, int middle, int right)
-    {
-        var leftArrayLength = middle - left + 1;
-        var rightArrayLength = right - middle;
-        var leftTempArray = new int[leftArrayLength];
-        var rightTempArray = new int[rightArrayLength];
-        int i, j;
-        for (i = 0; i < leftArrayLength; ++i)
-            leftTempArray[i] = array[left + i];
-        for (j = 0; j < rightArrayLength; ++j)
-            rightTempArray[j] = array[middle + 1 + j];
-        i = 0;
-        j = 0;
-        int k = left;
-        while (i < leftArrayLength && j < rightArrayLength)
-        {
-            if (leftTempArray[i] <= rightTempArray[j] && leftTempArray[i] < 0)
-            {
-                array[k++] = leftTempArray[i++];
-            }
-            else if (leftTempArray[i] > rightTempArray[j] && rightTempArray[j] < 0)
-            {
-                array[k++] = rightTempArray[j++];
-            }
-            else
-            {
-                array[k++] = leftTempArray[i++];
-            }
-        }
-        while (i < leftArrayLength)
-        {
-            array[k++] = leftTempArray[i++];
-        }
-        while (j < rightArrayLength)
-        {
-            array[k++] = rightTempArray[j++];
-        }
-    }
-
-    int[] SortRow(int[] array, int left, int right)
-    {
-        if (left < right)
-        {
-            int middle = left + (right - left) / 2;
-            SortRow(array, left, middle);
-            SortRow(array, middle + 1, right);
-            MergeArray(array, left, middle, right);
-        }
-        return array;
-    }
-    #endregion
-
     public void _SearchAndPullTile(int rowBefore, int colBefore, int rowAfter, int colAfter) // tìm Tile theo index trong ma tran
     {
         float side = Tile.gameObject.GetComponent<RectTransform>().sizeDelta.x;
-        foreach (Transform t in buttonList)
+        foreach (Transform t in buttonListWithoutBlocker)
         {
             if (t.localPosition == new Vector3((colBefore * side - (column * side - side) / 2), ((row * side - side) / 2 - rowBefore * side), 0))
             {
@@ -453,133 +362,144 @@ public class Board : MonoBehaviour
 
     void _PullTilesToBottom(int rowFirst, int rowLast)
     {
-        var tempArr = new int[rowLast - rowFirst + 1];
+        var tempArr = new string[rowLast - rowFirst + 1];
 
         for (int c = 0; c < column; c++)
         {
             for (int r = rowFirst; r <= rowLast; r++)
             {
-                tempArr[r - rowFirst] = Matrix[r, c];
+                tempArr[r - rowFirst] = matrix[r, c];
             }
 
             for (int i = 0; i < tempArr.Length - 1; i++)
             {
                 for (int j = 0; j < tempArr.Length - i - 1; j++)
                 {
-                    if (tempArr[j] > tempArr[j + 1] && tempArr[j + 1] < 0)
+                    if (tempArr[j] != "0" && tempArr[j + 1] != "0")
                     {
-                        int temp = tempArr[j + 1];
-                        tempArr[j + 1] = tempArr[j];
-                        tempArr[j] = temp;
+                        if (tempArr[j + 1] == "")
+                        {
+                            string temp = tempArr[j + 1];
+                            tempArr[j + 1] = tempArr[j];
+                            tempArr[j] = temp;
 
-                        _SearchAndPullTile(j + rowFirst, c, j + rowFirst + 1, c);
+                            _SearchAndPullTile(j + rowFirst, c, j + rowFirst + 1, c);
+                        }
                     }
                 }
             }
 
             for (int r = rowFirst; r <= rowLast; r++)
             {
-                Matrix[r, c] = tempArr[r - rowFirst];
+                matrix[r, c] = tempArr[r - rowFirst];
             }
         }
     }
 
     void _PullTilesToTop(int rowFirst, int rowLast)
     {
-        var tempArr = new int[rowLast - rowFirst + 1];
+        var tempArr = new string[rowLast - rowFirst + 1];
 
         for (int c = 0; c < column; c++)
         {
             for (int r = rowFirst; r <= rowLast; r++)
             {
-                tempArr[r - rowFirst] = Matrix[r, c];
+                tempArr[r - rowFirst] = matrix[r, c];
             }
 
             for (int i = 0; i < tempArr.Length - 1; i++)
             {
                 for (int j = 0; j < tempArr.Length - i - 1; j++)
                 {
-                    if (tempArr[j] < tempArr[j + 1] && tempArr[j] < 0)
+                    if (tempArr[j] != "0" && tempArr[j + 1] != "0")
                     {
-                        int temp = tempArr[j];
-                        tempArr[j] = tempArr[j + 1];
-                        tempArr[j + 1] = temp;
+                        if (tempArr[j] == "")
+                        {
+                            string temp = tempArr[j];
+                            tempArr[j] = tempArr[j + 1];
+                            tempArr[j + 1] = temp;
 
-                        _SearchAndPullTile(j + rowFirst + 1, c, j + rowFirst, c);
+                            _SearchAndPullTile(j + rowFirst + 1, c, j + rowFirst, c);
+                        }
                     }
                 }
             }
 
             for (int r = rowFirst; r <= rowLast; r++)
             {
-                Matrix[r, c] = tempArr[r - rowFirst];
+                matrix[r, c] = tempArr[r - rowFirst];
             }
         }
     }
 
     void _PullTilesToLeft(int colFirst, int colLast)
     {
-        var tempArr = new int[colLast - colFirst + 1];
+        var tempArr = new string[colLast - colFirst + 1];
 
         for (int r = 0; r < row; r++)
         {
             for (int c = colFirst; c <= colLast; c++)
             {
-                tempArr[c - colFirst] = Matrix[r, c];
+                tempArr[c - colFirst] = matrix[r, c];
             }
 
             for (int i = 0; i < tempArr.Length - 1; i++)
             {
                 for (int j = 0; j < tempArr.Length - i - 1; j++)
                 {
-                    if (tempArr[j] < tempArr[j + 1] && tempArr[j] < 0)
+                    if (tempArr[j] != "0" && tempArr[j + 1] != "0")
                     {
-                        int temp = tempArr[j];
-                        tempArr[j] = tempArr[j + 1];
-                        tempArr[j + 1] = temp;
+                        if (tempArr[j] == "")
+                        {
+                            string temp = tempArr[j];
+                            tempArr[j] = tempArr[j + 1];
+                            tempArr[j + 1] = temp;
 
-                        _SearchAndPullTile(r, j + colFirst + 1, r, j + colFirst);
+                            _SearchAndPullTile(r, j + colFirst + 1, r, j + colFirst);
+                        }
                     }
                 }
             }
 
             for (int c = colFirst; c <= colLast; c++)
             {
-                Matrix[r, c] = tempArr[c - colFirst];
+                matrix[r, c] = tempArr[c - colFirst];
             }
         }
     }
 
     void _PullTilesToRight(int colFirst, int colLast)
     {
-        var tempArr = new int[colLast - colFirst + 1];
+        var tempArr = new string[colLast - colFirst + 1];
 
         for (int r = 0; r < row; r++)
         {
             for (int c = colFirst; c <= colLast; c++)
             {
-                tempArr[c - colFirst] = Matrix[r, c];
+                tempArr[c - colFirst] = matrix[r, c];
             }
-            //tempArr = SortRow(tempArr, 0, column-1);
 
             for (int i = 0; i < tempArr.Length - 1; i++)
             {
                 for (int j = 0; j < tempArr.Length - i - 1; j++)
                 {
-                    if (tempArr[j] > tempArr[j + 1] && tempArr[j + 1] < 0)
+                    if (tempArr[j] != "0" && tempArr[j + 1] != "0")
                     {
-                        int temp = tempArr[j + 1];
-                        tempArr[j + 1] = tempArr[j];
-                        tempArr[j] = temp;
+                        if (tempArr[j + 1] == "")
+                        {
+                            string temp = tempArr[j + 1];
+                            tempArr[j + 1] = tempArr[j];
+                            tempArr[j] = temp;
 
-                        _SearchAndPullTile(r, j + colFirst, r, j + colFirst + 1);
+                            _SearchAndPullTile(r, j + colFirst, r, j + colFirst + 1);
+                        }
                     }
                 }
             }
 
             for (int c = colFirst; c <= colLast; c++)
             {
-                Matrix[r, c] = tempArr[c - colFirst];
+                matrix[r, c] = tempArr[c - colFirst];
             }
         }
     }

@@ -4,19 +4,20 @@ using UnityEngine;
 
 public class BackgroundController : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject[] Backgrounds;
 
     // Start is called before the first frame update
     void Start()
     {
-        int bgrIndex = Random.Range(0, Backgrounds.Length);
-        GameObject background = Backgrounds[bgrIndex];
-        foreach (GameObject obj in Backgrounds)
+        GameObject background = transform.GetChild(BoardController.levelData.theme - 1).gameObject;
+        for (int i = 0; i < transform.childCount; i++)
         {
-            if (obj != background)
+            if (BoardController.levelData.theme - 1 != i)
             {
-                obj.SetActive(false);
+                transform.GetChild(i).gameObject.SetActive(false);
+            }
+            else
+            {
+                transform.GetChild(i).gameObject.SetActive(true);
             }
         }
 
@@ -26,9 +27,9 @@ public class BackgroundController : MonoBehaviour
         float width = sr.bounds.size.x;
         float scaleHeight = Camera.main.orthographicSize * 2f;
         float scaleWidth = scaleHeight * Screen.width / Screen.height;
-        //transform.localScale = new Vector3(scaleWidth, scaleHeight, 0);
-        temp.y = scaleHeight / height;
-        temp.x = scaleWidth / width;
-        background.transform.localScale = temp;
+        background.transform.localScale = new Vector3(scaleWidth / width, scaleHeight / height, 0);
+        //temp.y = scaleHeight / height;
+        //temp.x = scaleWidth / width;
+        //background.transform.localScale = temp;
     }
 }

@@ -14,6 +14,9 @@ public class TimeController : MonoBehaviour
     private TextMeshProUGUI timeText;
 
     public static float time;
+    public static float timestampFor1Star;
+    public static float timestampFor2Star;
+    public static float timestampFor3Star;
     private float timeBurn = 1f;
     private bool isFreezed, timerIsRunning;
 
@@ -33,6 +36,19 @@ public class TimeController : MonoBehaviour
     void Start()
     {
         timerIsRunning = true;
+
+        time = BoardController.levelData.time[0];
+        timestampFor1Star = BoardController.levelData.time[1];
+        timestampFor2Star = BoardController.levelData.time[2];
+        timestampFor3Star = BoardController.levelData.time[3];
+        instance._SetTimeForSlider(false);
+
+        slider.transform.GetChild(3).gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(
+            timestampFor1Star / time * slider.gameObject.GetComponent<RectTransform>().sizeDelta.x, 0);
+        slider.transform.GetChild(4).gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(
+            timestampFor2Star / time * slider.gameObject.GetComponent<RectTransform>().sizeDelta.x, 0);
+        slider.transform.GetChild(5).gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(
+            timestampFor3Star / time * slider.gameObject.GetComponent<RectTransform>().sizeDelta.x, 0);
     }
 
     void Update()
@@ -50,16 +66,30 @@ public class TimeController : MonoBehaviour
                     time -= timeBurn * Time.deltaTime;
                     slider.value = time;
 
-                    if (slider.maxValue / 2 <= time && time < 3 * slider.maxValue / 4)
+                    //if (slider.maxValue / 2 <= time && time < 3 * slider.maxValue / 4)
+                    //{
+                    //    slider.transform.GetChild(5).transform.GetChild(0).gameObject.SetActive(false);
+                    //}
+                    //else if (slider.maxValue / 4 <= time && time < slider.maxValue / 2)
+                    //{
+                    //    slider.transform.GetChild(4).transform.GetChild(0).gameObject.SetActive(false);
+                    //}
+                    //else if (time < slider.maxValue / 4)
+                    //{
+                    //    slider.transform.GetChild(3).transform.GetChild(0).gameObject.SetActive(false);
+                    //}
+
+                    if (timestampFor2Star <= time && time < timestampFor3Star)
                     {
-                        slider.transform.GetChild(5).transform.GetChild(0).gameObject.SetActive(false);
-                    }else if (slider.maxValue / 4 <= time && time < slider.maxValue / 2)
-                    {
-                        slider.transform.GetChild(4).transform.GetChild(0).gameObject.SetActive(false);
+                        slider.transform.GetChild(5).GetChild(0).gameObject.SetActive(false);
                     }
-                    else if(time < slider.maxValue / 4)
+                    else if (timestampFor1Star <= time && time < timestampFor2Star)
                     {
-                        slider.transform.GetChild(3).transform.GetChild(0).gameObject.SetActive(false);
+                        slider.transform.GetChild(4).GetChild(0).gameObject.SetActive(false);
+                    }
+                    else if (time < timestampFor1Star)
+                    {
+                        slider.transform.GetChild(3).GetChild(0).gameObject.SetActive(false);
                     }
                 }
                 else
