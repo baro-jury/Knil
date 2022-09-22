@@ -54,7 +54,6 @@ public class GameplayTrial : MonoBehaviour
 
     public void _PlayLevel(int lv)
     {
-        EventSystem.current.SetSelectedGameObject(null);
         var dataStr = Resources.Load("Level_" + lv) as TextAsset;
         TrialBoard.levelData = JsonConvert.DeserializeObject<LevelData>(dataStr.text);
         titleLv.text = "LEVEL " + lv;
@@ -132,6 +131,54 @@ public class GameplayTrial : MonoBehaviour
     public void _PlayLv12()
     {
         level = 12;
+        _PlayLevel(level);
+    }
+
+    public void _PlayLv13()
+    {
+        level = 13;
+        _PlayLevel(level);
+    }
+
+    public void _PlayLv14()
+    {
+        level = 14;
+        _PlayLevel(level);
+    }
+
+    public void _PlayLv15()
+    {
+        level = 15;
+        _PlayLevel(level);
+    }
+
+    public void _PlayLv16()
+    {
+        level = 16;
+        _PlayLevel(level);
+    }
+
+    public void _PlayLv17()
+    {
+        level = 17;
+        _PlayLevel(level);
+    }
+
+    public void _PlayLv18()
+    {
+        level = 18;
+        _PlayLevel(level);
+    }
+
+    public void _PlayLv19()
+    {
+        level = 19;
+        _PlayLevel(level);
+    }
+
+    public void _PlayLv20()
+    {
+        level = 20;
         _PlayLevel(level);
     }
 

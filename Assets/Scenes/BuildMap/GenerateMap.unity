@@ -2626,7 +2626,7 @@ GameObject:
   m_Component:
   - component: {fileID: 302435913}
   - component: {fileID: 302435912}
-  - component: {fileID: 302435914}
+  - component: {fileID: 302435915}
   m_Layer: 0
   m_Name: SetProperties
   m_TagString: Untagged
@@ -2688,7 +2688,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &302435914
+--- !u!114 &302435915
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2697,7 +2697,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 302435911}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85e56c78ea567944dac29febe0d312fe, type: 3}
+  m_Script: {fileID: 11500000, guid: 7ad254b12499bf9409e5eaa82d1819ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   AfternoonTeas: []
@@ -2763,6 +2763,12 @@ MonoBehaviour:
   - {fileID: 820553429, guid: 8de936b24dde31044bf9d1c0606a9c64, type: 3}
   - {fileID: -1770697309, guid: 8de936b24dde31044bf9d1c0606a9c64, type: 3}
   - {fileID: 1634341111, guid: 8de936b24dde31044bf9d1c0606a9c64, type: 3}
+  - {fileID: 21300000, guid: 7b17ae7f95d25eb4199acc90af6dfed5, type: 3}
+  - {fileID: 21300000, guid: 958f962d78c32e54d8eaaee6aa4fe580, type: 3}
+  - {fileID: 21300000, guid: b8b8603b55946cd40998a24f63f69833, type: 3}
+  - {fileID: 21300000, guid: e6384dccd2aaa8e4ca358ae888a62e20, type: 3}
+  - {fileID: 21300000, guid: 4d7f94951b843594baf2acfd60b9498b, type: 3}
+  blocker: {fileID: 21300000, guid: 4d07cbab9bd878348b792e34e600c79b, type: 3}
 --- !u!1 &307632060
 GameObject:
   m_ObjectHideFlags: 0

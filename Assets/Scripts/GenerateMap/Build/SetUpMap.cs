@@ -13,13 +13,13 @@ public class SetUpMap : MonoBehaviour
 {
     public static SetUpMap instance;
 
-    private LevelData levelData = new LevelData();
-    private List<OptionData> tileImages = new List<OptionData>();
+    private LevelData levelData = new();
+    private List<OptionData> tileImages = new();
     private List<ProcessData> map;
-    private ProcessData dataMap = new ProcessData();
+    private ProcessData dataMap = new();
     private int index = 0;
     private bool setIngame;
-    private string[,] matrix = new string[1, 1];
+    private string[,] matrix;
 
     [SerializeField]
     private GameObject background;
@@ -106,13 +106,12 @@ public class SetUpMap : MonoBehaviour
         //    Debug.Log(pro.ToString());
         //}
 
-        for (int i = 0; i < TileImage.spritesDict.Count; i++)
-        {
-            tileImages.Add(new OptionData(TileImage.spritesDict.ElementAt(i).Value, TileImage.spritesDict.ElementAt(i).Key));
-        }
         tileImages.Add(new OptionData("", btNone.GetComponent<Image>().sprite));
+        for (int i = 1; i < ResourceController.spritesDict.Count; i++)
+        {
+            tileImages.Add(new OptionData(ResourceController.spritesDict.ElementAt(i).Value, ResourceController.spritesDict.ElementAt(i).Key));
+        }
         ddImage.AddOptions(tileImages);
-        //ddImage.value = ddImage.options.Count - 1;
     }
 
     void _SelectBackground(Dropdown drop)
@@ -170,6 +169,7 @@ public class SetUpMap : MonoBehaviour
         levelData.theme = theme.value;
         levelData.time[0] = float.Parse(time.text);
         map = new List<ProcessData>();
+        matrix = new string[1, 1];
         for (int i = 0; i < int.Parse(process.text); i++)
         {
             map.Add(new ProcessData(1, 1, false, false, false, false, matrix));
@@ -185,6 +185,7 @@ public class SetUpMap : MonoBehaviour
         titleLv.text = "LEVEL " + levelData.level;
         timeWhileEditing.text = time.text;
         themeWhileEditing.value = theme.value;
+        index = 0;
 
         if (int.Parse(process.text) > 1)
         {
@@ -200,6 +201,20 @@ public class SetUpMap : MonoBehaviour
     #endregion
 
     #region Setting Up
+    void _CheckMatrix()
+    {
+        for(int r = 0; r < matrix.GetLength(0); r++)
+        {
+            for(int c = 0; c < matrix.GetLength(1); c++)
+            {
+                if (matrix[r, c] == null)
+                {
+                    matrix[r, c] = "";
+                }
+            }
+        }
+    }
+
     public void _ChangeSetting()
     {
         preSettingPanel.SetActive(true);
@@ -266,7 +281,7 @@ public class SetUpMap : MonoBehaviour
         btRandom.onClick.RemoveAllListeners();
         btBlock.onClick.RemoveAllListeners();
         ddImage.onValueChanged.RemoveAllListeners();
-        ddImage.value = ddImage.options.Count - 1;
+        ddImage.value = 0;
 
         btNone.onClick.AddListener(delegate
         {
@@ -310,7 +325,7 @@ public class SetUpMap : MonoBehaviour
 
     void _ChooseTile(Transform currentTile)
     {
-        currentTile.GetChild(0).GetComponent<Image>().sprite = TileImage.spritesDict.ElementAt(ddImage.value).Key;
+        currentTile.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict.ElementAt(ddImage.value).Key;
         optionPanel.SetActive(false);
     }
 
@@ -319,6 +334,7 @@ public class SetUpMap : MonoBehaviour
     #region Interact
     public void _GoToNextProcess()
     {
+        _CheckMatrix();
         map[index] = new ProcessData(dataMap.row, dataMap.column, dataMap.pullDown,
             dataMap.pullUp, dataMap.pullLeft, dataMap.pullRight, matrix);
         index++;
@@ -347,6 +363,7 @@ public class SetUpMap : MonoBehaviour
 
     public void _GoToPreviousProcess()
     {
+        _CheckMatrix();
         map[index] = new ProcessData(dataMap.row, dataMap.column, dataMap.pullDown,
             dataMap.pullUp, dataMap.pullLeft, dataMap.pullRight, matrix);
         btNext.gameObject.SetActive(true);
@@ -374,6 +391,7 @@ public class SetUpMap : MonoBehaviour
 
     public void _Complete()
     {
+        _CheckMatrix();
         map[index] = new ProcessData(dataMap.row, dataMap.column, dataMap.pullDown,
             dataMap.pullUp, dataMap.pullLeft, dataMap.pullRight, matrix);
         levelData.process = map;

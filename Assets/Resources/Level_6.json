@@ -1,76 +1,62 @@
 {
     "level": 6,
-    "theme": 1,
+    "theme": 2,
     "time": [
-        200.0,
-        0.0,
-        0.0,
-        0.0
+        250.0,
+        50.0,
+        100.0,
+        150.0
     ],
     "process": [
         {
-            "row": 8,
+            "row": 6,
             "column": 5,
-            "pullDown": false,
-            "pullUp": true,
+            "pullDown": true,
+            "pullUp": false,
             "pullLeft": false,
             "pullRight": false,
             "matrix": [
                 [
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
+                    "1",
+                    "4",
+                    "3",
+                    "4",
+                    "5"
                 ],
                 [
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
+                    "5",
+                    "2",
+                    "?",
+                    "?",
+                    "2"
                 ],
                 [
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
+                    "2",
+                    "1",
+                    "3",
+                    "5",
+                    "1"
                 ],
                 [
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
+                    "6",
+                    "?",
+                    "4",
+                    "6",
+                    "6"
                 ],
                 [
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
+                    "7",
+                    "?",
+                    "5",
+                    "3",
+                    "7"
                 ],
                 [
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
-                ],
-                [
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
-                ],
-                [
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
+                    "2",
+                    "3",
+                    "4",
+                    "6",
+                    "1"
                 ]
             ]
         }

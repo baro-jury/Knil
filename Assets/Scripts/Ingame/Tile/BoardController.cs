@@ -8,13 +8,13 @@ public class BoardController : MonoBehaviour
 {
     public static BoardController instance;
     public static LevelData levelData;
-    private List<Transform> buttonList = new List<Transform>();
-    private List<Transform> buttonListWithoutBlocker = new List<Transform>();
+    private List<Transform> buttonList = new();
+    private List<Transform> buttonListWithoutBlocker = new();
     public int sideSmallTile = 112, sideMediumTile = 130, sideLargeTile = 180;
     private int process, row, column, orderOfPullingDirection;
     private bool pullDown, pullUp, pullLeft, pullRight;
     private string[,] matrix;
-    
+
     [SerializeField]
     private Button Tile;
     [SerializeField]
@@ -38,7 +38,6 @@ public class BoardController : MonoBehaviour
         _GoToProcess(1);
     }
 
-
     #region Khởi tạo level
     void _InstantiateProcess(int orderNumber)
     {
@@ -54,6 +53,8 @@ public class BoardController : MonoBehaviour
 
     void _GoToProcess(int order)
     {
+        buttonList.Clear();
+        buttonListWithoutBlocker.Clear();
         for (int i = 0; i < gameObject.transform.childCount; i++)
         {
             Destroy(gameObject.transform.GetChild(i).gameObject);
@@ -61,6 +62,7 @@ public class BoardController : MonoBehaviour
         orderOfPullingDirection = 0;
         _InstantiateProcess(order);
         _GenerateTiles();
+        _RearrangeTiles();
     }
     #endregion
 
@@ -69,6 +71,7 @@ public class BoardController : MonoBehaviour
     {
         int num = NumberOfSameTiles();
         int repeat = 0, index = ResourceController.spritesDict.Count - 1;
+        //ResourceController.instance._ShuffleImage(ResourceController.spritesDict);
 
         float sideTile = gameObject.GetComponent<RectTransform>().sizeDelta.x / column;
         float temp = gameObject.GetComponent<RectTransform>().sizeDelta.y / row;
@@ -115,23 +118,28 @@ public class BoardController : MonoBehaviour
         {
             for (int c = 0; c < column; c++)
             {
-                if (matrix[r, c] != null && matrix[r, c] != "")
+                if (matrix[r, c] != "")
                 {
                     Vector3 tilePos = _ConvertMatrixIndexToPosition(r, c, boardWidth, boardHeight, sideTile) / 40;
                     var objBtn = Instantiate(Tile, tilePos, Quaternion.identity, gameObject.transform);
                     if (matrix[r, c] == "?")
                     {
-                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict.ElementAt(index).Key;
+                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict.ElementAt(
+                            int.Parse(ResourceController.spritesDict.ElementAt(index).Value)
+                            ).Key;
+                        buttonListWithoutBlocker.Add(objBtn.transform);
                         repeat++;
                     }
                     else if (matrix[r, c] == "0")
                     {
-                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict.ElementAt(int.Parse(matrix[r, c])).Key;
+                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict.ElementAt(0).Key;
                         objBtn.interactable = false;
                     }
                     else
                     {
-                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict.ElementAt(int.Parse(matrix[r, c])).Key;
+                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict.ElementAt(
+                            ResourceController.instance._FindIndex(matrix[r, c])
+                            ).Key;
                         buttonListWithoutBlocker.Add(objBtn.transform);
                     }
                     objBtn.transform.localPosition = tilePos * 40;
@@ -178,7 +186,7 @@ public class BoardController : MonoBehaviour
     #region Sắp xếp Tiles
     bool _HasPossibleConnection()
     {
-        if (buttonList.Count == 0)
+        if (buttonListWithoutBlocker.Count == 0)
         {
             return true;
         }
@@ -213,18 +221,20 @@ public class BoardController : MonoBehaviour
     public void _RearrangeTiles()
     {
         float side = Tile.gameObject.GetComponent<RectTransform>().sizeDelta.x;
-        for (int i = 0; i < (buttonList.Count - 1); i++)
+        for (int i = 0; i < (buttonListWithoutBlocker.Count - 1); i++)
         {
-            int randomIndex = Random.Range(i + 1, buttonList.Count);
+            int randomIndex = Random.Range(i + 1, buttonListWithoutBlocker.Count);
 
-            Vector3 tempPos = buttonList[i].localPosition;
-            buttonList[i].localPosition = buttonList[randomIndex].localPosition;
-            buttonList[randomIndex].localPosition = tempPos;
+            Vector3 tempPos = buttonListWithoutBlocker[i].localPosition;
+            buttonListWithoutBlocker[i].localPosition = buttonListWithoutBlocker[randomIndex].localPosition;
+            buttonListWithoutBlocker[randomIndex].localPosition = tempPos;
 
-            int[] tempI = _ConvertPositionToMatrixIndex(buttonList[i].localPosition.x, buttonList[i].localPosition.y, column * side, row * side, side);
+            int[] tempI = _ConvertPositionToMatrixIndex(
+                buttonListWithoutBlocker[i].localPosition.x, buttonListWithoutBlocker[i].localPosition.y, column * side, row * side, side);
             int rTempI = tempI[0];
             int cTempI = tempI[1];
-            int[] tempRanI = _ConvertPositionToMatrixIndex(buttonList[i].localPosition.x, buttonList[randomIndex].localPosition.y, column * side, row * side, side);
+            int[] tempRanI = _ConvertPositionToMatrixIndex(
+                buttonListWithoutBlocker[randomIndex].localPosition.x, buttonListWithoutBlocker[randomIndex].localPosition.y, column * side, row * side, side);
             int rTempRanI = tempRanI[0];
             int cTempRanI = tempRanI[1]; ;
 
@@ -300,7 +310,7 @@ public class BoardController : MonoBehaviour
             }
             else
             {
-                if (levelData.level < 12 && levelData.level == ProgressController.instance._GetMarkedLevel())
+                if (levelData.level < 20 && levelData.level == ProgressController.instance._GetMarkedLevel())
                 {
                     ProgressController.instance._MarkCurrentLevel(levelData.level + 1);
                 }

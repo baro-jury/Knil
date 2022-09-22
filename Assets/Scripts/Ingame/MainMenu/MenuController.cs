@@ -52,11 +52,6 @@ public class MenuController : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
-    public void _ExitGame()
-    {
-        Application.Quit();
-    }
-
     public void _GoToSetting()
     {
         settingPanel.SetActive(true);

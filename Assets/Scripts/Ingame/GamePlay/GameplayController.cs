@@ -135,7 +135,7 @@ public class GameplayController : MonoBehaviour
 
     public void _GoToNextLevel()
     {
-        if (LevelController.level == 12)
+        if (LevelController.level == 20)
         {
             _GoToMenu();
         }
