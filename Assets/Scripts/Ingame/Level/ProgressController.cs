@@ -11,6 +11,8 @@ public class ProgressController : MonoBehaviour
     private GameObject menu;
     
     private const string PROGRESS = "Progress";
+    private const string COINS = "Coins";
+    private const string STARS = "Stars";
 
     void _MakeSingleInstance()
     {

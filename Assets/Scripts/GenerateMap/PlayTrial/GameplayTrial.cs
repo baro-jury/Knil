@@ -18,6 +18,7 @@ public class GameplayTrial : MonoBehaviour
     private int siblingIndex;
     private Transform[] points = new Transform[4];
     private Transform tile;
+    private List<ParticleSystem> particles = new();
 
     [SerializeField]
     private TextMeshProUGUI titleLv;
@@ -27,6 +28,8 @@ public class GameplayTrial : MonoBehaviour
     private Button pauseButton;
     [SerializeField]
     private Transform tempAlignWithLeft, tempAlignWithRight, tempAlignWithTop, tempAlignWithBottom, tempAlignWithStart, tempAlignWithEnd;
+    [SerializeField]
+    private ParticleSystem hint, lightningByMagicwand, shuffle;
 
     void _MakeInstance()
     {
@@ -39,6 +42,9 @@ public class GameplayTrial : MonoBehaviour
     void Awake()
     {
         _MakeInstance();
+        hint.Stop();
+        lightningByMagicwand.Stop();
+        shuffle.Stop();
     }
 
     void Start()
@@ -204,6 +210,12 @@ public class GameplayTrial : MonoBehaviour
 
     public void _ClickTile(Transform currentTile)
     {
+        DOTween.Clear();
+        currentTile.GetComponent<RectTransform>().DOScale(new Vector3(.8f, .8f, 1), .1f).SetEase(Ease.InOutQuad).SetUpdate(true)
+            .OnComplete(() =>
+            {
+                currentTile.GetComponent<RectTransform>().DOScale(Vector3.one, .1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+            });
         Time.timeScale = 1;
         isCoupled = !isCoupled;
         if (!isCoupled)
@@ -255,13 +267,30 @@ public class GameplayTrial : MonoBehaviour
     #endregion
 
     #region Supporter & Booster
+    public void _PlayParticles(bool isHinted, bool thunderstruck, bool isShuffled)
+    {
+        if (isHinted) { hint.Play(); }
+        else { hint.Stop(); }
+
+        if (thunderstruck) { lightningByMagicwand.Play(); }
+        else { lightningByMagicwand.Stop(); }
+
+        if (isShuffled) { shuffle.Play(); }
+        else { shuffle.Stop(); }
+    }
+
     public void _SupporterShuffle() //Đổi vị trí: Khi người chơi sử dụng, các item thay đổi vị trí cho nhau.
     {
+        particles.Clear();
         TrialBoard.instance._RearrangeTiles();
+        //var effect = Instantiate(shuffle, Vector3.zero, Quaternion.identity, gameObject.transform);
+        //particles.Add(effect);
     }
 
     public void _SupporterHint() //Hint: Khi sử dụng sẽ gợi ý 1 kết quả
     {
+        particles.Clear();
+        DOTween.Clear();
         bool isFounded = false;
         while (!isFounded)
         {
@@ -275,12 +304,36 @@ public class GameplayTrial : MonoBehaviour
                     {
                         if (_HasAvailableConnection(temp[i], temp[j]))
                         {
+                            var effectI = Instantiate(hint, temp[i].localPosition, Quaternion.identity, gameObject.transform);
+                            var effectJ = Instantiate(hint, temp[j].localPosition, Quaternion.identity, gameObject.transform);
+                            effectI.Play();
+                            effectJ.Play();
+                            particles.Add(effectI);
+                            particles.Add(effectJ);
+
                             StartCoroutine(MakeConnection(points));
+                            //temp[i].DOScale(new Vector3(.8f, .8f, .8f), .75f).SetEase(Ease.InOutQuad).SetUpdate(true)
+                            //    .OnComplete(()=> 
+                            //    {
+                            //        temp[i].DOScale(Vector3.one, .75f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                            //    })
+                            //    .SetLoops(3, LoopType.Yoyo);
+                            //temp[j].DOScale(new Vector3(.8f, .8f, .8f), .75f).SetEase(Ease.InOutQuad).SetUpdate(true)
+                            //    .OnComplete(() =>
+                            //    {
+                            //        temp[j].DOScale(Vector3.one, .75f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                            //    })
+                            //    .SetLoops(3, LoopType.Yoyo);
+
+                            temp[i].DOScale(new Vector3(.8f, .8f, .8f), .5f).SetEase(Ease.InOutQuad).SetUpdate(true).SetLoops(6, LoopType.Yoyo);
+                            temp[j].DOScale(new Vector3(.8f, .8f, .8f), .5f).SetEase(Ease.InOutQuad).SetUpdate(true).SetLoops(6, LoopType.Yoyo);
+
                             isFounded = true;
-                            break;
+                            goto endloop;
                         }
                     }
                 }
+            endloop:;
             }
         }
     }
@@ -288,7 +341,6 @@ public class GameplayTrial : MonoBehaviour
     public void _SupporterMagicWand() //Đũa thần: 2 kết quả hoàn thành
     {
         int numCouple = 0;
-        Transform[] trans = new Transform[4];
         for (int index = 0; index < ResourceController.spritesDict.Count; index++)
         {
         check:
@@ -378,8 +430,11 @@ public class GameplayTrial : MonoBehaviour
         {
             if (i == 0 || i == n - 1)
             {
-                linePositions[i].gameObject.SetActive(false);
-                TrialBoard.instance._DeactivateTile(linePositions[i]);
+                int index = i;
+                linePositions[i].GetComponent<RectTransform>().DOSizeDelta(Vector2.zero, .65f).SetEase(Ease.InBack).SetUpdate(true)
+                    .OnComplete(delegate { linePositions[index].gameObject.SetActive(false); });
+                //linePositions[i].gameObject.SetActive(false);
+                TrialBoard.instance._DeactivateTile(linePositions[i].GetComponent<TileController>());
             }
         }
         yield return new WaitForSeconds(0.75f);
@@ -408,6 +463,8 @@ public class GameplayTrial : MonoBehaviour
 
     public bool _HasAvailableConnection(Transform tile1, Transform tile2)
     {
+
+        #region 1 line
         // check line with x
         if (tile1.localPosition.x == tile2.localPosition.x)
         {
@@ -426,36 +483,50 @@ public class GameplayTrial : MonoBehaviour
                 return true;
             }
         }
+        #endregion
 
-        if (_HasLineInHorizontalRectangle(tile1, tile2))
+        #region 2 lines
+        if (_HasHorizontalLshapedPath(tile1, tile2))
         {
             return true;
         }
-        if (_HasLineInVerticalRectangle(tile1, tile2))
+        if (_HasVerticalLshapedPath(tile1, tile2))
+        {
+            return true;
+        }
+        #endregion
+
+        #region 3 lines
+        if (_HasHorizontalZshapedPath(tile1, tile2))
+        {
+            return true;
+        }
+        if (_HasVerticalZshapedPath(tile1, tile2))
         {
             return true;
         }
 
         // check more right
-        if (_HasLineInHorizontalExtent(tile1, tile2, 1))
+        if (_HasHorizontalUshapedPath(tile1, tile2, 1))
         {
             return true;
         }
         // check more left
-        if (_HasLineInHorizontalExtent(tile1, tile2, -1))
+        if (_HasHorizontalUshapedPath(tile1, tile2, -1))
         {
             return true;
         }
         // check more down
-        if (_HasLineInVerticalExtent(tile1, tile2, 1))
+        if (_HasVerticalUshapedPath(tile1, tile2, 1))
         {
             return true;
         }
         // check more up
-        if (_HasLineInVerticalExtent(tile1, tile2, -1))
+        if (_HasVerticalUshapedPath(tile1, tile2, -1))
         {
             return true;
         }
+        #endregion
 
         return false;
     }
@@ -508,8 +579,102 @@ public class GameplayTrial : MonoBehaviour
         return true;
     }
 
+    //2 button trong hinh chu nhat ngang: check hinh chu L
+    bool _HasHorizontalLshapedPath(Transform tile1, Transform tile2)
+    {
+        #region Setup toa do, kich thuoc, dieu kien
+
+        if (tile1.localPosition.x == tile2.localPosition.x || tile1.localPosition.y == tile2.localPosition.y)
+        {
+            return false;
+        }
+
+        Transform leftTile = tile1, rightTile = tile2;
+        float leftX = Mathf.Min(tile1.localPosition.x, tile2.localPosition.x);
+        float rightX = Mathf.Max(tile1.localPosition.x, tile2.localPosition.x);
+        if (leftX == tile2.localPosition.x)
+        {
+            leftTile = tile2;
+            rightTile = tile1;
+        }
+
+        #endregion
+
+        for (float i = leftX; i <= rightX; i += (rightX - leftX))
+        {
+            tempAlignWithLeft.localPosition = new Vector3(i, leftTile.localPosition.y, 0);
+            tempAlignWithRight.localPosition = new Vector3(i, rightTile.localPosition.y, 0);
+            if (i == leftX)
+            {
+                if (!TrialBoard.instance._HasButtonInLocation(i, rightTile.localPosition.y) &&
+                    _HasVerticalLine(leftTile, tempAlignWithRight) && _HasHorizontalLine(tempAlignWithRight, rightTile))
+                {
+                    _SetLinePositions(leftTile, tempAlignWithRight, rightTile, null);
+                    return true;
+                }
+            }
+            else
+            {
+                if (!TrialBoard.instance._HasButtonInLocation(i, leftTile.localPosition.y) &&
+                    _HasHorizontalLine(leftTile, tempAlignWithLeft) && _HasVerticalLine(tempAlignWithLeft, rightTile))
+                {
+                    _SetLinePositions(leftTile, tempAlignWithLeft, rightTile, null);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    //2 button trong hinh chu nhat dung: check hinh chu L
+    bool _HasVerticalLshapedPath(Transform tile1, Transform tile2)
+    {
+        #region Setup toa do, kich thuoc, dieu kien
+
+        if (tile1.localPosition.x == tile2.localPosition.x || tile1.localPosition.y == tile2.localPosition.y)
+        {
+            return false;
+        }
+
+        Transform topTile = tile1, bottomTile = tile2;
+        float topY = Mathf.Max(tile1.localPosition.y, tile2.localPosition.y);
+        float bottomY = Mathf.Min(tile1.localPosition.y, tile2.localPosition.y);
+        if (topY == tile2.localPosition.y)
+        {
+            topTile = tile2;
+            bottomTile = tile1;
+        }
+
+        #endregion
+
+        for (float i = topY; i >= bottomY; i -= (topY - bottomY))
+        {
+            tempAlignWithTop.localPosition = new Vector3(topTile.localPosition.x, i, 0);
+            tempAlignWithBottom.localPosition = new Vector3(bottomTile.localPosition.x, i, 0);
+            if (i == topY)
+            {
+                if (!TrialBoard.instance._HasButtonInLocation(bottomTile.localPosition.x, i) &&
+                    _HasHorizontalLine(topTile, tempAlignWithBottom) && _HasVerticalLine(tempAlignWithBottom, bottomTile))
+                {
+                    _SetLinePositions(topTile, tempAlignWithBottom, bottomTile, null);
+                    return true;
+                }
+            }
+            else
+            {
+                if (!TrialBoard.instance._HasButtonInLocation(topTile.localPosition.x, i) &&
+                        _HasVerticalLine(topTile, tempAlignWithTop) && _HasHorizontalLine(tempAlignWithTop, bottomTile))
+                {
+                    _SetLinePositions(topTile, tempAlignWithStart, bottomTile, null);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     //2 button trong hinh chu nhat ngang: check hinh chu Z
-    bool _HasLineInHorizontalRectangle(Transform tile1, Transform tile2)
+    bool _HasHorizontalZshapedPath(Transform tile1, Transform tile2)
     {
         #region Setup toa do, kich thuoc, dieu kien
 
@@ -548,7 +713,7 @@ public class GameplayTrial : MonoBehaviour
     }
 
     //2 button trong hinh chu nhat dung: check hinh chu Z
-    bool _HasLineInVerticalRectangle(Transform tile1, Transform tile2)
+    bool _HasVerticalZshapedPath(Transform tile1, Transform tile2)
     {
         #region Setup toa do, kich thuoc, dieu kien
 
@@ -586,8 +751,8 @@ public class GameplayTrial : MonoBehaviour
         return false;
     }
 
-    //mo rong ra theo chieu ngang: check hinh chu U, L
-    bool _HasLineInHorizontalExtent(Transform tile1, Transform tile2, int direct)
+    //mo rong ra theo chieu ngang: check hinh chu U
+    bool _HasHorizontalUshapedPath(Transform tile1, Transform tile2, int direct)
     {
         #region Setup toa do, kich thuoc, dieu kien
 
@@ -622,28 +787,16 @@ public class GameplayTrial : MonoBehaviour
             startTile.localPosition = new Vector3(startX, startY, 0);
             endTile.localPosition = new Vector3(endX, endY, 0);
 
-            for (float i = endX; i <= (tile1.parent.GetComponent<RectTransform>().sizeDelta.x + buttonSide) / 2; i += buttonSide)
+            for (float i = (endX + buttonSide); i <= (tile1.parent.GetComponent<RectTransform>().sizeDelta.x + buttonSide) / 2; i += buttonSide)
             {
                 tempAlignWithStart.localPosition = new Vector3(i, startY, 0);
                 tempAlignWithEnd.localPosition = new Vector3(i, endY, 0);
-                if (i == endX)
+                checkPoint = TrialBoard.instance._HasButtonInLocation(i, startY) || TrialBoard.instance._HasButtonInLocation(i, endY);
+                if (!checkPoint && _HasHorizontalLine(startTile, tempAlignWithStart) &&
+                    _HasVerticalLine(tempAlignWithStart, tempAlignWithEnd) && _HasHorizontalLine(tempAlignWithEnd, endTile))
                 {
-                    if (!TrialBoard.instance._HasButtonInLocation(i, startY) &&
-                        _HasHorizontalLine(startTile, tempAlignWithStart) && _HasVerticalLine(tempAlignWithStart, endTile))
-                    {
-                        _SetLinePositions(startTile, tempAlignWithStart, endTile, null);
-                        return true;
-                    }
-                }
-                else
-                {
-                    checkPoint = TrialBoard.instance._HasButtonInLocation(i, startY) || TrialBoard.instance._HasButtonInLocation(i, endY);
-                    if (!checkPoint && _HasHorizontalLine(startTile, tempAlignWithStart) &&
-                        _HasVerticalLine(tempAlignWithStart, tempAlignWithEnd) && _HasHorizontalLine(tempAlignWithEnd, endTile))
-                    {
-                        _SetLinePositions(startTile, tempAlignWithStart, tempAlignWithEnd, endTile);
-                        return true;
-                    }
+                    _SetLinePositions(startTile, tempAlignWithStart, tempAlignWithEnd, endTile);
+                    return true;
                 }
             }
 
@@ -656,28 +809,16 @@ public class GameplayTrial : MonoBehaviour
             startTile.localPosition = new Vector3(endX, endY, 0);
             endTile.localPosition = new Vector3(startX, startY, 0);
 
-            for (float i = startX; i >= -(tile1.parent.GetComponent<RectTransform>().sizeDelta.x + buttonSide) / 2; i -= buttonSide)
+            for (float i = (startX - buttonSide); i >= -(tile1.parent.GetComponent<RectTransform>().sizeDelta.x + buttonSide) / 2; i -= buttonSide)
             {
                 tempAlignWithStart.localPosition = new Vector3(i, endY, 0);
                 tempAlignWithEnd.localPosition = new Vector3(i, startY, 0);
-                if (i == startX)
+                checkPoint = TrialBoard.instance._HasButtonInLocation(i, startY) || TrialBoard.instance._HasButtonInLocation(i, endY);
+                if (!checkPoint && _HasHorizontalLine(startTile, tempAlignWithStart) &&
+                    _HasVerticalLine(tempAlignWithStart, tempAlignWithEnd) && _HasHorizontalLine(tempAlignWithEnd, endTile))
                 {
-                    if (!TrialBoard.instance._HasButtonInLocation(i, endY) &&
-                        _HasHorizontalLine(startTile, tempAlignWithStart) && _HasVerticalLine(tempAlignWithStart, endTile))
-                    {
-                        _SetLinePositions(startTile, tempAlignWithStart, endTile, null);
-                        return true;
-                    }
-                }
-                else
-                {
-                    checkPoint = TrialBoard.instance._HasButtonInLocation(i, startY) || TrialBoard.instance._HasButtonInLocation(i, endY);
-                    if (!checkPoint && _HasHorizontalLine(startTile, tempAlignWithStart) &&
-                        _HasVerticalLine(tempAlignWithStart, tempAlignWithEnd) && _HasHorizontalLine(tempAlignWithEnd, endTile))
-                    {
-                        _SetLinePositions(startTile, tempAlignWithStart, tempAlignWithEnd, endTile);
-                        return true;
-                    }
+                    _SetLinePositions(startTile, tempAlignWithStart, tempAlignWithEnd, endTile);
+                    return true;
                 }
             }
 
@@ -687,8 +828,8 @@ public class GameplayTrial : MonoBehaviour
         return false;
     }
 
-    //mo rong ra theo chieu doc: check hinh chu U, L
-    bool _HasLineInVerticalExtent(Transform tile1, Transform tile2, int direct)
+    //mo rong ra theo chieu doc: check hinh chu U
+    bool _HasVerticalUshapedPath(Transform tile1, Transform tile2, int direct)
     {
         #region Setup toa do, kich thuoc, dieu kien
 
@@ -723,28 +864,16 @@ public class GameplayTrial : MonoBehaviour
             startTile.localPosition = new Vector3(startX, startY, 0);
             endTile.localPosition = new Vector3(endX, endY, 0);
 
-            for (float i = endY; i >= -(tile1.parent.GetComponent<RectTransform>().sizeDelta.y + buttonSide) / 2; i -= buttonSide)
+            for (float i = (endY - buttonSide); i >= -(tile1.parent.GetComponent<RectTransform>().sizeDelta.y + buttonSide) / 2; i -= buttonSide)
             {
                 tempAlignWithStart.localPosition = new Vector3(startX, i, 0);
                 tempAlignWithEnd.localPosition = new Vector3(endX, i, 0);
-                if (i == endY)
+                checkPoint = TrialBoard.instance._HasButtonInLocation(startX, i) || TrialBoard.instance._HasButtonInLocation(endX, i);
+                if (!checkPoint && _HasVerticalLine(startTile, tempAlignWithStart) &&
+                    _HasHorizontalLine(tempAlignWithStart, tempAlignWithEnd) && _HasVerticalLine(tempAlignWithEnd, endTile))
                 {
-                    if (!TrialBoard.instance._HasButtonInLocation(startX, i) &&
-                        _HasVerticalLine(startTile, tempAlignWithStart) && _HasHorizontalLine(tempAlignWithStart, endTile))
-                    {
-                        _SetLinePositions(startTile, tempAlignWithStart, endTile, null);
-                        return true;
-                    }
-                }
-                else
-                {
-                    checkPoint = TrialBoard.instance._HasButtonInLocation(startX, i) || TrialBoard.instance._HasButtonInLocation(endX, i);
-                    if (!checkPoint && _HasVerticalLine(startTile, tempAlignWithStart) &&
-                        _HasHorizontalLine(tempAlignWithStart, tempAlignWithEnd) && _HasVerticalLine(tempAlignWithEnd, endTile))
-                    {
-                        _SetLinePositions(startTile, tempAlignWithStart, tempAlignWithEnd, endTile);
-                        return true;
-                    }
+                    _SetLinePositions(startTile, tempAlignWithStart, tempAlignWithEnd, endTile);
+                    return true;
                 }
             }
 
@@ -757,28 +886,16 @@ public class GameplayTrial : MonoBehaviour
             startTile.localPosition = new Vector3(endX, endY, 0);
             endTile.localPosition = new Vector3(startX, startY, 0);
 
-            for (float i = startY; i <= (tile1.parent.GetComponent<RectTransform>().sizeDelta.y + buttonSide) / 2; i += buttonSide)
+            for (float i = (startY + buttonSide); i <= (tile1.parent.GetComponent<RectTransform>().sizeDelta.y + buttonSide) / 2; i += buttonSide)
             {
                 tempAlignWithStart.localPosition = new Vector3(endX, i, 0);
                 tempAlignWithEnd.localPosition = new Vector3(startX, i, 0);
-                if (i == startY)
+                checkPoint = TrialBoard.instance._HasButtonInLocation(startX, i) || TrialBoard.instance._HasButtonInLocation(endX, i);
+                if (!checkPoint && _HasVerticalLine(startTile, tempAlignWithStart) &&
+                    _HasHorizontalLine(tempAlignWithStart, tempAlignWithEnd) && _HasVerticalLine(tempAlignWithEnd, endTile))
                 {
-                    if (!TrialBoard.instance._HasButtonInLocation(endX, i) &&
-                        _HasVerticalLine(startTile, tempAlignWithStart) && _HasHorizontalLine(tempAlignWithStart, endTile))
-                    {
-                        _SetLinePositions(startTile, tempAlignWithStart, endTile, null);
-                        return true;
-                    }
-                }
-                else
-                {
-                    checkPoint = TrialBoard.instance._HasButtonInLocation(startX, i) || TrialBoard.instance._HasButtonInLocation(endX, i);
-                    if (!checkPoint && _HasVerticalLine(startTile, tempAlignWithStart) &&
-                        _HasHorizontalLine(tempAlignWithStart, tempAlignWithEnd) && _HasVerticalLine(tempAlignWithEnd, endTile))
-                    {
-                        _SetLinePositions(startTile, tempAlignWithStart, tempAlignWithEnd, endTile);
-                        return true;
-                    }
+                    _SetLinePositions(startTile, tempAlignWithStart, tempAlignWithEnd, endTile);
+                    return true;
                 }
             }
 

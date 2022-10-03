@@ -66,19 +66,6 @@ public class TimeController : MonoBehaviour
                     time -= timeBurn * Time.deltaTime;
                     slider.value = time;
 
-                    //if (slider.maxValue / 2 <= time && time < 3 * slider.maxValue / 4)
-                    //{
-                    //    slider.transform.GetChild(5).transform.GetChild(0).gameObject.SetActive(false);
-                    //}
-                    //else if (slider.maxValue / 4 <= time && time < slider.maxValue / 2)
-                    //{
-                    //    slider.transform.GetChild(4).transform.GetChild(0).gameObject.SetActive(false);
-                    //}
-                    //else if (time < slider.maxValue / 4)
-                    //{
-                    //    slider.transform.GetChild(3).transform.GetChild(0).gameObject.SetActive(false);
-                    //}
-
                     if (timestampFor2Star <= time && time < timestampFor3Star)
                     {
                         slider.transform.GetChild(5).GetChild(0).gameObject.SetActive(false);

@@ -1,15 +1,17 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Newtonsoft.Json;
 
 public class TrialBoard : MonoBehaviour
 {
     public static TrialBoard instance;
     public static LevelData levelData;
     private List<Transform> buttonList = new();
-    private List<Transform> buttonListWithoutBlocker = new();
+    private List<TileController> buttonListWithoutBlocker = new();
     private Dictionary<Sprite, string> dict = new();
     public int sideSmallTile = 112, sideMediumTile = 130, sideLargeTile = 180;
     private int process, row, column, orderOfPullingDirection;
@@ -17,9 +19,23 @@ public class TrialBoard : MonoBehaviour
     private string[,] matrix;
 
     [SerializeField]
-    private Button Tile;
+    private TileController Tile;
     [SerializeField]
     private GameObject FirstAnchor, LastAnchor;
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Keypad0))
+        {
+            Debug.Log(JsonConvert.SerializeObject(matrix));
+            string temp = null;
+            foreach (var item in buttonList)
+            {
+                temp += item.name + " ";
+            }
+            Debug.Log(temp);
+        }
+    }
 
     void _MakeInstance()
     {
@@ -74,7 +90,7 @@ public class TrialBoard : MonoBehaviour
     {
         int num = NumberOfSameTiles();
         int repeat = 0, index = ResourceController.spritesDict.Count - 1;
-        ResourceController.instance._ShuffleImage(dict);
+        //ResourceController.instance._ShuffleImage(dict);
 
         float sideTile = gameObject.GetComponent<RectTransform>().sizeDelta.x / column;
         float temp = gameObject.GetComponent<RectTransform>().sizeDelta.y / row;
@@ -125,16 +141,19 @@ public class TrialBoard : MonoBehaviour
                 {
                     Vector3 tilePos = _ConvertMatrixIndexToPosition(r, c, boardWidth, boardHeight, sideTile) / 40;
                     var objBtn = Instantiate(Tile, tilePos, Quaternion.identity, gameObject.transform);
+                    int ID = -1;
                     if (matrix[r, c] == "?")
                     {
-                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = dict.ElementAt(int.Parse(dict.ElementAt(index).Value)).Key;
-                        buttonListWithoutBlocker.Add(objBtn.transform);
+                        ID = int.Parse(dict.ElementAt(index).Value);
+                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = dict.ElementAt(ID).Key;
+                        buttonListWithoutBlocker.Add(objBtn);
                         repeat++;
                     }
                     else if (matrix[r, c] == "0")
                     {
+                        ID = int.Parse(dict.ElementAt(0).Value);
                         objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = dict.ElementAt(0).Key;
-                        objBtn.interactable = false;
+                        objBtn.GetComponent<Button>().interactable = false;
                     }
                     else
                     {
@@ -142,12 +161,18 @@ public class TrialBoard : MonoBehaviour
                         {
                             if (dict.ElementAt(i).Value == matrix[r, c])
                             {
+                                ID = int.Parse(dict.ElementAt(i).Value);
                                 objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = dict.ElementAt(i).Key;
                                 break;
                             }
                         }
-                        buttonListWithoutBlocker.Add(objBtn.transform);
+                        buttonListWithoutBlocker.Add(objBtn);
                     }
+                    //objBtn.gameObject.GetComponent<TileController>().Id = ID;
+                    //objBtn.gameObject.GetComponent<TileController>().Index = (r, c);
+                    objBtn.Id = ID;
+                    objBtn.Index = (r, c);
+
                     objBtn.transform.localPosition = tilePos * 40;
                     buttonList.Add(objBtn.transform);
                     if (repeat == num)
@@ -226,30 +251,177 @@ public class TrialBoard : MonoBehaviour
 
     public void _RearrangeTiles()
     {
+        DOTween.Clear();
+        GameplayTrial.instance._PlayParticles(false, false, true);
         float side = Tile.gameObject.GetComponent<RectTransform>().sizeDelta.x;
-        for (int i = 0; i < (buttonListWithoutBlocker.Count - 1); i++)
+        //for (int i = 0; i < (buttonListWithoutBlocker.Count - 1); i++)
+        //{
+        //    int randomIndex = Random.Range(i + 1, buttonListWithoutBlocker.Count);
+        //    _SwapPos(buttonListWithoutBlocker[i].transform, buttonListWithoutBlocker[randomIndex].transform, 0);
+
+        //    //Vector3 tempPos1 = buttonListWithoutBlocker[i].localPosition;
+        //    //Vector3 tempPos2 = buttonListWithoutBlocker[randomIndex].localPosition;
+
+        //    //buttonListWithoutBlocker[i].DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad)
+        //    //    .OnComplete(() =>
+        //    //    {
+        //    //        buttonListWithoutBlocker[i].DOLocalMove(tempPos2, .25f).SetEase(Ease.InOutQuad);
+        //    //    });
+        //    //buttonListWithoutBlocker[randomIndex].DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad)
+        //    //    .OnComplete(() =>
+        //    //    {
+        //    //        buttonListWithoutBlocker[randomIndex].DOLocalMove(tempPos1, .25f).SetEase(Ease.InOutQuad);
+        //    //    });
+
+        //    //sequence
+        //    //    .Insert(1, buttonListWithoutBlocker[i].DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad)
+        //    //        .OnComplete(() =>
+        //    //        {
+        //    //            buttonListWithoutBlocker[i].DOLocalMove(tempPos2, .25f).SetEase(Ease.InOutQuad);
+        //    //        }))
+        //    //    .Insert(1, buttonListWithoutBlocker[randomIndex].DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad)
+        //    //        .OnComplete(() =>
+        //    //        {
+        //    //            buttonListWithoutBlocker[randomIndex].DOLocalMove(tempPos1, .25f).SetEase(Ease.InOutQuad);
+        //    //        }))
+        //    //    .OnComplete(() =>
+        //    //    {
+        //    //        int[] tempI = _ConvertPositionToMatrixIndex(
+        //    //            buttonListWithoutBlocker[i].localPosition.x, buttonListWithoutBlocker[i].localPosition.y, column * side, row * side, side);
+        //    //        int rTempI = tempI[0];
+        //    //        int cTempI = tempI[1];
+        //    //        int[] tempRanI = _ConvertPositionToMatrixIndex(
+        //    //            buttonListWithoutBlocker[randomIndex].localPosition.x, buttonListWithoutBlocker[randomIndex].localPosition.y, column * side, row * side, side);
+        //    //        int rTempRanI = tempRanI[0];
+        //    //        int cTempRanI = tempRanI[1]; ;
+
+        //    //        string tempStr = matrix[rTempI, cTempI];
+        //    //        matrix[rTempI, cTempI] = matrix[rTempRanI, cTempRanI];
+        //    //        matrix[rTempRanI, cTempRanI] = tempStr;
+        //    //    });
+        //    //sequence.Play();
+
+        //    //foreach (var tile in buttonListWithoutBlocker)
+        //    //{
+        //    //    sequence.Append(tile.DOLocalMove(Vector3.zero, 9.25f).SetEase(Ease.InOutQuad).SetUpdate(true))
+        //    //        .OnComplete(()=> 
+        //    //        {
+        //    //            tile.localPosition = Vector3.zero;
+        //    //        });
+        //    //}
+        //    //sequence.OnStepComplete(() =>
+        //    //{
+        //    //    for (int i = 0; i < buttonListWithoutBlocker.Count; i++)
+        //    //    {
+        //    //        Vector3 temp = tempList[i].localPosition;
+        //    //        sequence.Append(buttonListWithoutBlocker[i].DOLocalMove(temp, 9.25f).SetEase(Ease.InOutQuad).SetUpdate(true))
+        //    //        .OnComplete(() =>
+        //    //        {
+        //    //            buttonListWithoutBlocker[i].localPosition = temp;
+        //    //        });
+        //    //    }
+        //    //});
+
+        //    int[] tempI = _ConvertPositionToMatrixIndex(
+        //        buttonListWithoutBlocker[i].transform.localPosition.x, buttonListWithoutBlocker[i].transform.localPosition.y, column * side, row * side, side);
+        //    int rTempI = tempI[0];
+        //    int cTempI = tempI[1];
+        //    int[] tempRanI = _ConvertPositionToMatrixIndex(
+        //        buttonListWithoutBlocker[randomIndex].transform.localPosition.x, buttonListWithoutBlocker[randomIndex].transform.localPosition.y, column * side, row * side, side);
+        //    int rTempRanI = tempRanI[0];
+        //    int cTempRanI = tempRanI[1]; ;
+
+        //    string tempStr = matrix[rTempI, cTempI];
+        //    matrix[rTempI, cTempI] = matrix[rTempRanI, cTempRanI];
+        //    matrix[rTempRanI, cTempRanI] = tempStr;
+        //}
+
+        List<int> source = new List<int>();
+        List<Transform> trsfTiles = new List<Transform>();
+        List<Vector3> posTiles = new List<Vector3>();
+        int index = 0;
+        foreach (var item in buttonListWithoutBlocker)
         {
-            int randomIndex = Random.Range(i + 1, buttonList.Count);
+            source.Add(index);
+            trsfTiles.Add(item.transform);
+            posTiles.Add(item.transform.position);
+            index++;
+        }
+        foreach (var item in trsfTiles)
+        {
+            item.DOLocalMove(Vector3.zero, .5f).SetEase(Ease.InBack).SetUpdate(true);
+        }
 
-            Vector3 tempPos = buttonListWithoutBlocker[i].localPosition;
-            buttonListWithoutBlocker[i].localPosition = buttonListWithoutBlocker[randomIndex].localPosition;
-            buttonListWithoutBlocker[randomIndex].localPosition = tempPos;
+        source = Shuffle(source.Count);
+        int total = source.Count;
+        for (int i = 0; i < total; i++)
+        {
+            //var colRow1 = buttonListWithoutBlocker[i].GetColRow();
+            //var colRow2 = buttonListWithoutBlocker[source[i]].GetColRow();
+            //matrix[colRow1.Item2, colRow1.Item1] = buttonListWithoutBlocker[source[i]].ID.ToString();
+            //matrix[colRow2.Item2, colRow2.Item1] = buttonListWithoutBlocker[i].ID.ToString();
 
-            int[] tempI = _ConvertPositionToMatrixIndex(
-                buttonListWithoutBlocker[i].localPosition.x, buttonListWithoutBlocker[i].localPosition.y, column * side, row * side, side);
-            int rTempI = tempI[0];
-            int cTempI = tempI[1];
-            int[] tempRanI = _ConvertPositionToMatrixIndex(
-                buttonListWithoutBlocker[randomIndex].localPosition.x, buttonListWithoutBlocker[randomIndex].localPosition.y, column * side, row * side, side);
-            int rTempRanI = tempRanI[0];
-            int cTempRanI = tempRanI[1]; ;
+            //var temp = buttonListWithoutBlocker[i];
+            //buttonListWithoutBlocker[i] = buttonListWithoutBlocker[source[i]];
+            //buttonListWithoutBlocker[source[i]] = temp;
+            //Debug.Log(matrix[colRow1.Item2, colRow1.Item1] + " <=> "+ matrix[colRow2.Item2, colRow2.Item1]+": " + JsonConvert.SerializeObject(matrix));
 
-            string tempStr = matrix[rTempI, cTempI];
-            matrix[rTempI, cTempI] = matrix[rTempRanI, cTempRanI];
-            matrix[rTempRanI, cTempRanI] = tempStr;
+            //buttonListWithoutBlocker[i].ChangeColRow(buttonListWithoutBlocker[source[i]].GetColRow());
+            //buttonListWithoutBlocker[source[i]].ChangeColRow(buttonListWithoutBlocker[i].GetColRow());
+
+            trsfTiles[i].DOMove(posTiles[source[i]], 0.5f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.5f);
+
+            if(i == total - 1)
+            {
+                GameplayTrial.instance._PlayParticles(false, false, false);
+            }
         }
     }
 
+    public List<int> Shuffle(int total = 1000)
+    {
+        int count = 1;
+        List<int> temp = new List<int>();
+        temp.Add(0);
+        for (int i = 1; i < total; i++)
+        {
+            temp.Insert(UnityEngine.Random.Range(0, count), i);
+            count++;
+        }
+        return temp;
+    }
+
+    void _SwapPos(Transform t1, Transform t2, int index)
+    {
+        var sequence = DOTween.Sequence();
+
+        Vector3 tempPos1 = t1.localPosition;
+        Vector3 tempPos2 = t2.localPosition;
+
+        //sequence.Insert(1, t1.DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetDelay(.25f))
+        //    .Insert(1, t2.DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetDelay(.25f))
+        //    .Insert(2, t1.DOLocalMove(tempPos2, .25f).SetEase(Ease.InOutQuad).SetDelay(.25f))
+        //    .Insert(2, t2.DOLocalMove(tempPos1, .25f).SetEase(Ease.InOutQuad).SetDelay(.25f));
+
+        //sequence.Insert(1, t1.DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad))
+        //    .Insert(1, t2.DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad))
+        //    .Insert(2, t1.DOLocalMove(tempPos2, .25f).SetEase(Ease.InOutQuad))
+        //    .Insert(2, t2.DOLocalMove(tempPos1, .25f).SetEase(Ease.InOutQuad));
+
+        //sequence.Play();
+
+        t1.DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetDelay(index*.5f)
+            .OnComplete(() =>
+            {
+                t1.DOLocalMove(tempPos2, .25f).SetEase(Ease.InOutQuad).OnComplete(delegate { Debug.Log($"{t1.name}: {tempPos2}"); });
+            });
+        t2.DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetDelay(index*.5f)
+            .OnComplete(() =>
+            {
+                t2.DOLocalMove(tempPos1, .25f).SetEase(Ease.InOutQuad).OnComplete(delegate { Debug.Log($"{t2.name}: {tempPos1}"); });
+            });
+
+    }
     #endregion
 
     #region Xử lý ingame
@@ -265,18 +437,18 @@ public class TrialBoard : MonoBehaviour
         return false;
     }
 
-    public void _DeactivateTile(Transform t)
+    public void _DeactivateTile(TileController t)
     {
         float side = t.GetComponent<RectTransform>().sizeDelta.x;
         int rTemp = (int)(
-                ((row * side - side) / 2 - t.localPosition.y) / side
+                ((row * side - side) / 2 - t.transform.localPosition.y) / side
                 );
         int cTemp = (int)(
-            ((column * side - side) / 2 + t.localPosition.x) / side
+            ((column * side - side) / 2 + t.transform.localPosition.x) / side
             );
 
         matrix[rTemp, cTemp] = "";
-        buttonList.Remove(t);
+        buttonList.Remove(t.transform);
         buttonListWithoutBlocker.Remove(t);
     }
 
@@ -293,18 +465,17 @@ public class TrialBoard : MonoBehaviour
                 Time.timeScale = 0;
             }
         }
+        Debug.Log(JsonConvert.SerializeObject(matrix));
     }
 
     public List<Transform> _SearchSameTiles(Sprite sprite)
     {
-        List<Transform> list = new List<Transform>();
-        int value = 0;
-        foreach (Transform trans in buttonListWithoutBlocker)
+        List<Transform> list = new();
+        foreach (var trans in buttonListWithoutBlocker)
         {
-            if (trans.GetChild(0).GetComponent<Image>().sprite == sprite)
+            if (trans.transform.GetChild(0).GetComponent<Image>().sprite == sprite)
             {
-                list.Add(trans);
-                value++;
+                list.Add(trans.transform);
             }
         }
         return list;
@@ -313,14 +484,32 @@ public class TrialBoard : MonoBehaviour
     #endregion
 
     #region Xử lý quy luật sau khi ăn Tiles
-    public void _SearchAndPullTile(int rowBefore, int colBefore, int rowAfter, int colAfter) // tìm Tile theo index trong ma tran
+    void _SearchAndPullTile(int rowBefore, int colBefore, int rowAfter, int colAfter) // tìm Tile theo index trong ma tran
     {
+        string temp = matrix[rowBefore, colBefore];
+        matrix[rowBefore, colBefore] = matrix[rowAfter, colAfter];
+        matrix[rowAfter, colAfter] = temp;
+
         float side = Tile.gameObject.GetComponent<RectTransform>().sizeDelta.x;
-        foreach (Transform t in buttonListWithoutBlocker)
+        Vector3 posBefore = _ConvertMatrixIndexToPosition(rowBefore, colBefore, column * side, row * side, side);
+        Vector3 posAfter = _ConvertMatrixIndexToPosition(rowAfter, colAfter, column * side, row * side, side);
+        foreach (var t in buttonListWithoutBlocker)
         {
-            if (t.localPosition == new Vector3((colBefore * side - (column * side - side) / 2), ((row * side - side) / 2 - rowBefore * side), 0))
+            if (t.transform.localPosition == posBefore)
             {
-                t.localPosition = new Vector3((colAfter * side - (column * side - side) / 2), ((row * side - side) / 2 - rowAfter * side), 0);
+                //Debug.Log("posAfter: " + posAfter);
+
+                //t.DOLocalMove(posAfter, .25f).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(() =>
+                //{
+                //    t.localPosition = posAfter;
+                //}).OnStepComplete(delegate { Debug.Log(t.name + "  " + t.localPosition); });
+
+                //t.DOLocalMove(posAfter, .25f).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(() =>
+                //{
+                //    t.localPosition = posAfter;
+                //});
+
+                t.transform.localPosition = posAfter;
                 break;
             }
         }
@@ -385,7 +574,7 @@ public class TrialBoard : MonoBehaviour
     void _PullTilesToBottom(int rowFirst, int rowLast)
     {
         var tempArr = new string[rowLast - rowFirst + 1];
-
+        int blankTiles = 0;
         for (int c = 0; c < column; c++)
         {
             for (int r = rowFirst; r <= rowLast; r++)
@@ -393,34 +582,52 @@ public class TrialBoard : MonoBehaviour
                 tempArr[r - rowFirst] = matrix[r, c];
             }
 
-            for (int i = 0; i < tempArr.Length - 1; i++)
-            {
-                for (int j = 0; j < tempArr.Length - i - 1; j++)
-                {
-                    if (tempArr[j] != "0" && tempArr[j + 1] != "0")
-                    {
-                        if (tempArr[j + 1] == "")
-                        {
-                            string temp = tempArr[j + 1];
-                            tempArr[j + 1] = tempArr[j];
-                            tempArr[j] = temp;
+            //for (int i = 0; i < tempArr.Length - 1; i++)
+            //{
+            //    for (int j = 0; j < tempArr.Length - i - 1; j++)
+            //    {
+            //        if (tempArr[j] != "0" && tempArr[j + 1] != "0")
+            //        {
+            //            if (tempArr[j + 1] == "")
+            //            {
+            //                string temp = tempArr[j + 1];
+            //                tempArr[j + 1] = tempArr[j];
+            //                tempArr[j] = temp;
+            //                _SearchAndPullTile(j + rowFirst, c, j + rowFirst + 1, c);
+            //            }
+            //        }
+            //    }
+            //}
 
-                            _SearchAndPullTile(j + rowFirst, c, j + rowFirst + 1, c);
+            for (int i = tempArr.Length - 1; i >= 0; i--)
+            {
+                if (tempArr[i] == "")
+                {
+                    blankTiles++;
+                }
+                else
+                {
+                    if (blankTiles != 0)
+                    {
+                        if (tempArr[i] == "0")
+                        {
+                            blankTiles = 0;
+                        }
+                        else
+                        {
+                            _SearchAndPullTile(rowFirst + i, c, rowFirst + i + blankTiles, c);
                         }
                     }
                 }
             }
-
-            for (int r = rowFirst; r <= rowLast; r++)
-            {
-                matrix[r, c] = tempArr[r - rowFirst];
-            }
+            blankTiles = 0;
         }
     }
 
     void _PullTilesToTop(int rowFirst, int rowLast)
     {
         var tempArr = new string[rowLast - rowFirst + 1];
+        int blankTiles = 0;
 
         for (int c = 0; c < column; c++)
         {
@@ -429,34 +636,53 @@ public class TrialBoard : MonoBehaviour
                 tempArr[r - rowFirst] = matrix[r, c];
             }
 
-            for (int i = 0; i < tempArr.Length - 1; i++)
-            {
-                for (int j = 0; j < tempArr.Length - i - 1; j++)
-                {
-                    if (tempArr[j] != "0" && tempArr[j + 1] != "0")
-                    {
-                        if (tempArr[j] == "")
-                        {
-                            string temp = tempArr[j];
-                            tempArr[j] = tempArr[j + 1];
-                            tempArr[j + 1] = temp;
+            //for (int i = 0; i < tempArr.Length - 1; i++)
+            //{
+            //    for (int j = 0; j < tempArr.Length - i - 1; j++)
+            //    {
+            //        if (tempArr[j] != "0" && tempArr[j + 1] != "0")
+            //        {
+            //            if (tempArr[j] == "")
+            //            {
+            //                string temp = tempArr[j];
+            //                tempArr[j] = tempArr[j + 1];
+            //                tempArr[j + 1] = temp;
 
-                            _SearchAndPullTile(j + rowFirst + 1, c, j + rowFirst, c);
+            //                _SearchAndPullTile(j + rowFirst + 1, c, j + rowFirst, c);
+            //            }
+            //        }
+            //    }
+            //}
+
+            for (int i = 0; i < tempArr.Length; i++)
+            {
+                if (tempArr[i] == "")
+                {
+                    blankTiles++;
+                }
+                else
+                {
+                    if (blankTiles != 0)
+                    {
+                        if (tempArr[i] == "0")
+                        {
+                            blankTiles = 0;
+                        }
+                        else
+                        {
+                            _SearchAndPullTile(rowFirst + i, c, rowFirst + i - blankTiles, c);
                         }
                     }
                 }
             }
-
-            for (int r = rowFirst; r <= rowLast; r++)
-            {
-                matrix[r, c] = tempArr[r - rowFirst];
-            }
+            blankTiles = 0;
         }
     }
 
     void _PullTilesToLeft(int colFirst, int colLast)
     {
         var tempArr = new string[colLast - colFirst + 1];
+        int blankTiles = 0;
 
         for (int r = 0; r < row; r++)
         {
@@ -465,34 +691,53 @@ public class TrialBoard : MonoBehaviour
                 tempArr[c - colFirst] = matrix[r, c];
             }
 
-            for (int i = 0; i < tempArr.Length - 1; i++)
-            {
-                for (int j = 0; j < tempArr.Length - i - 1; j++)
-                {
-                    if (tempArr[j] != "0" && tempArr[j + 1] != "0")
-                    {
-                        if (tempArr[j] == "")
-                        {
-                            string temp = tempArr[j];
-                            tempArr[j] = tempArr[j + 1];
-                            tempArr[j + 1] = temp;
+            //for (int i = 0; i < tempArr.Length - 1; i++)
+            //{
+            //    for (int j = 0; j < tempArr.Length - i - 1; j++)
+            //    {
+            //        if (tempArr[j] != "0" && tempArr[j + 1] != "0")
+            //        {
+            //            if (tempArr[j] == "")
+            //            {
+            //                string temp = tempArr[j];
+            //                tempArr[j] = tempArr[j + 1];
+            //                tempArr[j + 1] = temp;
 
-                            _SearchAndPullTile(r, j + colFirst + 1, r, j + colFirst);
+            //                _SearchAndPullTile(r, j + colFirst + 1, r, j + colFirst);
+            //            }
+            //        }
+            //    }
+            //}
+
+            for (int i = 0; i < tempArr.Length; i++)
+            {
+                if (tempArr[i] == "")
+                {
+                    blankTiles++;
+                }
+                else
+                {
+                    if (blankTiles != 0)
+                    {
+                        if (tempArr[i] == "0")
+                        {
+                            blankTiles = 0;
+                        }
+                        else
+                        {
+                            _SearchAndPullTile(r, colFirst + i, r, colFirst + i - blankTiles);
                         }
                     }
                 }
             }
-
-            for (int c = colFirst; c <= colLast; c++)
-            {
-                matrix[r, c] = tempArr[c - colFirst];
-            }
+            blankTiles = 0;
         }
     }
 
     void _PullTilesToRight(int colFirst, int colLast)
     {
         var tempArr = new string[colLast - colFirst + 1];
+        int blankTiles = 0;
 
         for (int r = 0; r < row; r++)
         {
@@ -501,28 +746,46 @@ public class TrialBoard : MonoBehaviour
                 tempArr[c - colFirst] = matrix[r, c];
             }
 
-            for (int i = 0; i < tempArr.Length - 1; i++)
-            {
-                for (int j = 0; j < tempArr.Length - i - 1; j++)
-                {
-                    if (tempArr[j] != "0" && tempArr[j + 1] != "0")
-                    {
-                        if (tempArr[j + 1] == "")
-                        {
-                            string temp = tempArr[j + 1];
-                            tempArr[j + 1] = tempArr[j];
-                            tempArr[j] = temp;
+            //for (int i = 0; i < tempArr.Length - 1; i++)
+            //{
+            //    for (int j = 0; j < tempArr.Length - i - 1; j++)
+            //    {
+            //        if (tempArr[j] != "0" && tempArr[j + 1] != "0")
+            //        {
+            //            if (tempArr[j + 1] == "")
+            //            {
+            //                string temp = tempArr[j + 1];
+            //                tempArr[j + 1] = tempArr[j];
+            //                tempArr[j] = temp;
 
-                            _SearchAndPullTile(r, j + colFirst, r, j + colFirst + 1);
+            //                _SearchAndPullTile(r, j + colFirst, r, j + colFirst + 1);
+            //            }
+            //        }
+            //    }
+            //}
+
+            for (int i = tempArr.Length - 1; i >= 0; i--)
+            {
+                if (tempArr[i] == "")
+                {
+                    blankTiles++;
+                }
+                else
+                {
+                    if (blankTiles != 0)
+                    {
+                        if (tempArr[i] == "0")
+                        {
+                            blankTiles = 0;
+                        }
+                        else
+                        {
+                            _SearchAndPullTile(r, colFirst + i, r, colFirst + i + blankTiles);
                         }
                     }
                 }
             }
-
-            for (int c = colFirst; c <= colLast; c++)
-            {
-                matrix[r, c] = tempArr[c - colFirst];
-            }
+            blankTiles = 0;
         }
     }
 

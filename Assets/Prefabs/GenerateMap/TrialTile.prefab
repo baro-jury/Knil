@@ -89,6 +89,7 @@ GameObject:
   - component: {fileID: 8692532866410087047}
   - component: {fileID: 8692532866410087044}
   - component: {fileID: 804777316}
+  - component: {fileID: 5121327937221274675}
   - component: {fileID: 7192367117103562674}
   m_Layer: 5
   m_Name: TrialTile
@@ -116,7 +117,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 45, y: -45}
-  m_SizeDelta: {x: 112, y: 112}
+  m_SizeDelta: {x: 180, y: 180}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8692532866410087046
 CanvasRenderer:
@@ -200,9 +201,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 804777316}
-        m_TargetAssemblyTypeName: PrefabController, Assembly-CSharp
-        m_MethodName: _TileTrialClick
+      - m_Target: {fileID: 5121327937221274675}
+        m_TargetAssemblyTypeName: TileController, Assembly-CSharp
+        m_MethodName: _TileTrialClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -224,6 +225,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 600f5e457e3fbb04fb568163b1f0e918, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5121327937221274675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8692532866410087045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de1528c092be9d74a97d52d80442796d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 0
+  indexRow: 0
+  indexCol: 0
 --- !u!95 &7192367117103562674
 Animator:
   serializedVersion: 4
@@ -234,7 +250,7 @@ Animator:
   m_GameObject: {fileID: 8692532866410087045}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 2b5c182de2214874682c127dfac4eadc, type: 2}
+  m_Controller: {fileID: 9100000, guid: 9ec0d3d5b7c22ec45a68da5f2976f871, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
