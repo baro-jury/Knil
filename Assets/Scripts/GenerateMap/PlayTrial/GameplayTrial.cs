@@ -14,11 +14,10 @@ public class GameplayTrial : MonoBehaviour
     public static GameplayTrial instance;
     public static int level;
 
-    private bool isCoupled = true;
+    private bool isCoupled = true, isHinted = false;
     private int siblingIndex;
     private Transform[] points = new Transform[4];
     private Transform tile;
-    private List<ParticleSystem> particles = new();
 
     [SerializeField]
     private TextMeshProUGUI titleLv;
@@ -26,6 +25,8 @@ public class GameplayTrial : MonoBehaviour
     private GameObject chooseLvPanel;
     [SerializeField]
     private Button pauseButton;
+    [SerializeField]
+    private Button btSpHint, btSpMagicWand, btSpFreeze, btSpShuffle;
     [SerializeField]
     private Transform tempAlignWithLeft, tempAlignWithRight, tempAlignWithTop, tempAlignWithBottom, tempAlignWithStart, tempAlignWithEnd;
     [SerializeField]
@@ -42,9 +43,6 @@ public class GameplayTrial : MonoBehaviour
     void Awake()
     {
         _MakeInstance();
-        hint.Stop();
-        lightningByMagicwand.Stop();
-        shuffle.Stop();
     }
 
     void Start()
@@ -52,10 +50,46 @@ public class GameplayTrial : MonoBehaviour
         Time.timeScale = 0;
     }
 
+    void _ScaleBgr()
+    {
+        Transform temp = GameObject.Find("Background").transform;
+        GameObject background = temp.GetChild(TrialBoard.levelData.theme - 1).gameObject;
+        for (int i = 0; i < temp.childCount; i++)
+        {
+            if (TrialBoard.levelData.theme - 1 != i)
+            {
+                temp.GetChild(i).gameObject.SetActive(false);
+            }
+            else
+            {
+                temp.GetChild(i).gameObject.SetActive(true);
+            }
+        }
+
+        SpriteRenderer sr = background.GetComponent<SpriteRenderer>();
+        float height = sr.bounds.size.y;
+        float width = sr.bounds.size.x;
+        float scaleHeight = Camera.main.orthographicSize * 2f;
+        float scaleWidth = scaleHeight * Screen.width / Screen.height;
+        background.transform.localScale = new Vector3(scaleWidth / width, scaleHeight / height, 0);
+    }
+
     #region Choose level
     public void _ChooseLevel()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void _PlayLvTest()
+    {
+        var dataStr = Resources.Load("demo") as TextAsset;
+        TrialBoard.levelData = JsonConvert.DeserializeObject<LevelData>(dataStr.text);
+        titleLv.text = "DEMO";
+        TrialBoard.instance._GoToProcess(1);
+        Time.timeScale = 0;
+        Timer.time = 0;
+        chooseLvPanel.SetActive(false);
+        _ScaleBgr();
     }
 
     public void _PlayLevel(int lv)
@@ -67,6 +101,7 @@ public class GameplayTrial : MonoBehaviour
         Time.timeScale = 0;
         Timer.time = 0;
         chooseLvPanel.SetActive(false);
+        _ScaleBgr();
     }
 
     public void _PlayLv1()
@@ -210,7 +245,7 @@ public class GameplayTrial : MonoBehaviour
 
     public void _ClickTile(Transform currentTile)
     {
-        DOTween.Clear();
+        currentTile.DOKill();
         currentTile.GetComponent<RectTransform>().DOScale(new Vector3(.8f, .8f, 1), .1f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
             {
@@ -260,42 +295,38 @@ public class GameplayTrial : MonoBehaviour
 
     bool _AreTheSameTiles(Transform tile1, Transform tile2)
     {
-        return ResourceController.spritesDict[tile1.GetChild(0).GetComponent<Image>().sprite]
-            == ResourceController.spritesDict[tile2.GetChild(0).GetComponent<Image>().sprite];
+        return ResourceController.spritesDict[tile1.GetComponent<TileController>().Id.ToString()]
+            == ResourceController.spritesDict[tile2.GetComponent<TileController>().Id.ToString()];
+    }
+
+    void _ResetTileState()
+    {
+        DOTween.Clear();
+        foreach (var tile in TrialBoard.buttonList)
+        {
+            tile.localScale = Vector3.one;
+        }
+        isHinted = false;
     }
 
     #endregion
 
     #region Supporter & Booster
-    public void _PlayParticles(bool isHinted, bool thunderstruck, bool isShuffled)
+    public void _EnableSupporter(bool isEnabled)
     {
-        if (isHinted) { hint.Play(); }
-        else { hint.Stop(); }
-
-        if (thunderstruck) { lightningByMagicwand.Play(); }
-        else { lightningByMagicwand.Stop(); }
-
-        if (isShuffled) { shuffle.Play(); }
-        else { shuffle.Stop(); }
-    }
-
-    public void _SupporterShuffle() //Đổi vị trí: Khi người chơi sử dụng, các item thay đổi vị trí cho nhau.
-    {
-        particles.Clear();
-        TrialBoard.instance._RearrangeTiles();
-        //var effect = Instantiate(shuffle, Vector3.zero, Quaternion.identity, gameObject.transform);
-        //particles.Add(effect);
+        btSpHint.interactable = isEnabled;
+        btSpMagicWand.interactable = isEnabled;
+        btSpFreeze.interactable = isEnabled;
+        btSpShuffle.interactable = isEnabled;
     }
 
     public void _SupporterHint() //Hint: Khi sử dụng sẽ gợi ý 1 kết quả
     {
-        particles.Clear();
-        DOTween.Clear();
-        bool isFounded = false;
-        while (!isFounded)
+        _ResetTileState();
+        while (!isHinted)
         {
-            int index = Random.Range(0, ResourceController.spritesDict.Count);
-            List<Transform> temp = TrialBoard.instance._SearchSameTiles(ResourceController.spritesDict.ElementAt(index).Key);
+            int index = Random.Range(1, TrialBoard.dict.Count);
+            List<Transform> temp = TrialBoard.instance._SearchSameTiles(TrialBoard.dict[index.ToString()]);
             if (temp.Count != 0)
             {
                 for (int i = 0; i < (temp.Count - 1); i++)
@@ -304,31 +335,12 @@ public class GameplayTrial : MonoBehaviour
                     {
                         if (_HasAvailableConnection(temp[i], temp[j]))
                         {
-                            var effectI = Instantiate(hint, temp[i].localPosition, Quaternion.identity, gameObject.transform);
-                            var effectJ = Instantiate(hint, temp[j].localPosition, Quaternion.identity, gameObject.transform);
-                            effectI.Play();
-                            effectJ.Play();
-                            particles.Add(effectI);
-                            particles.Add(effectJ);
+                            //var effectI = Instantiate(hint, temp[i].localPosition, Quaternion.identity, gameObject.transform);
+                            //var effectJ = Instantiate(hint, temp[j].localPosition, Quaternion.identity, gameObject.transform);
+                            //effectI.Play();
+                            //effectJ.Play();
 
-                            StartCoroutine(MakeConnection(points));
-                            //temp[i].DOScale(new Vector3(.8f, .8f, .8f), .75f).SetEase(Ease.InOutQuad).SetUpdate(true)
-                            //    .OnComplete(()=> 
-                            //    {
-                            //        temp[i].DOScale(Vector3.one, .75f).SetEase(Ease.InOutQuad).SetUpdate(true);
-                            //    })
-                            //    .SetLoops(3, LoopType.Yoyo);
-                            //temp[j].DOScale(new Vector3(.8f, .8f, .8f), .75f).SetEase(Ease.InOutQuad).SetUpdate(true)
-                            //    .OnComplete(() =>
-                            //    {
-                            //        temp[j].DOScale(Vector3.one, .75f).SetEase(Ease.InOutQuad).SetUpdate(true);
-                            //    })
-                            //    .SetLoops(3, LoopType.Yoyo);
-
-                            temp[i].DOScale(new Vector3(.8f, .8f, .8f), .5f).SetEase(Ease.InOutQuad).SetUpdate(true).SetLoops(6, LoopType.Yoyo);
-                            temp[j].DOScale(new Vector3(.8f, .8f, .8f), .5f).SetEase(Ease.InOutQuad).SetUpdate(true).SetLoops(6, LoopType.Yoyo);
-
-                            isFounded = true;
+                            isHinted = true;
                             goto endloop;
                         }
                     }
@@ -336,19 +348,38 @@ public class GameplayTrial : MonoBehaviour
             endloop:;
             }
         }
+
+        int n = points.Length;
+        for (int i = 0; i < points.Length; i++)
+        {
+            if (points[i] == null)
+            {
+                n--;
+            }
+        }
+        for (int i = 0; i < n; i++)
+        {
+            if (i == 0 || i == n - 1)
+            {
+                points[i].DOScale(new Vector3(.8f, .8f, .8f), .5f).SetEase(Ease.InOutQuad).SetUpdate(true).SetLoops(-1, LoopType.Yoyo);
+            }
+        }
     }
 
     public void _SupporterMagicWand() //Đũa thần: 2 kết quả hoàn thành
     {
+        Time.timeScale = 1;
+        _ResetTileState();
+        EventSystem.current.SetSelectedGameObject(null);
         int numCouple = 0;
-        for (int index = 0; index < ResourceController.spritesDict.Count; index++)
+        for (int index = 1; index < TrialBoard.dict.Count; index++)
         {
         check:
             if (numCouple == 2)
             {
                 break;
             }
-            List<Transform> temp = TrialBoard.instance._SearchSameTiles(ResourceController.spritesDict.ElementAt(index).Key);
+            List<Transform> temp = TrialBoard.instance._SearchSameTiles(TrialBoard.dict[index.ToString()]);
 
             if (temp.Count != 0)
             {
@@ -365,13 +396,24 @@ public class GameplayTrial : MonoBehaviour
                 }
             }
         }
-        LineController.instance._EraseLine();
     }
 
     public void _SupporterFreezeTime() //Snow: Đóng băng thời gian 10 giây
     {
         Debug.Log("Đóng băng thời gian 10 giây");
         StartCoroutine(FreezeTime());
+    }
+
+    public void _SupporterShuffle() //Đổi vị trí: Khi người chơi sử dụng, các item thay đổi vị trí cho nhau.
+    {
+        _ResetTileState();
+        isCoupled = true;
+        EventSystem.current.SetSelectedGameObject(null);
+        TrialBoard.instance._RearrangeTiles();
+        //var effect = Instantiate(shuffle, new Vector3(0, 50, 0), Quaternion.identity, gameObject.transform);
+        //effect.Play();
+
+        Debug.Log("shuffle");
     }
 
     public void _BoosterTimeWizard() //Time : Tăng 10 giây khi sử dụng
@@ -385,8 +427,8 @@ public class GameplayTrial : MonoBehaviour
         bool isFounded = false;
         while (!isFounded)
         {
-            int index = Random.Range(0, ResourceController.spritesDict.Count);
-            List<Transform> temp = TrialBoard.instance._SearchSameTiles(ResourceController.spritesDict.ElementAt(index).Key);
+            int index = Random.Range(1, TrialBoard.dict.Count);
+            List<Transform> temp = TrialBoard.instance._SearchSameTiles(TrialBoard.dict[index.ToString()]);
             if (temp.Count != 0)
             {
                 for (int i = 0; i < temp.Count; i++)
@@ -408,15 +450,17 @@ public class GameplayTrial : MonoBehaviour
     #region IEnumerator
     IEnumerator MakeConnection(params Transform[] linePositions)
     {
-        LineController.instance._DrawLine(0.15f * tile.gameObject.GetComponent<RectTransform>().sizeDelta.x / 100, linePositions);
+        LineController.instance._DrawLine(0.15f * tile.GetComponent<TileController>().Size / 100, linePositions);
 
-        yield return new WaitForSeconds(0.75f);
+        yield return new WaitForSeconds(0.4f);
 
         LineController.instance._EraseLine();
     }
 
     IEnumerator DestroyTiles(params Transform[] linePositions)
     {
+        Sequence sequence = DOTween.Sequence();
+        _EnableSupporter(false);
         int n = linePositions.Length;
         for (int i = 0; i < linePositions.Length; i++)
         {
@@ -431,15 +475,23 @@ public class GameplayTrial : MonoBehaviour
             if (i == 0 || i == n - 1)
             {
                 int index = i;
-                linePositions[i].GetComponent<RectTransform>().DOSizeDelta(Vector2.zero, .65f).SetEase(Ease.InBack).SetUpdate(true)
-                    .OnComplete(delegate { linePositions[index].gameObject.SetActive(false); });
-                //linePositions[i].gameObject.SetActive(false);
+                linePositions[index].GetComponent<Button>().interactable = false;
+                sequence.Join(linePositions[i].GetComponent<RectTransform>().DOSizeDelta(Vector2.zero, .4f).SetEase(Ease.InBack).SetUpdate(true)
+                    .OnComplete(delegate { linePositions[index].gameObject.SetActive(false); })
+                    );
+                //linePositions[i].GetComponent<RectTransform>().DOSizeDelta(Vector2.zero, .65f).SetEase(Ease.InBack).SetUpdate(true)
+                //    .OnComplete(delegate { linePositions[index].gameObject.SetActive(false); });
                 TrialBoard.instance._DeactivateTile(linePositions[i].GetComponent<TileController>());
             }
         }
-        yield return new WaitForSeconds(0.75f);
+        sequence.Play();
+        yield return new WaitForSeconds(0.4f);
+        
         TrialBoard.instance._ActivateGravity();
-        TrialBoard.instance._ShuffleWhenNoPossibleLink();
+        yield return new WaitForSeconds(0.1f);
+        _ResetTileState();
+        _EnableSupporter(true);
+        TrialBoard.instance._CheckPossibleConnection();
         TrialBoard.instance._CheckProcess();
     }
 
@@ -537,7 +589,7 @@ public class GameplayTrial : MonoBehaviour
         float y = tile1.localPosition.y;
         float min = Mathf.Min(tile1.localPosition.x, tile2.localPosition.x);
         float max = Mathf.Max(tile1.localPosition.x, tile2.localPosition.x);
-        float buttonSide = tile1.gameObject.GetComponent<RectTransform>().sizeDelta.x;
+        float buttonSide = tile1.GetComponent<TileController>().Size;
         if (max - min == buttonSide)
         {
             return true;
@@ -561,7 +613,7 @@ public class GameplayTrial : MonoBehaviour
         float x = tile1.localPosition.x;
         float min = Mathf.Min(tile1.localPosition.y, tile2.localPosition.y);
         float max = Mathf.Max(tile1.localPosition.y, tile2.localPosition.y);
-        float buttonSide = tile1.gameObject.GetComponent<RectTransform>().sizeDelta.y;
+        float buttonSide = tile1.GetComponent<TileController>().Size;
         if (max - min == buttonSide)
         {
             return true;
@@ -589,10 +641,15 @@ public class GameplayTrial : MonoBehaviour
             return false;
         }
 
-        Transform leftTile = tile1, rightTile = tile2;
+        Transform leftTile, rightTile;
         float leftX = Mathf.Min(tile1.localPosition.x, tile2.localPosition.x);
         float rightX = Mathf.Max(tile1.localPosition.x, tile2.localPosition.x);
-        if (leftX == tile2.localPosition.x)
+        if (leftX == tile1.localPosition.x)
+        {
+            leftTile = tile1;
+            rightTile = tile2;
+        }
+        else
         {
             leftTile = tile2;
             rightTile = tile1;
@@ -636,10 +693,15 @@ public class GameplayTrial : MonoBehaviour
             return false;
         }
 
-        Transform topTile = tile1, bottomTile = tile2;
+        Transform topTile, bottomTile;
         float topY = Mathf.Max(tile1.localPosition.y, tile2.localPosition.y);
         float bottomY = Mathf.Min(tile1.localPosition.y, tile2.localPosition.y);
-        if (topY == tile2.localPosition.y)
+        if (topY == tile1.localPosition.y)
+        {
+            topTile = tile1;
+            bottomTile = tile2;
+        }
+        else
         {
             topTile = tile2;
             bottomTile = tile1;
@@ -683,15 +745,20 @@ public class GameplayTrial : MonoBehaviour
             return false;
         }
 
-        Transform leftTile = tile1, rightTile = tile2;
+        Transform leftTile, rightTile;
         float leftX = Mathf.Min(tile1.localPosition.x, tile2.localPosition.x);
         float rightX = Mathf.Max(tile1.localPosition.x, tile2.localPosition.x);
-        if (leftX == tile2.localPosition.x)
+        if (leftX == tile1.localPosition.x)
+        {
+            leftTile = tile1;
+            rightTile = tile2;
+        }
+        else
         {
             leftTile = tile2;
             rightTile = tile1;
         }
-        float buttonSide = tile1.gameObject.GetComponent<RectTransform>().sizeDelta.x;
+        float buttonSide = tile1.GetComponent<TileController>().Size;
         bool checkPoint;
 
         #endregion
@@ -722,15 +789,20 @@ public class GameplayTrial : MonoBehaviour
             return false;
         }
 
-        Transform topTile = tile1, bottomTile = tile2;
+        Transform topTile, bottomTile;
         float topY = Mathf.Max(tile1.localPosition.y, tile2.localPosition.y);
         float bottomY = Mathf.Min(tile1.localPosition.y, tile2.localPosition.y);
-        if (topY == tile2.localPosition.y)
+        if (topY == tile1.localPosition.y)
+        {
+            topTile = tile1;
+            bottomTile = tile2;
+        }
+        else
         {
             topTile = tile2;
             bottomTile = tile1;
         }
-        float buttonSide = tile1.gameObject.GetComponent<RectTransform>().sizeDelta.y;
+        float buttonSide = tile1.GetComponent<TileController>().Size;
         bool checkPoint;
 
         #endregion
@@ -761,21 +833,11 @@ public class GameplayTrial : MonoBehaviour
             return false;
         }
 
-        Transform startTile = tile1, endTile = tile2;
-        float startX = Mathf.Min(tile1.localPosition.x, tile2.localPosition.x);
-        float endX = Mathf.Max(tile1.localPosition.x, tile2.localPosition.x);
-        float startY, endY;
-        if (startX == tile1.localPosition.x)
-        {
-            startY = tile1.localPosition.y;
-            endY = tile2.localPosition.y;
-        }
-        else
-        {
-            startY = tile2.localPosition.y;
-            endY = tile1.localPosition.y;
-        }
-        float buttonSide = tile1.gameObject.GetComponent<RectTransform>().sizeDelta.x;
+        Transform startTile, endTile;
+        float lowerX = Mathf.Min(tile1.localPosition.x, tile2.localPosition.x);
+        float higherX = Mathf.Max(tile1.localPosition.x, tile2.localPosition.x);
+        float buttonSide = tile1.GetComponent<TileController>().Size;
+        float width = TrialBoard.column * buttonSide;
         bool checkPoint;
 
         #endregion
@@ -784,14 +846,22 @@ public class GameplayTrial : MonoBehaviour
         {
             #region Di tu trai sang phai
 
-            startTile.localPosition = new Vector3(startX, startY, 0);
-            endTile.localPosition = new Vector3(endX, endY, 0);
-
-            for (float i = (endX + buttonSide); i <= (tile1.parent.GetComponent<RectTransform>().sizeDelta.x + buttonSide) / 2; i += buttonSide)
+            if (lowerX == tile1.localPosition.x)
             {
-                tempAlignWithStart.localPosition = new Vector3(i, startY, 0);
-                tempAlignWithEnd.localPosition = new Vector3(i, endY, 0);
-                checkPoint = TrialBoard.instance._HasButtonInLocation(i, startY) || TrialBoard.instance._HasButtonInLocation(i, endY);
+                startTile = tile1;
+                endTile = tile2;
+            }
+            else
+            {
+                startTile = tile2;
+                endTile = tile1;
+            }
+
+            for (float i = (higherX + buttonSide); i <= (width + buttonSide) / 2; i += buttonSide)
+            {
+                tempAlignWithStart.localPosition = new Vector3(i, startTile.localPosition.y, 0);
+                tempAlignWithEnd.localPosition = new Vector3(i, endTile.localPosition.y, 0);
+                checkPoint = TrialBoard.instance._HasButtonInLocation(i, startTile.localPosition.y) || TrialBoard.instance._HasButtonInLocation(i, endTile.localPosition.y);
                 if (!checkPoint && _HasHorizontalLine(startTile, tempAlignWithStart) &&
                     _HasVerticalLine(tempAlignWithStart, tempAlignWithEnd) && _HasHorizontalLine(tempAlignWithEnd, endTile))
                 {
@@ -806,14 +876,22 @@ public class GameplayTrial : MonoBehaviour
         {
             #region Di tu phai sang trai
 
-            startTile.localPosition = new Vector3(endX, endY, 0);
-            endTile.localPosition = new Vector3(startX, startY, 0);
-
-            for (float i = (startX - buttonSide); i >= -(tile1.parent.GetComponent<RectTransform>().sizeDelta.x + buttonSide) / 2; i -= buttonSide)
+            if (lowerX == tile1.localPosition.x)
             {
-                tempAlignWithStart.localPosition = new Vector3(i, endY, 0);
-                tempAlignWithEnd.localPosition = new Vector3(i, startY, 0);
-                checkPoint = TrialBoard.instance._HasButtonInLocation(i, startY) || TrialBoard.instance._HasButtonInLocation(i, endY);
+                startTile = tile2;
+                endTile = tile1;
+            }
+            else
+            {
+                startTile = tile1;
+                endTile = tile2;
+            }
+
+            for (float i = (lowerX - buttonSide); i >= -(width + buttonSide) / 2; i -= buttonSide)
+            {
+                tempAlignWithStart.localPosition = new Vector3(i, startTile.localPosition.y, 0);
+                tempAlignWithEnd.localPosition = new Vector3(i, endTile.localPosition.y, 0);
+                checkPoint = TrialBoard.instance._HasButtonInLocation(i, startTile.localPosition.y) || TrialBoard.instance._HasButtonInLocation(i, endTile.localPosition.y);
                 if (!checkPoint && _HasHorizontalLine(startTile, tempAlignWithStart) &&
                     _HasVerticalLine(tempAlignWithStart, tempAlignWithEnd) && _HasHorizontalLine(tempAlignWithEnd, endTile))
                 {
@@ -838,21 +916,11 @@ public class GameplayTrial : MonoBehaviour
             return false;
         }
 
-        Transform startTile = tile1, endTile = tile2;
-        float startY = Mathf.Max(tile1.localPosition.y, tile2.localPosition.y);
-        float endY = Mathf.Min(tile1.localPosition.y, tile2.localPosition.y);
-        float startX, endX;
-        if (startY == tile1.localPosition.y)
-        {
-            startX = tile1.localPosition.x;
-            endX = tile2.localPosition.x;
-        }
-        else
-        {
-            startX = tile2.localPosition.x;
-            endX = tile1.localPosition.x;
-        }
-        float buttonSide = tile1.gameObject.GetComponent<RectTransform>().sizeDelta.y;
+        Transform startTile, endTile;
+        float higherY = Mathf.Max(tile1.localPosition.y, tile2.localPosition.y);
+        float lowerY = Mathf.Min(tile1.localPosition.y, tile2.localPosition.y);
+        float buttonSide = tile1.GetComponent<TileController>().Size;
+        float height = TrialBoard.row * buttonSide;
         bool checkPoint;
 
         #endregion
@@ -861,14 +929,22 @@ public class GameplayTrial : MonoBehaviour
         {
             #region Di tu tren xuong duoi
 
-            startTile.localPosition = new Vector3(startX, startY, 0);
-            endTile.localPosition = new Vector3(endX, endY, 0);
-
-            for (float i = (endY - buttonSide); i >= -(tile1.parent.GetComponent<RectTransform>().sizeDelta.y + buttonSide) / 2; i -= buttonSide)
+            if (higherY == tile1.localPosition.y)
             {
-                tempAlignWithStart.localPosition = new Vector3(startX, i, 0);
-                tempAlignWithEnd.localPosition = new Vector3(endX, i, 0);
-                checkPoint = TrialBoard.instance._HasButtonInLocation(startX, i) || TrialBoard.instance._HasButtonInLocation(endX, i);
+                startTile = tile1;
+                endTile = tile2;
+            }
+            else
+            {
+                startTile = tile2;
+                endTile = tile1;
+            }
+
+            for (float i = (lowerY - buttonSide); i >= -(height + buttonSide) / 2; i -= buttonSide)
+            {
+                tempAlignWithStart.localPosition = new Vector3(startTile.localPosition.x, i, 0);
+                tempAlignWithEnd.localPosition = new Vector3(endTile.localPosition.x, i, 0);
+                checkPoint = TrialBoard.instance._HasButtonInLocation(startTile.localPosition.x, i) || TrialBoard.instance._HasButtonInLocation(endTile.localPosition.x, i);
                 if (!checkPoint && _HasVerticalLine(startTile, tempAlignWithStart) &&
                     _HasHorizontalLine(tempAlignWithStart, tempAlignWithEnd) && _HasVerticalLine(tempAlignWithEnd, endTile))
                 {
@@ -883,14 +959,22 @@ public class GameplayTrial : MonoBehaviour
         {
             #region Di tu duoi len tren
 
-            startTile.localPosition = new Vector3(endX, endY, 0);
-            endTile.localPosition = new Vector3(startX, startY, 0);
-
-            for (float i = (startY + buttonSide); i <= (tile1.parent.GetComponent<RectTransform>().sizeDelta.y + buttonSide) / 2; i += buttonSide)
+            if (higherY == tile1.localPosition.y)
             {
-                tempAlignWithStart.localPosition = new Vector3(endX, i, 0);
-                tempAlignWithEnd.localPosition = new Vector3(startX, i, 0);
-                checkPoint = TrialBoard.instance._HasButtonInLocation(startX, i) || TrialBoard.instance._HasButtonInLocation(endX, i);
+                startTile = tile2;
+                endTile = tile1;
+            }
+            else
+            {
+                startTile = tile1;
+                endTile = tile2;
+            }
+
+            for (float i = (higherY + buttonSide); i <= (height + buttonSide) / 2; i += buttonSide)
+            {
+                tempAlignWithStart.localPosition = new Vector3(startTile.localPosition.x, i, 0);
+                tempAlignWithEnd.localPosition = new Vector3(endTile.localPosition.x, i, 0);
+                checkPoint = TrialBoard.instance._HasButtonInLocation(startTile.localPosition.x, i) || TrialBoard.instance._HasButtonInLocation(endTile.localPosition.x, i);
                 if (!checkPoint && _HasVerticalLine(startTile, tempAlignWithStart) &&
                     _HasHorizontalLine(tempAlignWithStart, tempAlignWithEnd) && _HasVerticalLine(tempAlignWithEnd, endTile))
                 {

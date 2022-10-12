@@ -11,13 +11,13 @@ public class TimeController : MonoBehaviour
     [SerializeField]
     private Slider slider;
     [SerializeField]
-    private TextMeshProUGUI timeText;
+    private TextMeshProUGUI timeText, timeTextComplete;
 
     public static float time;
-    public static float timestampFor1Star;
-    public static float timestampFor2Star;
-    public static float timestampFor3Star;
-    private float timeBurn = 1f;
+    //private float timeBurn = 1f;
+    private float timestampFor1Star;
+    private float timestampFor2Star;
+    private float timestampFor3Star;
     private bool isFreezed, timerIsRunning;
 
     void _MakeInstance()
@@ -63,7 +63,7 @@ public class TimeController : MonoBehaviour
             {
                 if (time > 0)
                 {
-                    time -= timeBurn * Time.deltaTime;
+                    time -= Time.deltaTime;
                     slider.value = time;
 
                     if (timestampFor2Star <= time && time < timestampFor3Star)
@@ -96,6 +96,7 @@ public class TimeController : MonoBehaviour
         float minutes = Mathf.FloorToInt(timeToDisplay / 60);
         float seconds = Mathf.FloorToInt(timeToDisplay % 60);
         timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        timeTextComplete.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
     public void _SetTimeForSlider(bool isBoosted)
@@ -112,5 +113,18 @@ public class TimeController : MonoBehaviour
     public void _FreezeTime(bool freeze)
     {
         isFreezed = freeze;
+    }
+
+    public int _NumberOfStarsAchieved()
+    {
+        int count = 1;
+        for(int i = 4; i <= 5; i++)
+        {
+            if (slider.transform.GetChild(i).GetChild(0).gameObject.activeSelf)
+            {
+                count++;
+            }
+        }
+        return count;
     }
 }

@@ -8,10 +8,10 @@ public class PrefabController : MonoBehaviour
     //nut x
     public void _Close()
     {
-        transform.parent.GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
+        transform.parent.GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true) //gameObject: form
             .OnComplete(() =>
             {
-                transform.parent.parent.gameObject.SetActive(false);
+                transform.parent.parent.gameObject.SetActive(false); //panel
             });
     }
 

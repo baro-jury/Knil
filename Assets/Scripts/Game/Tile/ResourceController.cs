@@ -6,7 +6,7 @@ using UnityEngine;
 public class ResourceController : MonoBehaviour
 {
     public static ResourceController instance;
-    public static Dictionary<Sprite, string> spritesDict = new();
+    public static Dictionary<string, Sprite> spritesDict = new();
 
     public List<Sprite> AfternoonTeas;
     public List<Sprite> Butterflies;
@@ -46,47 +46,27 @@ public class ResourceController : MonoBehaviour
 
     public void _CreateDictionary(List<Sprite> list)
     {
-        Dictionary<Sprite, string> temp = new();
-        temp.Add(blocker, "0");
+        Dictionary<string, Sprite> temp = new();
+        temp.Add("0", blocker);
         foreach (Sprite sprite in list)
         {
-            //if (spritesDict.ContainsKey(sprite))
-            //{
-            //    spritesDict[sprite] = idElement;
-            //}
-            //else
-            //{
-            //    spritesDict.Add(sprite, idElement);
-            //}
-            temp.Add(sprite, idElement.ToString());
+            temp.Add(idElement.ToString(), sprite);
             idElement++;
         }
         spritesDict = temp;
         idElement = 1;
     }
 
-    public void _ShuffleImage(Dictionary<Sprite, string> dictionary)
+    public void _ShuffleImage(Dictionary<string, Sprite> dictionary)
     {
         for (int i = 1; i < (dictionary.Count - 1); i++)
         {
             int randomIndex = Random.Range(i + 1, dictionary.Count);
 
-            string temp = dictionary.ElementAt(i).Value;
-            dictionary[dictionary.ElementAt(i).Key] = dictionary.ElementAt(randomIndex).Value;
-            dictionary[dictionary.ElementAt(randomIndex).Key] = temp;
+            Sprite temp = dictionary[i.ToString()];
+            dictionary[i.ToString()] = dictionary[randomIndex.ToString()];
+            dictionary[randomIndex.ToString()] = temp;
         }
-    }
-
-    public int _FindIndex(string value)
-    {
-        for (int i = 0; i < spritesDict.Count; i++)
-        {
-            if(spritesDict.ElementAt(i).Value == value)
-            {
-                return i;
-            }
-        }
-        return default;
     }
 
 }

@@ -27,39 +27,21 @@ public class SetUpMap : MonoBehaviour
     [SerializeField]
     private GameObject preSettingPanel;
     [SerializeField]
-    private InputField level;
-    [SerializeField]
-    private InputField process;
-    [SerializeField]
-    private InputField time;
+    private InputField level, process, time;
     [SerializeField]
     private Dropdown theme;
 
     [SerializeField]
     private InputField timeWhileEditing;
     [SerializeField]
-    private InputField timestampFor1Star;
-    [SerializeField]
-    private InputField timestampFor2Star;
-    [SerializeField]
-    private InputField timestampFor3Star;
+    private InputField timestampFor1Star, timestampFor2Star, timestampFor3Star;
 
     [SerializeField]
     private GameObject ingameSettingPanel;
     [SerializeField]
-    private InputField row;
+    private InputField row, column;
     [SerializeField]
-    private InputField column;
-    [SerializeField]
-    private Dropdown themeWhileEditing;
-    [SerializeField]
-    private Dropdown pullDown;
-    [SerializeField]
-    private Dropdown pullUp;
-    [SerializeField]
-    private Dropdown pullLeft;
-    [SerializeField]
-    private Dropdown pullRight;
+    private Dropdown themeWhileEditing, pullDown, pullUp, pullLeft, pullRight;
 
     [SerializeField]
     private TextMeshProUGUI titleLv;
@@ -71,11 +53,7 @@ public class SetUpMap : MonoBehaviour
     private Dropdown ddImage;
 
     [SerializeField]
-    private Button btPrev;
-    [SerializeField]
-    private Button btNext;
-    [SerializeField]
-    private Button btPlayTrial;
+    private Button btPrev, btNext, btPlayTrial;
 
     void _MakeInstance()
     {
@@ -109,7 +87,7 @@ public class SetUpMap : MonoBehaviour
         tileImages.Add(new OptionData("", btNone.GetComponent<Image>().sprite));
         for (int i = 1; i < ResourceController.spritesDict.Count; i++)
         {
-            tileImages.Add(new OptionData(ResourceController.spritesDict.ElementAt(i).Value, ResourceController.spritesDict.ElementAt(i).Key));
+            tileImages.Add(new OptionData(ResourceController.spritesDict.ElementAt(i).Key, ResourceController.spritesDict.ElementAt(i).Value));
         }
         ddImage.AddOptions(tileImages);
     }
@@ -254,13 +232,13 @@ public class SetUpMap : MonoBehaviour
         levelData.time[2] = float.Parse(timestampFor2Star.text);
         levelData.time[3] = float.Parse(timestampFor3Star.text);
         levelData.theme = themeWhileEditing.value;
-        dataMap.row = int.Parse(row.text);
-        dataMap.column = int.Parse(column.text);
-        dataMap.pullDown = bool.Parse(pullDown.options[pullDown.value].text);
-        dataMap.pullUp = bool.Parse(pullUp.options[pullUp.value].text);
-        dataMap.pullLeft = bool.Parse(pullLeft.options[pullLeft.value].text);
-        dataMap.pullRight = bool.Parse(pullRight.options[pullRight.value].text);
-        dataMap.matrix = matrix;
+        dataMap.Row = int.Parse(row.text);
+        dataMap.Column = int.Parse(column.text);
+        dataMap.PullDown = bool.Parse(pullDown.options[pullDown.value].text);
+        dataMap.PullUp = bool.Parse(pullUp.options[pullUp.value].text);
+        dataMap.PullLeft = bool.Parse(pullLeft.options[pullLeft.value].text);
+        dataMap.PullRight = bool.Parse(pullRight.options[pullRight.value].text);
+        dataMap.Matrix = matrix;
 
         _SelectBackground(themeWhileEditing);
     }
@@ -273,7 +251,7 @@ public class SetUpMap : MonoBehaviour
         float tileSize = currentTile.gameObject.GetComponent<RectTransform>().sizeDelta.x;
         int[] temp = SetUpBoard.instance._ConvertPositionToMatrixIndex(
             currentTile.localPosition.x, currentTile.localPosition.y,
-            tileSize * dataMap.column, tileSize * dataMap.row, tileSize);
+            tileSize * dataMap.Column, tileSize * dataMap.Row, tileSize);
 
         optionPanel.SetActive(true);
 
@@ -325,7 +303,7 @@ public class SetUpMap : MonoBehaviour
 
     void _ChooseTile(Transform currentTile)
     {
-        currentTile.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict.ElementAt(ddImage.value).Key;
+        currentTile.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict[ddImage.value.ToString()];
         optionPanel.SetActive(false);
     }
 
@@ -335,8 +313,8 @@ public class SetUpMap : MonoBehaviour
     public void _GoToNextProcess()
     {
         _CheckMatrix();
-        map[index] = new ProcessData(dataMap.row, dataMap.column, dataMap.pullDown,
-            dataMap.pullUp, dataMap.pullLeft, dataMap.pullRight, matrix);
+        map[index] = new ProcessData(dataMap.Row, dataMap.Column, dataMap.PullDown,
+            dataMap.PullUp, dataMap.PullLeft, dataMap.PullRight, matrix);
         index++;
 
         btPrev.gameObject.SetActive(true);
@@ -345,13 +323,13 @@ public class SetUpMap : MonoBehaviour
             btNext.gameObject.SetActive(false);
             btPlayTrial.interactable = true;
         }
-        row.text = map[index].row.ToString();
-        column.text = map[index].column.ToString();
-        pullDown.value = map[index].pullDown == true ? 1 : 0;
-        pullUp.value = map[index].pullUp == true ? 1 : 0;
-        pullLeft.value = map[index].pullLeft == true ? 1 : 0;
-        pullRight.value = map[index].pullRight == true ? 1 : 0;
-        matrix = map[index].matrix;
+        row.text = map[index].Row.ToString();
+        column.text = map[index].Column.ToString();
+        pullDown.value = map[index].PullDown == true ? 1 : 0;
+        pullUp.value = map[index].PullUp == true ? 1 : 0;
+        pullLeft.value = map[index].PullLeft == true ? 1 : 0;
+        pullRight.value = map[index].PullRight == true ? 1 : 0;
+        matrix = map[index].Matrix;
         _EditDataMap();
 
         SetUpBoard.levelData = levelData;
@@ -364,8 +342,8 @@ public class SetUpMap : MonoBehaviour
     public void _GoToPreviousProcess()
     {
         _CheckMatrix();
-        map[index] = new ProcessData(dataMap.row, dataMap.column, dataMap.pullDown,
-            dataMap.pullUp, dataMap.pullLeft, dataMap.pullRight, matrix);
+        map[index] = new ProcessData(dataMap.Row, dataMap.Column, dataMap.PullDown,
+            dataMap.PullUp, dataMap.PullLeft, dataMap.PullRight, matrix);
         btNext.gameObject.SetActive(true);
         btPlayTrial.interactable = false;
         index--;
@@ -373,13 +351,13 @@ public class SetUpMap : MonoBehaviour
         {
             btPrev.gameObject.SetActive(false);
         }
-        row.text = map[index].row.ToString();
-        column.text = map[index].column.ToString();
-        pullDown.value = map[index].pullDown == true ? 1 : 0;
-        pullUp.value = map[index].pullUp == true ? 1 : 0;
-        pullLeft.value = map[index].pullLeft == true ? 1 : 0;
-        pullRight.value = map[index].pullRight == true ? 1 : 0;
-        matrix = map[index].matrix;
+        row.text = map[index].Row.ToString();
+        column.text = map[index].Column.ToString();
+        pullDown.value = map[index].PullDown == true ? 1 : 0;
+        pullUp.value = map[index].PullUp == true ? 1 : 0;
+        pullLeft.value = map[index].PullLeft == true ? 1 : 0;
+        pullRight.value = map[index].PullRight == true ? 1 : 0;
+        matrix = map[index].Matrix;
         _EditDataMap();
 
         SetUpBoard.levelData = levelData;
@@ -392,8 +370,8 @@ public class SetUpMap : MonoBehaviour
     public void _Complete()
     {
         _CheckMatrix();
-        map[index] = new ProcessData(dataMap.row, dataMap.column, dataMap.pullDown,
-            dataMap.pullUp, dataMap.pullLeft, dataMap.pullRight, matrix);
+        map[index] = new ProcessData(dataMap.Row, dataMap.Column, dataMap.PullDown,
+            dataMap.PullUp, dataMap.PullLeft, dataMap.PullRight, matrix);
         levelData.process = map;
 
         string json = JsonConvert.SerializeObject(levelData);

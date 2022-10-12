@@ -66,8 +66,15 @@ public class LevelController : MonoBehaviour
         }
     }
 
+    public void _PlayLvTest()
+    {
+        var dataStr = Resources.Load("demo") as TextAsset;
+        BoardController.levelData = JsonConvert.DeserializeObject<LevelData>(dataStr.text);
+        SceneManager.LoadScene(1);
+    }
     public void _PlayLevel(int lv)
     {
+        level = lv;
         BoardController.levelData = _GetLevelData(lv);
         SceneManager.LoadScene(1);
     }

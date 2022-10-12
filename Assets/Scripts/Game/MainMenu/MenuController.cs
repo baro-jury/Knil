@@ -11,12 +11,9 @@ public class MenuController : MonoBehaviour
     public Button continueLevelButton;
 
     [SerializeField]
-    private GameObject menuPanel;
+    private GameObject menuPanel, settingPanel, guidePanel;
     [SerializeField]
-    private GameObject settingPanel;
-    [SerializeField]
-    private GameObject guidePanel;
-
+    private Text stars, coins;
     void _MakeInstance()
     {
         if (instance == null)
@@ -30,10 +27,16 @@ public class MenuController : MonoBehaviour
         _MakeInstance();
     }
 
+    void Start()
+    {
+        stars.text = ProgressController.instance._GetStarsAchieved() + "";
+        coins.text = ProgressController.instance._GetCoinsInPossession() + "";
+    }
+
     public void _PlayNewGame()
     {
         LevelController.instance._PlayLv1();
-        ProgressController.instance._MarkCurrentLevel(1);
+        ProgressController.instance._SetMarkedLevel(1);
     }
 
     public void _PlaySavedGame()
@@ -82,4 +85,8 @@ public class MenuController : MonoBehaviour
         settingPanel.SetActive(false);
     }
 
+    public void _BuyCoins()
+    {
+        
+    }
 }

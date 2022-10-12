@@ -52,13 +52,13 @@ public class SetUpBoard : MonoBehaviour
     {
         Timer.time = levelData.time[0];
 
-        row = processData.row;
-        column = processData.column;
-        pullDown = processData.pullDown;
-        pullUp = processData.pullUp;
-        pullLeft = processData.pullLeft;
-        pullRight = processData.pullRight;
-        matrix = processData.matrix;
+        row = processData.Row;
+        column = processData.Column;
+        pullDown = processData.PullDown;
+        pullUp = processData.PullUp;
+        pullLeft = processData.PullLeft;
+        pullRight = processData.PullRight;
+        matrix = processData.Matrix;
     }
 
     void _GenerateTiles()
@@ -122,7 +122,7 @@ public class SetUpBoard : MonoBehaviour
                 }
                 else
                 {
-                    objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict.ElementAt(int.Parse(matrix[r, c])).Key;
+                    objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict[matrix[r, c]];
                 }
             }
         }

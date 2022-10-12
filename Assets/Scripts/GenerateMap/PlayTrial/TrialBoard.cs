@@ -10,11 +10,12 @@ public class TrialBoard : MonoBehaviour
 {
     public static TrialBoard instance;
     public static LevelData levelData;
-    private List<Transform> buttonList = new();
-    private List<TileController> buttonListWithoutBlocker = new();
-    private Dictionary<Sprite, string> dict = new();
+    public static List<Transform> buttonList = new();
+    public static List<TileController> buttonListWithoutBlocker = new();
+    public static Dictionary<string, Sprite> dict = new();
+    public static int row, column;
     public int sideSmallTile = 112, sideMediumTile = 130, sideLargeTile = 180;
-    private int process, row, column, orderOfPullingDirection;
+    private int process, orderOfPullingDirection;
     private bool pullDown, pullUp, pullLeft, pullRight;
     private string[,] matrix;
 
@@ -52,7 +53,8 @@ public class TrialBoard : MonoBehaviour
 
     void Start()
     {
-        foreach (KeyValuePair<Sprite, string> kvp in ResourceController.spritesDict)
+        dict.Clear();
+        foreach (KeyValuePair<string, Sprite> kvp in ResourceController.spritesDict)
         {
             dict.Add(kvp.Key, kvp.Value);
         }
@@ -62,13 +64,13 @@ public class TrialBoard : MonoBehaviour
     void _InstantiateProcess(int orderNumber)
     {
         process = orderNumber;
-        row = levelData.process[orderNumber - 1].row;
-        column = levelData.process[orderNumber - 1].column;
-        pullDown = levelData.process[orderNumber - 1].pullDown;
-        pullUp = levelData.process[orderNumber - 1].pullUp;
-        pullLeft = levelData.process[orderNumber - 1].pullLeft;
-        pullRight = levelData.process[orderNumber - 1].pullRight;
-        matrix = levelData.process[orderNumber - 1].matrix;
+        row = levelData.process[orderNumber - 1].Row;
+        column = levelData.process[orderNumber - 1].Column;
+        pullDown = levelData.process[orderNumber - 1].PullDown;
+        pullUp = levelData.process[orderNumber - 1].PullUp;
+        pullLeft = levelData.process[orderNumber - 1].PullLeft;
+        pullRight = levelData.process[orderNumber - 1].PullRight;
+        matrix = levelData.process[orderNumber - 1].Matrix;
     }
 
     public void _GoToProcess(int order)
@@ -90,7 +92,7 @@ public class TrialBoard : MonoBehaviour
     {
         int num = NumberOfSameTiles();
         int repeat = 0, index = ResourceController.spritesDict.Count - 1;
-        //ResourceController.instance._ShuffleImage(dict);
+        ResourceController.instance._ShuffleImage(dict);
 
         float sideTile = gameObject.GetComponent<RectTransform>().sizeDelta.x / column;
         float temp = gameObject.GetComponent<RectTransform>().sizeDelta.y / row;
@@ -129,50 +131,43 @@ public class TrialBoard : MonoBehaviour
         float boardHeight = row * sideTile;
 
         Tile.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(sideTile, sideTile);
-        FirstAnchor.GetComponent<RectTransform>().sizeDelta = new Vector2(sideTile, sideTile);
-        LastAnchor.GetComponent<RectTransform>().sizeDelta = new Vector2(sideTile, sideTile);
+        Tile.Size = (int)sideTile;
+        FirstAnchor.GetComponent<TileController>().Size = (int)sideTile;
+        LastAnchor.GetComponent<TileController>().Size = (int)sideTile;
+        //FirstAnchor.GetComponent<RectTransform>().sizeDelta = new Vector2(sideTile, sideTile);
+        //LastAnchor.GetComponent<RectTransform>().sizeDelta = new Vector2(sideTile, sideTile);
 
-        #region Generate tile & phan tu ma tran + add vao buttonList
         for (int r = 0; r < row; r++)
         {
             for (int c = 0; c < column; c++)
             {
                 if (matrix[r, c] != "")
                 {
-                    Vector3 tilePos = _ConvertMatrixIndexToPosition(r, c, boardWidth, boardHeight, sideTile) / 40;
+                    Vector3 tilePos = _ConvertMatrixIndexToLocalPos(r, c, boardWidth, boardHeight, sideTile) / 40;
                     var objBtn = Instantiate(Tile, tilePos, Quaternion.identity, gameObject.transform);
-                    int ID = -1;
                     if (matrix[r, c] == "?")
                     {
-                        ID = int.Parse(dict.ElementAt(index).Value);
-                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = dict.ElementAt(ID).Key;
+                        matrix[r, c] = index.ToString();
+                        objBtn.Id = index;
+                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = dict[index.ToString()];
                         buttonListWithoutBlocker.Add(objBtn);
                         repeat++;
                     }
                     else if (matrix[r, c] == "0")
                     {
-                        ID = int.Parse(dict.ElementAt(0).Value);
-                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = dict.ElementAt(0).Key;
+                        objBtn.Id = 0;
+                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = dict["0"];
                         objBtn.GetComponent<Button>().interactable = false;
                     }
                     else
                     {
-                        for (int i = 0; i < dict.Count; i++)
-                        {
-                            if (dict.ElementAt(i).Value == matrix[r, c])
-                            {
-                                ID = int.Parse(dict.ElementAt(i).Value);
-                                objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = dict.ElementAt(i).Key;
-                                break;
-                            }
-                        }
+                        objBtn.Id = int.Parse(matrix[r, c]);
+                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = dict[matrix[r, c]];
                         buttonListWithoutBlocker.Add(objBtn);
                     }
-                    //objBtn.gameObject.GetComponent<TileController>().Id = ID;
-                    //objBtn.gameObject.GetComponent<TileController>().Index = (r, c);
-                    objBtn.Id = ID;
                     objBtn.Index = (r, c);
-
+                    objBtn.Size = (int)sideTile;
+                    objBtn.name = objBtn.Id + " - " + objBtn.Index;
                     objBtn.transform.localPosition = tilePos * 40;
                     buttonList.Add(objBtn.transform);
                     if (repeat == num)
@@ -184,7 +179,6 @@ public class TrialBoard : MonoBehaviour
                 }
             }
         }
-        #endregion
     }
 
     int NumberOfSameTiles()
@@ -197,17 +191,15 @@ public class TrialBoard : MonoBehaviour
         return num;
     }
 
-    int[] _ConvertPositionToMatrixIndex(float x, float y, float boardWidth, float boardHeight, float tileSize)
+    (int, int) _ConvertPositionToMatrixIndex(float x, float y, float boardWidth, float boardHeight, float tileSize)
     {
-        int[] temp = new int[2];
-
-        temp[0] = (int)(((boardHeight - tileSize) / 2 - y) / tileSize);  //row
-        temp[1] = (int)(((boardWidth - tileSize) / 2 + x) / tileSize); //column
-
+        (int, int) temp = new();
+        temp.Item1 = (int)(((boardHeight - tileSize) / 2 - y) / tileSize);  //row
+        temp.Item2 = (int)(((boardWidth - tileSize) / 2 + x) / tileSize); //column
         return temp;
     }
 
-    Vector3 _ConvertMatrixIndexToPosition(int row, int col, float boardWidth, float boardHeight, float tileSize)
+    Vector3 _ConvertMatrixIndexToLocalPos(int row, int col, float boardWidth, float boardHeight, float tileSize)
     {
         return new Vector3((col * tileSize - (boardWidth - tileSize) / 2), ((boardHeight - tileSize) / 2 - row * tileSize), 0);
     }
@@ -215,15 +207,16 @@ public class TrialBoard : MonoBehaviour
     #endregion
 
     #region Sắp xếp Tiles
-    bool _HasPossibleConnection()
+    public void _CheckPossibleConnection()
     {
+        bool canConnect = false;
         if (buttonListWithoutBlocker.Count == 0)
         {
-            return true;
+            canConnect = true;
         }
-        for (int index = 0; index < ResourceController.spritesDict.Count; index++)
+        for (int index = 1; index < dict.Count; index++)
         {
-            List<Transform> temp = _SearchSameTiles(ResourceController.spritesDict.ElementAt(index).Key);
+            List<Transform> temp = _SearchSameTiles(dict[index.ToString()]);
             if (temp.Count != 0)
             {
                 for (int i = 0; i < (temp.Count - 1); i++)
@@ -232,18 +225,13 @@ public class TrialBoard : MonoBehaviour
                     {
                         if (GameplayTrial.instance._HasAvailableConnection(temp[i], temp[j]))
                         {
-                            return true;
+                            canConnect = true;
                         }
                     }
                 }
             }
         }
-        return false;
-    }
-
-    public void _ShuffleWhenNoPossibleLink()
-    {
-        while (!_HasPossibleConnection())
+        if (!canConnect)
         {
             _RearrangeTiles();
         }
@@ -251,137 +239,47 @@ public class TrialBoard : MonoBehaviour
 
     public void _RearrangeTiles()
     {
-        DOTween.Clear();
-        GameplayTrial.instance._PlayParticles(false, false, true);
-        float side = Tile.gameObject.GetComponent<RectTransform>().sizeDelta.x;
-        //for (int i = 0; i < (buttonListWithoutBlocker.Count - 1); i++)
-        //{
-        //    int randomIndex = Random.Range(i + 1, buttonListWithoutBlocker.Count);
-        //    _SwapPos(buttonListWithoutBlocker[i].transform, buttonListWithoutBlocker[randomIndex].transform, 0);
+        GameplayTrial.instance._EnableSupporter(false);
+        List<int> source = new();
+        List<Transform> trsfTiles = new();
+        List<Vector3> posTiles = new();
+        List<(int, int)> indexTiles = new();
 
-        //    //Vector3 tempPos1 = buttonListWithoutBlocker[i].localPosition;
-        //    //Vector3 tempPos2 = buttonListWithoutBlocker[randomIndex].localPosition;
-
-        //    //buttonListWithoutBlocker[i].DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad)
-        //    //    .OnComplete(() =>
-        //    //    {
-        //    //        buttonListWithoutBlocker[i].DOLocalMove(tempPos2, .25f).SetEase(Ease.InOutQuad);
-        //    //    });
-        //    //buttonListWithoutBlocker[randomIndex].DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad)
-        //    //    .OnComplete(() =>
-        //    //    {
-        //    //        buttonListWithoutBlocker[randomIndex].DOLocalMove(tempPos1, .25f).SetEase(Ease.InOutQuad);
-        //    //    });
-
-        //    //sequence
-        //    //    .Insert(1, buttonListWithoutBlocker[i].DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad)
-        //    //        .OnComplete(() =>
-        //    //        {
-        //    //            buttonListWithoutBlocker[i].DOLocalMove(tempPos2, .25f).SetEase(Ease.InOutQuad);
-        //    //        }))
-        //    //    .Insert(1, buttonListWithoutBlocker[randomIndex].DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad)
-        //    //        .OnComplete(() =>
-        //    //        {
-        //    //            buttonListWithoutBlocker[randomIndex].DOLocalMove(tempPos1, .25f).SetEase(Ease.InOutQuad);
-        //    //        }))
-        //    //    .OnComplete(() =>
-        //    //    {
-        //    //        int[] tempI = _ConvertPositionToMatrixIndex(
-        //    //            buttonListWithoutBlocker[i].localPosition.x, buttonListWithoutBlocker[i].localPosition.y, column * side, row * side, side);
-        //    //        int rTempI = tempI[0];
-        //    //        int cTempI = tempI[1];
-        //    //        int[] tempRanI = _ConvertPositionToMatrixIndex(
-        //    //            buttonListWithoutBlocker[randomIndex].localPosition.x, buttonListWithoutBlocker[randomIndex].localPosition.y, column * side, row * side, side);
-        //    //        int rTempRanI = tempRanI[0];
-        //    //        int cTempRanI = tempRanI[1]; ;
-
-        //    //        string tempStr = matrix[rTempI, cTempI];
-        //    //        matrix[rTempI, cTempI] = matrix[rTempRanI, cTempRanI];
-        //    //        matrix[rTempRanI, cTempRanI] = tempStr;
-        //    //    });
-        //    //sequence.Play();
-
-        //    //foreach (var tile in buttonListWithoutBlocker)
-        //    //{
-        //    //    sequence.Append(tile.DOLocalMove(Vector3.zero, 9.25f).SetEase(Ease.InOutQuad).SetUpdate(true))
-        //    //        .OnComplete(()=> 
-        //    //        {
-        //    //            tile.localPosition = Vector3.zero;
-        //    //        });
-        //    //}
-        //    //sequence.OnStepComplete(() =>
-        //    //{
-        //    //    for (int i = 0; i < buttonListWithoutBlocker.Count; i++)
-        //    //    {
-        //    //        Vector3 temp = tempList[i].localPosition;
-        //    //        sequence.Append(buttonListWithoutBlocker[i].DOLocalMove(temp, 9.25f).SetEase(Ease.InOutQuad).SetUpdate(true))
-        //    //        .OnComplete(() =>
-        //    //        {
-        //    //            buttonListWithoutBlocker[i].localPosition = temp;
-        //    //        });
-        //    //    }
-        //    //});
-
-        //    int[] tempI = _ConvertPositionToMatrixIndex(
-        //        buttonListWithoutBlocker[i].transform.localPosition.x, buttonListWithoutBlocker[i].transform.localPosition.y, column * side, row * side, side);
-        //    int rTempI = tempI[0];
-        //    int cTempI = tempI[1];
-        //    int[] tempRanI = _ConvertPositionToMatrixIndex(
-        //        buttonListWithoutBlocker[randomIndex].transform.localPosition.x, buttonListWithoutBlocker[randomIndex].transform.localPosition.y, column * side, row * side, side);
-        //    int rTempRanI = tempRanI[0];
-        //    int cTempRanI = tempRanI[1]; ;
-
-        //    string tempStr = matrix[rTempI, cTempI];
-        //    matrix[rTempI, cTempI] = matrix[rTempRanI, cTempRanI];
-        //    matrix[rTempRanI, cTempRanI] = tempStr;
-        //}
-
-        List<int> source = new List<int>();
-        List<Transform> trsfTiles = new List<Transform>();
-        List<Vector3> posTiles = new List<Vector3>();
-        int index = 0;
         foreach (var item in buttonListWithoutBlocker)
         {
-            source.Add(index);
+            source.Add(buttonListWithoutBlocker.FindIndex(x => x == item));
             trsfTiles.Add(item.transform);
-            posTiles.Add(item.transform.position);
-            index++;
+            posTiles.Add(item.transform.localPosition);
+            indexTiles.Add(item.Index);
         }
         foreach (var item in trsfTiles)
         {
-            item.DOLocalMove(Vector3.zero, .5f).SetEase(Ease.InBack).SetUpdate(true);
+            item.DOLocalMove(Vector3.zero, 0.4f).SetEase(Ease.InBack).SetUpdate(true);
         }
-
+        _MakeConnectableCouple(source, trsfTiles, posTiles, indexTiles);
         source = Shuffle(source.Count);
-        int total = source.Count;
-        for (int i = 0; i < total; i++)
+        for (int i = 0; i < source.Count; i++)
         {
-            //var colRow1 = buttonListWithoutBlocker[i].GetColRow();
-            //var colRow2 = buttonListWithoutBlocker[source[i]].GetColRow();
-            //matrix[colRow1.Item2, colRow1.Item1] = buttonListWithoutBlocker[source[i]].ID.ToString();
-            //matrix[colRow2.Item2, colRow2.Item1] = buttonListWithoutBlocker[i].ID.ToString();
-
-            //var temp = buttonListWithoutBlocker[i];
-            //buttonListWithoutBlocker[i] = buttonListWithoutBlocker[source[i]];
-            //buttonListWithoutBlocker[source[i]] = temp;
-            //Debug.Log(matrix[colRow1.Item2, colRow1.Item1] + " <=> "+ matrix[colRow2.Item2, colRow2.Item1]+": " + JsonConvert.SerializeObject(matrix));
-
-            //buttonListWithoutBlocker[i].ChangeColRow(buttonListWithoutBlocker[source[i]].GetColRow());
-            //buttonListWithoutBlocker[source[i]].ChangeColRow(buttonListWithoutBlocker[i].GetColRow());
-
-            trsfTiles[i].DOMove(posTiles[source[i]], 0.5f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.5f);
-
-            if(i == total - 1)
+            trsfTiles[i].GetComponent<TileController>().Index = indexTiles[source[i]];
+            trsfTiles[i].name = trsfTiles[i].GetComponent<TileController>().Id
+                + " - " + trsfTiles[i].GetComponent<TileController>().Index;
+            matrix[indexTiles[source[i]].Item1, indexTiles[source[i]].Item2] = trsfTiles[i].GetComponent<TileController>().Id + "";
+            if (i < source.Count - 1)
             {
-                GameplayTrial.instance._PlayParticles(false, false, false);
+                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.4f);
+            }
+            else
+            {
+                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.4f)
+                    .OnComplete(() => { GameplayTrial.instance._EnableSupporter(true); });
             }
         }
     }
 
-    public List<int> Shuffle(int total = 1000)
+    List<int> Shuffle(int total = 1000)
     {
         int count = 1;
-        List<int> temp = new List<int>();
+        List<int> temp = new();
         temp.Add(0);
         for (int i = 1; i < total; i++)
         {
@@ -391,43 +289,54 @@ public class TrialBoard : MonoBehaviour
         return temp;
     }
 
-    void _SwapPos(Transform t1, Transform t2, int index)
+    void _MakeConnectableCouple(List<int> source, List<Transform> trsfTiles, List<Vector3> posTiles, List<(int, int)> indexTiles)
     {
-        var sequence = DOTween.Sequence();
+        Transform tile1 = trsfTiles[0];
+        source.Remove(source.Count - 1);
+        trsfTiles.Remove(tile1);
+        Transform tile2 = trsfTiles.First(x => x.GetComponent<TileController>().Id == tile1.GetComponent<TileController>().Id);
+        source.Remove(source.Count - 1);
+        trsfTiles.Remove(tile2);
 
-        Vector3 tempPos1 = t1.localPosition;
-        Vector3 tempPos2 = t2.localPosition;
+        Vector3 tilePos1 = new(), tilePos2 = new();
+        (int, int) index1 = new(), index2 = new();
 
-        //sequence.Insert(1, t1.DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetDelay(.25f))
-        //    .Insert(1, t2.DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetDelay(.25f))
-        //    .Insert(2, t1.DOLocalMove(tempPos2, .25f).SetEase(Ease.InOutQuad).SetDelay(.25f))
-        //    .Insert(2, t2.DOLocalMove(tempPos1, .25f).SetEase(Ease.InOutQuad).SetDelay(.25f));
-
-        //sequence.Insert(1, t1.DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad))
-        //    .Insert(1, t2.DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad))
-        //    .Insert(2, t1.DOLocalMove(tempPos2, .25f).SetEase(Ease.InOutQuad))
-        //    .Insert(2, t2.DOLocalMove(tempPos1, .25f).SetEase(Ease.InOutQuad));
-
-        //sequence.Play();
-
-        t1.DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetDelay(index*.5f)
-            .OnComplete(() =>
+        for (int i = 0; i < (buttonListWithoutBlocker.Count - 1); i++)
+        {
+            for (int j = (i + 1); j < buttonListWithoutBlocker.Count; j++)
             {
-                t1.DOLocalMove(tempPos2, .25f).SetEase(Ease.InOutQuad).OnComplete(delegate { Debug.Log($"{t1.name}: {tempPos2}"); });
-            });
-        t2.DOLocalMove(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetDelay(index*.5f)
-            .OnComplete(() =>
-            {
-                t2.DOLocalMove(tempPos1, .25f).SetEase(Ease.InOutQuad).OnComplete(delegate { Debug.Log($"{t2.name}: {tempPos1}"); });
-            });
+                if (GameplayTrial.instance._HasAvailableConnection(buttonListWithoutBlocker[i].transform, buttonListWithoutBlocker[j].transform))
+                {
+                    tilePos1 = buttonListWithoutBlocker[i].transform.localPosition;
+                    tilePos2 = buttonListWithoutBlocker[j].transform.localPosition;
+                    index1 = buttonListWithoutBlocker[i].Index;
+                    index2 = buttonListWithoutBlocker[j].Index;
+                    goto arrange;
+                }
+            }
+        }
+    arrange:
+        tile1.DOLocalMove(tilePos1, 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.4f);
+        posTiles.Remove(tilePos1);
+        tile2.DOLocalMove(tilePos2, 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.4f);
+        posTiles.Remove(tilePos2);
 
+        tile1.GetComponent<TileController>().Index = index1;
+        tile1.name = tile1.GetComponent<TileController>().Id + " - " + tile1.GetComponent<TileController>().Index;
+        matrix[index1.Item1, index1.Item2] = tile1.GetComponent<TileController>().Id + "";
+        indexTiles.Remove(index1);
+        tile2.GetComponent<TileController>().Index = index2;
+        tile2.name = tile2.GetComponent<TileController>().Id + " - " + tile2.GetComponent<TileController>().Index;
+        matrix[index2.Item1, index2.Item2] = tile2.GetComponent<TileController>().Id + "";
+        indexTiles.Remove(index2);
     }
+
     #endregion
 
     #region Xử lý ingame
     public bool _HasButtonInLocation(float x, float y)
     {
-        foreach (Transform trans in buttonList)
+        foreach (var trans in buttonList)
         {
             if (new Vector3(x, y, 0) == trans.localPosition)
             {
@@ -439,12 +348,11 @@ public class TrialBoard : MonoBehaviour
 
     public void _DeactivateTile(TileController t)
     {
-        float side = t.GetComponent<RectTransform>().sizeDelta.x;
         int rTemp = (int)(
-                ((row * side - side) / 2 - t.transform.localPosition.y) / side
+                ((row * t.Size - t.Size) / 2 - t.transform.localPosition.y) / t.Size
                 );
         int cTemp = (int)(
-            ((column * side - side) / 2 + t.transform.localPosition.x) / side
+            ((column * t.Size - t.Size) / 2 + t.transform.localPosition.x) / t.Size
             );
 
         matrix[rTemp, cTemp] = "";
@@ -486,30 +394,19 @@ public class TrialBoard : MonoBehaviour
     #region Xử lý quy luật sau khi ăn Tiles
     void _SearchAndPullTile(int rowBefore, int colBefore, int rowAfter, int colAfter) // tìm Tile theo index trong ma tran
     {
-        string temp = matrix[rowBefore, colBefore];
-        matrix[rowBefore, colBefore] = matrix[rowAfter, colAfter];
-        matrix[rowAfter, colAfter] = temp;
-
-        float side = Tile.gameObject.GetComponent<RectTransform>().sizeDelta.x;
-        Vector3 posBefore = _ConvertMatrixIndexToPosition(rowBefore, colBefore, column * side, row * side, side);
-        Vector3 posAfter = _ConvertMatrixIndexToPosition(rowAfter, colAfter, column * side, row * side, side);
+        Vector3 posAfter = _ConvertMatrixIndexToLocalPos(rowAfter, colAfter, column * Tile.Size, row * Tile.Size, Tile.Size);
         foreach (var t in buttonListWithoutBlocker)
         {
-            if (t.transform.localPosition == posBefore)
+            if (t.Index == (rowBefore, colBefore))
             {
-                //Debug.Log("posAfter: " + posAfter);
+                t.Index = (rowAfter, colAfter);
+                //t.transform.localPosition = posAfter;
+                t.transform.DOLocalMove(posAfter, .2f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                t.name = t.Id + " - " + t.Index;
 
-                //t.DOLocalMove(posAfter, .25f).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(() =>
-                //{
-                //    t.localPosition = posAfter;
-                //}).OnStepComplete(delegate { Debug.Log(t.name + "  " + t.localPosition); });
+                matrix[rowAfter, colAfter] = matrix[rowBefore, colBefore];
+                matrix[rowBefore, colBefore] = "";
 
-                //t.DOLocalMove(posAfter, .25f).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(() =>
-                //{
-                //    t.localPosition = posAfter;
-                //});
-
-                t.transform.localPosition = posAfter;
                 break;
             }
         }
@@ -582,23 +479,6 @@ public class TrialBoard : MonoBehaviour
                 tempArr[r - rowFirst] = matrix[r, c];
             }
 
-            //for (int i = 0; i < tempArr.Length - 1; i++)
-            //{
-            //    for (int j = 0; j < tempArr.Length - i - 1; j++)
-            //    {
-            //        if (tempArr[j] != "0" && tempArr[j + 1] != "0")
-            //        {
-            //            if (tempArr[j + 1] == "")
-            //            {
-            //                string temp = tempArr[j + 1];
-            //                tempArr[j + 1] = tempArr[j];
-            //                tempArr[j] = temp;
-            //                _SearchAndPullTile(j + rowFirst, c, j + rowFirst + 1, c);
-            //            }
-            //        }
-            //    }
-            //}
-
             for (int i = tempArr.Length - 1; i >= 0; i--)
             {
                 if (tempArr[i] == "")
@@ -635,24 +515,6 @@ public class TrialBoard : MonoBehaviour
             {
                 tempArr[r - rowFirst] = matrix[r, c];
             }
-
-            //for (int i = 0; i < tempArr.Length - 1; i++)
-            //{
-            //    for (int j = 0; j < tempArr.Length - i - 1; j++)
-            //    {
-            //        if (tempArr[j] != "0" && tempArr[j + 1] != "0")
-            //        {
-            //            if (tempArr[j] == "")
-            //            {
-            //                string temp = tempArr[j];
-            //                tempArr[j] = tempArr[j + 1];
-            //                tempArr[j + 1] = temp;
-
-            //                _SearchAndPullTile(j + rowFirst + 1, c, j + rowFirst, c);
-            //            }
-            //        }
-            //    }
-            //}
 
             for (int i = 0; i < tempArr.Length; i++)
             {
@@ -691,24 +553,6 @@ public class TrialBoard : MonoBehaviour
                 tempArr[c - colFirst] = matrix[r, c];
             }
 
-            //for (int i = 0; i < tempArr.Length - 1; i++)
-            //{
-            //    for (int j = 0; j < tempArr.Length - i - 1; j++)
-            //    {
-            //        if (tempArr[j] != "0" && tempArr[j + 1] != "0")
-            //        {
-            //            if (tempArr[j] == "")
-            //            {
-            //                string temp = tempArr[j];
-            //                tempArr[j] = tempArr[j + 1];
-            //                tempArr[j + 1] = temp;
-
-            //                _SearchAndPullTile(r, j + colFirst + 1, r, j + colFirst);
-            //            }
-            //        }
-            //    }
-            //}
-
             for (int i = 0; i < tempArr.Length; i++)
             {
                 if (tempArr[i] == "")
@@ -745,24 +589,6 @@ public class TrialBoard : MonoBehaviour
             {
                 tempArr[c - colFirst] = matrix[r, c];
             }
-
-            //for (int i = 0; i < tempArr.Length - 1; i++)
-            //{
-            //    for (int j = 0; j < tempArr.Length - i - 1; j++)
-            //    {
-            //        if (tempArr[j] != "0" && tempArr[j + 1] != "0")
-            //        {
-            //            if (tempArr[j + 1] == "")
-            //            {
-            //                string temp = tempArr[j + 1];
-            //                tempArr[j + 1] = tempArr[j];
-            //                tempArr[j] = temp;
-
-            //                _SearchAndPullTile(r, j + colFirst, r, j + colFirst + 1);
-            //            }
-            //        }
-            //    }
-            //}
 
             for (int i = tempArr.Length - 1; i >= 0; i--)
             {

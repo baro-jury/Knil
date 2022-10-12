@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7094400107124536436}
   - component: {fileID: 7094400107141313392}
   - component: {fileID: 7094400109691450516}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Lightning_explosion_vertical
   m_TagString: 
   m_Icon: {fileID: 0}
@@ -2320,7 +2320,7 @@ GameObject:
   - component: {fileID: 7094400108164720052}
   - component: {fileID: 7094400107124536439}
   - component: {fileID: 7094400107141313395}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: 1_verticla
   m_TagString: 
   m_Icon: {fileID: 0}
@@ -4682,7 +4682,7 @@ GameObject:
   - component: {fileID: 7094400108164720152}
   - component: {fileID: 7094400107124536346}
   - component: {fileID: 7094400107141313382}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: LightningBolt
   m_TagString: 
   m_Icon: {fileID: 0}
@@ -4696,8 +4696,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7094400108114383973}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.352, z: 0}
+  m_LocalRotation: {x: -0.55919296, y: 0, z: 0, w: 0.8290375}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4707,7 +4707,7 @@ Transform:
   - {fileID: 7094400108164719671}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -68, y: 0, z: 0}
 --- !u!198 &7094400107124536346
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -4723,10 +4723,10 @@ ParticleSystem:
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 1
-  looping: 1
+  looping: 0
   prewarm: 0
   playOnAwake: 0
-  useUnscaledTime: 1
+  useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
     serializedVersion: 2
@@ -6972,7 +6972,7 @@ GameObject:
   - component: {fileID: 7094400108164719664}
   - component: {fileID: 7094400107124536213}
   - component: {fileID: 7094400107141313251}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: 0_vertical (1)
   m_TagString: 
   m_Icon: {fileID: 0}
@@ -9280,7 +9280,7 @@ GameObject:
   - component: {fileID: 7094400108164720324}
   - component: {fileID: 7094400107124536371}
   - component: {fileID: 7094400107141313340}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: puff_glow
   m_TagString: 
   m_Icon: {fileID: 0}
@@ -11624,7 +11624,7 @@ GameObject:
   - component: {fileID: 7094400108164720325}
   - component: {fileID: 7094400107124536368}
   - component: {fileID: 7094400107141313341}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: 5_round_glow
   m_TagString: 
   m_Icon: {fileID: 0}
@@ -13970,7 +13970,7 @@ GameObject:
   - component: {fileID: 7094400108164720327}
   - component: {fileID: 7094400107124536370}
   - component: {fileID: 7094400107141313343}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: FireBall (1)
   m_TagString: 
   m_Icon: {fileID: 0}
@@ -16305,7 +16305,7 @@ GameObject:
   - component: {fileID: 7094400108164720320}
   - component: {fileID: 7094400107124536383}
   - component: {fileID: 7094400107141313336}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: FireBall
   m_TagString: 
   m_Icon: {fileID: 0}
@@ -18640,7 +18640,7 @@ GameObject:
   - component: {fileID: 7094400108164720322}
   - component: {fileID: 7094400107124536369}
   - component: {fileID: 7094400107141313338}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: 3_explosion
   m_TagString: 
   m_Icon: {fileID: 0}
@@ -20941,7 +20941,7 @@ GameObject:
   - component: {fileID: 7094400108164720323}
   - component: {fileID: 7094400107124536382}
   - component: {fileID: 7094400107141313339}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: LightningLinger
   m_TagString: 
   m_Icon: {fileID: 0}
@@ -23312,7 +23312,7 @@ GameObject:
   - component: {fileID: 7094400108164719671}
   - component: {fileID: 7094400107124536215}
   - component: {fileID: 7094400107141313373}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: 6_round_star
   m_TagString: 
   m_Icon: {fileID: 0}

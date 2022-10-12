@@ -23,33 +23,29 @@ public class LevelData
 
 public class ProcessData
 {
-    public int row;
-    public int column;
-    public bool pullDown;
-    public bool pullUp;
-    public bool pullLeft;
-    public bool pullRight;
-    public string[,] matrix;
+    public int Row { get; set; }
+    public int Column { get; set; }
+    public bool PullDown { get; set; }
+    public bool PullUp { get; set; }
+    public bool PullLeft { get; set; }
+    public bool PullRight { get; set; }
+    public string[,] Matrix { get; set; }
 
     public ProcessData() { }
 
     public ProcessData(int row, int column, bool pullDown, bool pullUp, bool pullLeft, bool pullRight)
     {
-        this.row = row;
-        this.column = column;
-        this.pullDown = pullDown;
-        this.pullUp = pullUp;
-        this.pullLeft = pullLeft;
-        this.pullRight = pullRight;
+        Row = row;
+        Column = column;
+        PullDown = pullDown;
+        PullUp = pullUp;
+        PullLeft = pullLeft;
+        PullRight = pullRight;
     }
 
     public ProcessData(int row, int column, bool pullDown, bool pullUp, bool pullLeft, bool pullRight, string[,] matrix) : this(row, column, pullDown, pullUp, pullLeft, pullRight)
     {
-        this.matrix = matrix;
+        Matrix = matrix;
     }
 
-    public override string ToString()
-    {
-        return "Process: " + row + " " + column + " " + pullDown + " " + pullUp + " " + pullLeft + " " + pullRight;
-    }
 }
