@@ -7,18 +7,19 @@ using TMPro;
 public class TimeController : MonoBehaviour
 {
     public static TimeController instance;
+    public static bool isSaved;
 
     [SerializeField]
     private Slider slider;
     [SerializeField]
-    private TextMeshProUGUI timeText, timeTextComplete;
+    private Text timeText, timeTextComplete;
 
     public static float time;
     //private float timeBurn = 1f;
     private float timestampFor1Star;
     private float timestampFor2Star;
     private float timestampFor3Star;
-    private bool isFreezed, timerIsRunning;
+    private bool isFreezed;
 
     void _MakeInstance()
     {
@@ -35,7 +36,7 @@ public class TimeController : MonoBehaviour
 
     void Start()
     {
-        timerIsRunning = true;
+        isSaved = false;
 
         time = BoardController.levelData.time[0];
         timestampFor1Star = BoardController.levelData.time[1];
@@ -44,11 +45,11 @@ public class TimeController : MonoBehaviour
         instance._SetTimeForSlider(false);
 
         slider.transform.GetChild(3).gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(
-            timestampFor1Star / time * slider.gameObject.GetComponent<RectTransform>().sizeDelta.x, 0);
+            timestampFor1Star / time * slider.GetComponent<RectTransform>().rect.size.x, 0);
         slider.transform.GetChild(4).gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(
-            timestampFor2Star / time * slider.gameObject.GetComponent<RectTransform>().sizeDelta.x, 0);
+            timestampFor2Star / time * slider.GetComponent<RectTransform>().rect.size.x, 0);
         slider.transform.GetChild(5).gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(
-            timestampFor3Star / time * slider.gameObject.GetComponent<RectTransform>().sizeDelta.x, 0);
+            timestampFor3Star / time * slider.GetComponent<RectTransform>().rect.size.x, 0);
     }
 
     void Update()
@@ -59,34 +60,46 @@ public class TimeController : MonoBehaviour
         }
         else
         {
-            if (timerIsRunning)
+            if (time > 0)
             {
-                if (time > 0)
-                {
-                    time -= Time.deltaTime;
-                    slider.value = time;
+                time -= Time.deltaTime;
+                slider.value = time;
 
-                    if (timestampFor2Star <= time && time < timestampFor3Star)
-                    {
-                        slider.transform.GetChild(5).GetChild(0).gameObject.SetActive(false);
-                    }
-                    else if (timestampFor1Star <= time && time < timestampFor2Star)
-                    {
-                        slider.transform.GetChild(4).GetChild(0).gameObject.SetActive(false);
-                    }
-                    else if (time < timestampFor1Star)
-                    {
-                        slider.transform.GetChild(3).GetChild(0).gameObject.SetActive(false);
-                    }
+                if(timestampFor3Star <= time)
+                {
+                    slider.transform.GetChild(3).GetChild(0).gameObject.SetActive(true);
+                    slider.transform.GetChild(4).GetChild(0).gameObject.SetActive(true);
+                    slider.transform.GetChild(5).GetChild(0).gameObject.SetActive(true);
+                }
+                if (timestampFor2Star <= time && time < timestampFor3Star)
+                {
+                    slider.transform.GetChild(3).GetChild(0).gameObject.SetActive(true);
+                    slider.transform.GetChild(4).GetChild(0).gameObject.SetActive(true);
+                    slider.transform.GetChild(5).GetChild(0).gameObject.SetActive(false);
+                }
+                else if (timestampFor1Star <= time && time < timestampFor2Star)
+                {
+                    slider.transform.GetChild(3).GetChild(0).gameObject.SetActive(true);
+                    slider.transform.GetChild(4).GetChild(0).gameObject.SetActive(false);
+                }
+                else if (time < timestampFor1Star)
+                {
+                    slider.transform.GetChild(3).GetChild(0).gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                time = 0;
+                if (isSaved)
+                {
+                    GameplayController.instance._GameOver();
                 }
                 else
                 {
-                    time = 0;
-                    GameplayController.instance._GameOver();
-                    timerIsRunning = false;
+                    GameplayController.instance._TakeTheLastChance();
                 }
-                _DisplayTime(time);
             }
+            _DisplayTime(time);
         }
     }
 
@@ -118,7 +131,7 @@ public class TimeController : MonoBehaviour
     public int _NumberOfStarsAchieved()
     {
         int count = 1;
-        for(int i = 4; i <= 5; i++)
+        for (int i = 4; i <= 5; i++)
         {
             if (slider.transform.GetChild(i).GetChild(0).gameObject.activeSelf)
             {

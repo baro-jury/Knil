@@ -91,7 +91,7 @@ public class TrialBoard : MonoBehaviour
     void _GenerateTiles()
     {
         int num = NumberOfSameTiles();
-        int repeat = 0, index = ResourceController.spritesDict.Count - 1;
+        int repeat = 0, index = dict.Count - 1;
         ResourceController.instance._ShuffleImage(dict);
 
         float sideTile = gameObject.GetComponent<RectTransform>().sizeDelta.x / column;
@@ -134,8 +134,6 @@ public class TrialBoard : MonoBehaviour
         Tile.Size = (int)sideTile;
         FirstAnchor.GetComponent<TileController>().Size = (int)sideTile;
         LastAnchor.GetComponent<TileController>().Size = (int)sideTile;
-        //FirstAnchor.GetComponent<RectTransform>().sizeDelta = new Vector2(sideTile, sideTile);
-        //LastAnchor.GetComponent<RectTransform>().sizeDelta = new Vector2(sideTile, sideTile);
 
         for (int r = 0; r < row; r++)
         {
@@ -400,8 +398,7 @@ public class TrialBoard : MonoBehaviour
             if (t.Index == (rowBefore, colBefore))
             {
                 t.Index = (rowAfter, colAfter);
-                //t.transform.localPosition = posAfter;
-                t.transform.DOLocalMove(posAfter, .2f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                t.transform.DOLocalMove(posAfter, 0.2f).SetEase(Ease.InOutQuad).SetUpdate(true);
                 t.name = t.Id + " - " + t.Index;
 
                 matrix[rowAfter, colAfter] = matrix[rowBefore, colBefore];

@@ -234,7 +234,7 @@ public class BoardController : MonoBehaviour
         }
         foreach (var item in trsfTiles)
         {
-            item.DOLocalMove(Vector3.zero, 0.5f).SetEase(Ease.InBack).SetUpdate(true);
+            item.DOLocalMove(Vector3.zero, 0.4f).SetEase(Ease.InBack).SetUpdate(true);
         }
         _MakeConnectableCouple(source, trsfTiles, posTiles, indexTiles);
         source = Shuffle(source.Count);
@@ -246,11 +246,11 @@ public class BoardController : MonoBehaviour
             matrix[indexTiles[source[i]].Item1, indexTiles[source[i]].Item2] = trsfTiles[i].GetComponent<TileController>().Id + "";
             if (i < source.Count - 1)
             {
-                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.5f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.5f);
+                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.4f);
             }
             else
             {
-                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.5f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.5f)
+                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.4f)
                     .OnComplete(() => { GameplayController.instance._EnableSupporter(true); });
             }
         }
@@ -294,9 +294,9 @@ public class BoardController : MonoBehaviour
             }
         }
     arrange:
-        tile1.DOLocalMove(tilePos1, 0.5f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.5f);
+        tile1.DOLocalMove(tilePos1, 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.4f);
         posTiles.Remove(tilePos1);
-        tile2.DOLocalMove(tilePos2, 0.5f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.5f);
+        tile2.DOLocalMove(tilePos2, 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.4f);
         posTiles.Remove(tilePos2);
 
         tile1.GetComponent<TileController>().Index = index1;
@@ -387,7 +387,7 @@ public class BoardController : MonoBehaviour
             {
                 t.Index = (rowAfter, colAfter);
                 //t.transform.localPosition = posAfter;
-                t.transform.DOLocalMove(_ConvertMatrixIndexToLocalPos(rowAfter, colAfter, column * Tile.Size, row * Tile.Size, Tile.Size), .2f)
+                t.transform.DOLocalMove(_ConvertMatrixIndexToLocalPos(rowAfter, colAfter, column * Tile.Size, row * Tile.Size, Tile.Size), 0.2f)
                     .SetEase(Ease.InOutQuad).SetUpdate(true);
                 t.name = t.Id.ToString() + " - " + t.Index.ToString();
 

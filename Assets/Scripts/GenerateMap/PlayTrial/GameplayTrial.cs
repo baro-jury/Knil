@@ -295,8 +295,7 @@ public class GameplayTrial : MonoBehaviour
 
     bool _AreTheSameTiles(Transform tile1, Transform tile2)
     {
-        return ResourceController.spritesDict[tile1.GetComponent<TileController>().Id.ToString()]
-            == ResourceController.spritesDict[tile2.GetComponent<TileController>().Id.ToString()];
+        return tile1.GetComponent<TileController>().Id == tile2.GetComponent<TileController>().Id;
     }
 
     void _ResetTileState()
@@ -335,11 +334,6 @@ public class GameplayTrial : MonoBehaviour
                     {
                         if (_HasAvailableConnection(temp[i], temp[j]))
                         {
-                            //var effectI = Instantiate(hint, temp[i].localPosition, Quaternion.identity, gameObject.transform);
-                            //var effectJ = Instantiate(hint, temp[j].localPosition, Quaternion.identity, gameObject.transform);
-                            //effectI.Play();
-                            //effectJ.Play();
-
                             isHinted = true;
                             goto endloop;
                         }
@@ -476,7 +470,7 @@ public class GameplayTrial : MonoBehaviour
             {
                 int index = i;
                 linePositions[index].GetComponent<Button>().interactable = false;
-                sequence.Join(linePositions[i].GetComponent<RectTransform>().DOSizeDelta(Vector2.zero, .4f).SetEase(Ease.InBack).SetUpdate(true)
+                sequence.Join(linePositions[i].GetComponent<RectTransform>().DOSizeDelta(Vector2.zero, 0.4f).SetEase(Ease.InBack).SetUpdate(true)
                     .OnComplete(delegate { linePositions[index].gameObject.SetActive(false); })
                     );
                 //linePositions[i].GetComponent<RectTransform>().DOSizeDelta(Vector2.zero, .65f).SetEase(Ease.InBack).SetUpdate(true)
@@ -486,10 +480,10 @@ public class GameplayTrial : MonoBehaviour
         }
         sequence.Play();
         yield return new WaitForSeconds(0.4f);
-        
-        TrialBoard.instance._ActivateGravity();
-        yield return new WaitForSeconds(0.1f);
         _ResetTileState();
+        TrialBoard.instance._ActivateGravity();
+        yield return new WaitForSeconds(0.2f);
+        
         _EnableSupporter(true);
         TrialBoard.instance._CheckPossibleConnection();
         TrialBoard.instance._CheckProcess();

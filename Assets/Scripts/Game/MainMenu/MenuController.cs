@@ -47,7 +47,7 @@ public class MenuController : MonoBehaviour
     public void _ChooseLevel()
     {
         menuPanel.SetActive(false);
-        LevelController.instance._UnlockLevel(ProgressController.instance._GetMarkedLevel());
+        //LevelController.instance._UnlockLevel(ProgressController.instance._GetMarkedLevel());
     }
 
     public void _BackToMenu()

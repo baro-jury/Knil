@@ -18,17 +18,17 @@ public class GameplayController : MonoBehaviour
     private Transform tile;
 
     [SerializeField]
-    private TextMeshProUGUI titleLv, titleGameover, titleComplete;
+    private GameObject boosterPanel;
+    [SerializeField]
+    private Text titleLv, titleGameover, titleComplete;
+    [SerializeField]
+    private GameObject pausePanel, quitPanel;
     [SerializeField]
     private Button settingOnButton, settingOffButton;
     [SerializeField]
     private Button btSpHint, btSpMagicWand, btSpFreeze, btSpShuffle;
     [SerializeField]
-    private GameObject boosterPanel;
-    [SerializeField]
-    private GameObject pausePanel, quitPanel;
-    [SerializeField]
-    private GameObject gameOverPanel, winPanel, starsAchieved;
+    private GameObject lastChancePanel, rejectChancePanel, gameOverPanel, winPanel, starsAchieved;
     [SerializeField]
     private Transform tempAlignWithLeft, tempAlignWithRight, tempAlignWithTop, tempAlignWithBottom, tempAlignWithStart, tempAlignWithEnd;
 
@@ -80,13 +80,13 @@ public class GameplayController : MonoBehaviour
         #endregion
 
         #region Children cua panel
+        pausePanel.transform.GetChild(0).GetComponent<RectTransform>().anchoredPosition = new Vector3(460, 875, 0);
         pausePanel.transform.GetChild(1).GetComponent<RectTransform>().anchoredPosition = new Vector3(460, 875, 0);
         pausePanel.transform.GetChild(2).GetComponent<RectTransform>().anchoredPosition = new Vector3(460, 875, 0);
-        pausePanel.transform.GetChild(3).GetComponent<RectTransform>().anchoredPosition = new Vector3(460, 875, 0);
 
-        pausePanel.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(725, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        pausePanel.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(575, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        pausePanel.transform.GetChild(3).GetComponent<RectTransform>().DOAnchorPosY(425, .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
+        pausePanel.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPosY(725, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(575, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(425, .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
             {
                 settingOffButton.interactable = true;
@@ -100,22 +100,20 @@ public class GameplayController : MonoBehaviour
     {
         settingOffButton.interactable = false;
         pausePanel.transform.GetComponent<Image>().DOFade(0f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        //settingOffButton.transform.DORotate(Vector3.zero, .5f).SetEase(Ease.InOutQuad).SetUpdate(true).SetInverted(true);
         settingOffButton.transform.DORotate(new Vector3(0, 0, 180), .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
             {
                 settingOffButton.transform.rotation = Quaternion.Euler(0, 0, 0);
             }); ;
 
+        pausePanel.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPosY(875, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
         pausePanel.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(875, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        pausePanel.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(875, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        pausePanel.transform.GetChild(3).GetComponent<RectTransform>().DOAnchorPosY(875, .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
+        pausePanel.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(875, .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
             {
                 pausePanel.SetActive(false);
                 settingOnButton.interactable = true;
             });
-
         Time.timeScale = 1;
     }
 
@@ -155,16 +153,53 @@ public class GameplayController : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
+    public void _TakeTheLastChance()
+    {
+        //lastChancePanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
+        lastChancePanel.SetActive(true);
+        //lastChancePanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .15f).SetEase(Ease.InOutQuad).SetUpdate(true);
+    }
+
+    public void _GetMoreTime()
+    {
+        if (ProgressController.instance._GetCoinsInPossession() >= 100)
+        {
+            ProgressController.instance._SetCoinsInPossession(100, false);
+            TimeController.time += 60;
+            lastChancePanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
+            .OnComplete(() =>
+            {
+                lastChancePanel.SetActive(false);
+            });
+            TimeController.isSaved = true;
+        }
+    }
+
     public void _WatchAds()
     {
+        //code xem quang cao
 
+        TimeController.time += 15;
+        lastChancePanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
+        .OnComplete(() =>
+        {
+            lastChancePanel.SetActive(false);
+        });
+        TimeController.isSaved = true;
+    }
+
+    public void _RejectChance()
+    {
+        rejectChancePanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
+        rejectChancePanel.SetActive(true);
+        rejectChancePanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
     }
 
     public void _GameOver()
     {
-        gameOverPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
+        //gameOverPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
         gameOverPanel.SetActive(true);
-        gameOverPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        //gameOverPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
     }
 
     public void _Replay()
@@ -410,7 +445,7 @@ public class GameplayController : MonoBehaviour
     IEnumerator MakeConnection(params Transform[] linePositions)
     {
         LineController.instance._DrawLine(0.15f * tile.GetComponent<TileController>().Size / 100, linePositions);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.4f);
         LineController.instance._EraseLine();
     }
 
@@ -433,16 +468,17 @@ public class GameplayController : MonoBehaviour
             {
                 int index = i;
                 linePositions[index].GetComponent<Button>().interactable = false;
-                linePositions[index].GetComponent<RectTransform>().DOSizeDelta(Vector2.zero, .45f).SetEase(Ease.InBack).SetUpdate(true)
+                linePositions[index].GetComponent<RectTransform>().DOSizeDelta(Vector2.zero, 0.4f).SetEase(Ease.InBack).SetUpdate(true)
                     .OnComplete(delegate { linePositions[index].gameObject.SetActive(false); });
                 BoardController.instance._DeactivateTile(linePositions[index].GetComponent<TileController>());
             }
         }
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.4f);
         _ResetTileState();
+        BoardController.instance._ActivateGravity();
+        yield return new WaitForSeconds(0.2f);
         settingOnButton.interactable = true;
         _EnableSupporter(true);
-        BoardController.instance._ActivateGravity();
         BoardController.instance._CheckPossibleConnection();
         BoardController.instance._CheckProcess();
     }
