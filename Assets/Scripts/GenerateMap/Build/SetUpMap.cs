@@ -6,9 +6,8 @@ using UnityEngine.UI;
 using Newtonsoft.Json;
 using TMPro;
 using static UnityEngine.UI.Dropdown;
-using System.Linq;
 using UnityEngine.SceneManagement;
-using DG.Tweening;
+
 public class SetUpMap : MonoBehaviour
 {
     public static SetUpMap instance;
@@ -73,18 +72,9 @@ public class SetUpMap : MonoBehaviour
     void Start()
     {
         //List<ProcessData> temp = new List<ProcessData>() { new ProcessData(3, 4, false, false, false, false), new ProcessData(12, 9, true, true, true, true) };
-        ////LevelData lv = new LevelData(11, 1, 420, JsonConvert.SerializeObject(tempp));
+        ////LevelData lv = new LevelData(11, 1, 420, temp);
         ////string json = JsonUtility.ToJson(lv); // <-
-        //string json = JsonConvert.SerializeObject(new LevelData(12, 1, 550, temp));
-        ////File.WriteAllText(Application.dataPath + "/Resources/demo.json", json);
-        //File.WriteAllText(Application.dataPath + "/Resources/Level_12.json", json);
-
         ////LevelData loadLv = JsonUtility.FromJson<LevelData>(json); // <-
-        //LevelData loadLv = JsonConvert.DeserializeObject<LevelData>(json);
-        //foreach (ProcessData pro in loadLv.process)
-        //{
-        //    Debug.Log(pro.ToString());
-        //}
 
         createdLv.onEndEdit.AddListener(delegate { _CheckInput(createdLv); });
         level.onEndEdit.AddListener(delegate { _CheckInput(level); });
@@ -92,18 +82,18 @@ public class SetUpMap : MonoBehaviour
 
         btPrevMap.onClick.AddListener(delegate { _GoToPreviousProcess(); });
         btNextMap.onClick.AddListener(delegate { _GoToNextProcess(); });
-        btPrevShape.onClick.AddListener(delegate { indexShape--; _GenerateMap(dataMap); });
-        btNextShape.onClick.AddListener(delegate { indexShape++; _GenerateMap(dataMap); });
-        btRotateShapeToLeft.onClick.AddListener(delegate { _RotateShape(false); _GenerateMap(dataMap); });
-        btRotateShapeToRight.onClick.AddListener(delegate { _RotateShape(true); _GenerateMap(dataMap); });
+        btPrevShape.onClick.AddListener(delegate { indexShape--; _EditBoard(); });
+        btNextShape.onClick.AddListener(delegate { indexShape++; _EditBoard(); });
+        btRotateShapeToLeft.onClick.AddListener(delegate { _RotateShape(false); });
+        btRotateShapeToRight.onClick.AddListener(delegate { _RotateShape(true); });
 
         timestampFor2Star.onEndEdit.AddListener(delegate { _EditDataMap(); });
         timestampFor3Star.onEndEdit.AddListener(delegate { _EditDataMap(); });
         time.onEndEdit.AddListener(delegate { _EditDataMap(); });
         themeWhileEditing.onValueChanged.AddListener(delegate { _EditDataMap(); });
-        totalTile.onEndEdit.AddListener(delegate { _GenerateMap(dataMap); });
-        row.onEndEdit.AddListener(delegate { _GenerateMap(dataMap); });
-        column.onEndEdit.AddListener(delegate { _GenerateMap(dataMap); });
+        totalTile.onEndEdit.AddListener(delegate { _EditBoard(); });
+        row.onEndEdit.AddListener(delegate { _EditBoard(); });
+        column.onEndEdit.AddListener(delegate { _EditBoard(); });
         pullDown.onValueChanged.AddListener(delegate { _EditDataMap(); });
         pullUp.onValueChanged.AddListener(delegate { _EditDataMap(); });
         pullLeft.onValueChanged.AddListener(delegate { _EditDataMap(); });
@@ -147,6 +137,43 @@ public class SetUpMap : MonoBehaviour
         }
     }
 
+    void _GenerateMap(ProcessData data)
+    {
+        SetUpBoard.levelData = levelData;
+        SetUpBoard.processData = data;
+        SetUpBoard.instance._StartCreating();
+    }
+
+    void _AdjustButtonSwitchMap()
+    {
+        if (map.Count > 1)
+        {
+            btPlayTrial.interactable = false;
+            if (indexMap == 0)
+            {
+                btPrevMap.gameObject.SetActive(false);
+                btNextMap.gameObject.SetActive(true);
+            }
+            else if (indexMap == map.Count - 1)
+            {
+                btPrevMap.gameObject.SetActive(true);
+                btNextMap.gameObject.SetActive(false);
+                btPlayTrial.interactable = true;
+            }
+            else
+            {
+                btPrevMap.gameObject.SetActive(true);
+                btNextMap.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            btPrevMap.gameObject.SetActive(false);
+            btNextMap.gameObject.SetActive(false);
+            btPlayTrial.interactable = true;
+        }
+    }
+
     public void _SetBaseProperties()
     {
         if (editCreatedLv.isOn)
@@ -183,6 +210,7 @@ public class SetUpMap : MonoBehaviour
         }
         else
         {
+            map.Clear();
             levelData.level = int.Parse(level.text);
             levelData.theme = theme.value;
             levelData.time[0] = float.Parse(time.text);
@@ -196,23 +224,17 @@ public class SetUpMap : MonoBehaviour
         }
         indexMap = 0;
         SetUpBoard.setup = this;
-        SetUpBoard.levelData = levelData;
-        SetUpBoard.processData = map[indexMap];
-        SetUpBoard.instance._StartCreating();
+        _GenerateMap(map[indexMap]);
         _SelectBackground(themeWhileEditing);
 
         titleLv.text = "LEVEL " + levelData.level;
         preSettingPanel.SetActive(false);
+        _AdjustButtonSwitchMap();
+    }
 
-        if (map.Count > 1)
-        {
-            btNextMap.gameObject.SetActive(true);
-        }
-        else
-        {
-            btNextMap.gameObject.SetActive(false);
-            btPlayTrial.interactable = true;
-        }
+    public void _GoToMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void _ChangeSetting()
@@ -230,25 +252,15 @@ public class SetUpMap : MonoBehaviour
     #endregion
 
     #region Edit Map
-    public void _GenerateMap(ProcessData data)
-    {
-        _EditBoard();
-        SetUpBoard.levelData = levelData;
-        SetUpBoard.processData = data;
-        SetUpBoard.instance._StartCreating();
-    }
-
     void _EditBoard()
     {
         _CheckInput(row);
         _CheckInput(column);
         _CheckInput(totalTile, int.Parse(row.text) * int.Parse(column.text));
 
-        string folderName = Application.dataPath + "/Resources/Shapes/" + totalTile.text;
-        string fullPath = folderName + "/" + row.text + "x" + column.text + ".json";
-        _EditShape(fullPath, File.Exists(fullPath));
-
+        _EditShape();
         _EditDataMap();
+        _GenerateMap(dataMap);
     }
 
     void _EditDataMap()
@@ -421,14 +433,23 @@ public class SetUpMap : MonoBehaviour
         }
     }
 
+    bool _SuitableShape()
+    {
+        return map[indexMap].TotalTile == int.Parse(totalTile.text)
+            && map[indexMap].Row == int.Parse(row.text)
+            && map[indexMap].Column == int.Parse(column.text);
+    }
+
     #endregion
 
     #region Shape
-    void _EditShape(string filePath, bool shapeIsExisted)
+    void _EditShape()
     {
-        if (shapeIsExisted)
+        string folderName = Application.dataPath + "/Resources/Shapes/" + totalTile.text;
+        string fullPath = folderName + "/" + row.text + "x" + column.text + ".json";
+        if (File.Exists(fullPath))
         {
-            string temp = filePath[filePath.IndexOf("Shapes")..];
+            string temp = fullPath[fullPath.IndexOf("Shapes")..];
             string path = temp.Remove(temp.IndexOf("."));
             var data = Resources.Load(path) as TextAsset;
             shapeList = JsonConvert.DeserializeObject<List<string[,]>>(data.text);
@@ -437,21 +458,27 @@ public class SetUpMap : MonoBehaviour
         else
         {
             shapeList = new();
-            matrix = new string[int.Parse(row.text), int.Parse(column.text)];
-            int temp = 0;
-            for (int r = 0; r < int.Parse(row.text); r++)
+            if (_SuitableShape())
             {
-                for (int c = 0; c < int.Parse(column.text); c++)
+                matrix = map[indexMap].Matrix;
+            }
+            else
+            {
+                matrix = new string[int.Parse(row.text), int.Parse(column.text)];
+                int temp = 0;
+                for (int r = 0; r < int.Parse(row.text); r++)
                 {
-                    if (temp < int.Parse(totalTile.text))
+                    for (int c = 0; c < int.Parse(column.text); c++)
                     {
-                        matrix[r, c] = "?";
-                        temp++;
+                        if (temp < int.Parse(totalTile.text))
+                        {
+                            matrix[r, c] = "?";
+                            temp++;
+                        }
                     }
                 }
             }
         }
-
         _EnableSwitchShape();
     }
 
@@ -489,24 +516,29 @@ public class SetUpMap : MonoBehaviour
         string[,] temp = new string[oldCol, oldRow];
         if (rotateRight)
         {
-            for(int c = 0; c < oldCol; c++)
+            for (int c = 0; c < oldCol; c++)
             {
-                for(int r = oldRow - 1; r >= 0; r--)
+                for (int r = 0; r < oldRow; r++)
                 {
-
+                    temp[c, r] = matrix[oldRow - 1 - r, c];
                 }
             }
         }
         else
         {
-            for (int c = oldCol - 1; c >= 0; c--)
+            for (int c = 0; c < oldCol; c++)
             {
                 for (int r = 0; r < oldRow; r++)
                 {
-
+                    temp[c, r] = matrix[r, oldCol - 1 - c];
                 }
             }
         }
+        matrix = temp;
+        row.text = oldCol + "";
+        column.text = oldRow + "";
+        _EditDataMap();
+        _GenerateMap(dataMap);
     }
 
     int _FindIndexShape(string[,] shape)
@@ -599,12 +631,8 @@ public class SetUpMap : MonoBehaviour
         mapContainExistedShape[indexMap] = (indexShape, map[indexMap]);
         indexMap++;
         indexShape = mapContainExistedShape[indexMap].Item1;
-        btPrevMap.gameObject.SetActive(true);
-        if (indexMap == map.Count - 1)
-        {
-            btNextMap.gameObject.SetActive(false);
-            btPlayTrial.interactable = true;
-        }
+        _AdjustButtonSwitchMap();
+
         totalTile.text = map[indexMap].TotalTile + "";
         row.text = map[indexMap].Row + "";
         column.text = map[indexMap].Column + "";
@@ -613,7 +641,7 @@ public class SetUpMap : MonoBehaviour
         pullUp.value = map[indexMap].PullUp == true ? 1 : 0;
         pullLeft.value = map[indexMap].PullLeft == true ? 1 : 0;
         pullRight.value = map[indexMap].PullRight == true ? 1 : 0;
-        _GenerateMap(map[indexMap]);
+        _EditBoard();
 
         Debug.Log("Tien trinh " + (indexMap + 1));
     }
@@ -626,12 +654,8 @@ public class SetUpMap : MonoBehaviour
         mapContainExistedShape[indexMap] = (indexShape, map[indexMap]);
         indexMap--;
         indexShape = mapContainExistedShape[indexMap].Item1;
-        btNextMap.gameObject.SetActive(true);
-        btPlayTrial.interactable = false;
-        if (indexMap == 0)
-        {
-            btPrevMap.gameObject.SetActive(false);
-        }
+        _AdjustButtonSwitchMap();
+
         totalTile.text = map[indexMap].TotalTile + "";
         row.text = map[indexMap].Row + "";
         column.text = map[indexMap].Column + "";
@@ -640,7 +664,7 @@ public class SetUpMap : MonoBehaviour
         pullUp.value = map[indexMap].PullUp == true ? 1 : 0;
         pullLeft.value = map[indexMap].PullLeft == true ? 1 : 0;
         pullRight.value = map[indexMap].PullRight == true ? 1 : 0;
-        _GenerateMap(map[indexMap]);
+        _EditBoard();
 
         Debug.Log("Tien trinh " + (indexMap + 1));
     }
@@ -663,9 +687,11 @@ public class SetUpMap : MonoBehaviour
 
         Debug.Log("Doneeeee");
     }
+
     void _PlayTrial()
     {
         SceneManager.LoadScene("PlayTrial");
+        GameplayTrial.lvInput.text = levelData.level + "";
     }
 
     #endregion

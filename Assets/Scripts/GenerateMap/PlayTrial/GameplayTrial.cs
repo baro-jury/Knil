@@ -20,9 +20,9 @@ public class GameplayTrial : MonoBehaviour
     private Transform tile;
 
     [SerializeField]
-    private GameObject chooseLvPanel;
+    public static InputField lvInput;
     [SerializeField]
-    private InputField lvInput;
+    private GameObject chooseLvPanel;
     [SerializeField]
     private TextMeshProUGUI titleLv;
     [SerializeField]
@@ -31,8 +31,6 @@ public class GameplayTrial : MonoBehaviour
     private Button btSpHint, btSpMagicWand, btSpFreeze, btSpShuffle;
     [SerializeField]
     private Transform tempAlignWithLeft, tempAlignWithRight, tempAlignWithTop, tempAlignWithBottom, tempAlignWithStart, tempAlignWithEnd;
-    [SerializeField]
-    private ParticleSystem hint, lightningByMagicwand, shuffle;
 
     void _MakeInstance()
     {

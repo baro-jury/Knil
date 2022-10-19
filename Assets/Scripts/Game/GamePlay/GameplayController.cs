@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -57,28 +58,15 @@ public class GameplayController : MonoBehaviour
     {
         settingOnButton.interactable = false;
         pausePanel.SetActive(true);
+        pausePanel.GetComponent<Button>().interactable = false;
         pausePanel.transform.GetComponent<Image>().DOFade(.8f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        settingOffButton.transform.DORotate(new Vector3(0, 0, -180), .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
-            .OnComplete(() =>
-            {
-                settingOffButton.transform.rotation = Quaternion.Euler(0, 0, 0);
-            });
-
-        #region Children cua setting button
-        //settingButton.transform.GetChild(0).GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
-        //settingButton.transform.GetChild(1).GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
-        //settingButton.transform.GetChild(2).GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
-
-        //settingButton.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPosY(-150, .5f).SetEase(ease).SetUpdate(true);
-        //settingButton.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(-300, .5f).SetEase(ease).SetUpdate(true);
-        //settingButton.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(-450, .5f).SetEase(ease).SetUpdate(true)
+        //settingOffButton.transform.DORotate(new Vector3(0, 0, -180), .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
         //    .OnComplete(() =>
         //    {
-        //        settingButton.enabled = true;
+        //        settingOffButton.transform.rotation = Quaternion.Euler(0, 0, 0);
         //    });
-        #endregion
+        settingOffButton.transform.DORotate(new Vector3(0, 0, 0), .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
 
-        #region Children cua panel
         pausePanel.transform.GetChild(0).GetComponent<RectTransform>().anchoredPosition = new Vector3(460, 875, 0);
         pausePanel.transform.GetChild(1).GetComponent<RectTransform>().anchoredPosition = new Vector3(460, 875, 0);
         pausePanel.transform.GetChild(2).GetComponent<RectTransform>().anchoredPosition = new Vector3(460, 875, 0);
@@ -89,11 +77,12 @@ public class GameplayController : MonoBehaviour
             .OnComplete(() =>
             {
                 settingOffButton.interactable = true;
-                //pausePanel.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
-                //pausePanel.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
-                //pausePanel.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                pausePanel.GetComponent<Button>().interactable = true;
+                pausePanel.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                pausePanel.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                pausePanel.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                pausePanel.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
             });
-        #endregion
 
         Time.timeScale = 0;
     }
@@ -101,16 +90,22 @@ public class GameplayController : MonoBehaviour
     public void _Resume()
     {
         settingOffButton.interactable = false;
-        pausePanel.transform.GetComponent<Image>().DOFade(0f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        settingOffButton.transform.DORotate(new Vector3(0, 0, 180), .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
-            .OnComplete(() =>
-            {
-                settingOffButton.transform.rotation = Quaternion.Euler(0, 0, 0);
-            }); ;
+        pausePanel.GetComponent<Button>().interactable = false;
+        pausePanel.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetComponent<Image>().DOFade(0f, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        //settingOffButton.transform.DORotate(new Vector3(0, 0, 180), .4f).SetEase(Ease.InOutQuad).SetUpdate(true)
+        //    .OnComplete(() =>
+        //    {
+        //        settingOffButton.transform.rotation = Quaternion.Euler(0, 0, 0);
+        //    }); ;
+        settingOffButton.transform.DORotate(new Vector3(0, 0, 180), .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
 
-        pausePanel.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPosY(875, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        pausePanel.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(875, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        pausePanel.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(875, .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
+        pausePanel.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPosY(875, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(875, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(875, .4f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
             {
                 pausePanel.SetActive(false);
@@ -152,7 +147,7 @@ public class GameplayController : MonoBehaviour
 
     public void _GoToMenu()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void _TakeTheLastChance()
@@ -206,7 +201,8 @@ public class GameplayController : MonoBehaviour
 
     public void _Replay()
     {
-        SceneManager.LoadScene(1);
+        //SceneManager.LoadScene("GamePlay");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void _CompleteLevel()
@@ -501,7 +497,6 @@ public class GameplayController : MonoBehaviour
 
     public bool _HasAvailableConnection(Transform tile1, Transform tile2)
     {
-
         #region 1 line
         // check line with x
         if (tile1.localPosition.x == tile2.localPosition.x)

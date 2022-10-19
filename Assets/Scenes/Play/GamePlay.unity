@@ -462,8 +462,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4280565135
-  m_fontColor: {r: 0.56078434, g: 0.2392157, b: 0.14117648, a: 1}
+    rgba: 2375055
+  m_fontColor: {r: 0.56078434, g: 0.2392157, b: 0.14117648, a: 0}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -732,8 +732,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4280565135
-  m_fontColor: {r: 0.56078434, g: 0.2392157, b: 0.14117648, a: 1}
+    rgba: 2375055
+  m_fontColor: {r: 0.56078434, g: 0.2392157, b: 0.14117648, a: 0}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2468,72 +2468,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ad254b12499bf9409e5eaa82d1819ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Demo:
-  - {fileID: -290563292, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: -1508651244, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: -599752729, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: -1962673874, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: -1251397243, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: -1123435651, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 2087015016, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: -1301100899, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 1528533259, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 1378207787, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 902999221, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 1195838548, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 51909961, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 969252010, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: -1466090141, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 514984672, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 1416032079, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: -20515824, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 2090187174, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 2067087322, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: -716362164, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: -1387302143, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 961984786, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 2099873304, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 237390943, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 22239914, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: -562640007, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: -770132392, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: -755843690, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 1513446796, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: -1260869304, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: -675634197, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: -871525683, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: -1127458635, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 1502391713, guid: e1ec80bece4bf4740a8c49d48f29f131, type: 3}
-  - {fileID: 73560874, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: -927158391, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: 1629925509, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: -705891660, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: -1098204065, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: -96740449, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: -2061271933, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: 823539607, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: -637069679, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: 1089931109, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: -734228713, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: -1875891421, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: -2086820713, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: 417427423, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: 1696098851, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: 1781158471, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: 603780986, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: -1022679192, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: 1622564571, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: 1057771817, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: 630529850, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: 488880835, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: 537853051, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: -1430169331, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: 584553860, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: 1373563070, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: 1467492400, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: -184956564, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: -551574854, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
-  - {fileID: 1642983791, guid: 4c4cd3783fde432499fcecedf8e9f33c, type: 3}
   Icon:
   - {fileID: 21300000, guid: 253380ae5d4df4347ab474bbe3b10ea5, type: 3}
   - {fileID: 21300000, guid: 1f28b23dba0c56242964a11b54efabf7, type: 3}
@@ -6877,8 +6811,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4280565135
-  m_fontColor: {r: 0.56078434, g: 0.2392157, b: 0.14117648, a: 1}
+    rgba: 2375055
+  m_fontColor: {r: 0.56078434, g: 0.2392157, b: 0.14117648, a: 0}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -8921,7 +8855,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 410.00003, y: 824.99994}
+  m_AnchoredPosition: {x: 410.00003, y: 825}
   m_SizeDelta: {x: 120, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1474069605
@@ -10845,7 +10779,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1735623294}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -10853,7 +10787,7 @@ RectTransform:
   - {fileID: 102022851}
   m_Father: {fileID: 443345772}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 460, y: 875}
@@ -11069,8 +11003,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4280565135
-  m_fontColor: {r: 0.56078434, g: 0.2392157, b: 0.14117648, a: 1}
+    rgba: 2375055
+  m_fontColor: {r: 0.56078434, g: 0.2392157, b: 0.14117648, a: 0}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

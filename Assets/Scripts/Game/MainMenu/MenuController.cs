@@ -50,7 +50,12 @@ public class MenuController : MonoBehaviour
 
     public void _BackToMenu()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    public void _CreateCustomMap()
+    {
+        SceneManager.LoadScene("GenerateMap");
     }
 
     public void _GoToSetting()
