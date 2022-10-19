@@ -24,19 +24,19 @@ public class TrialBoard : MonoBehaviour
     [SerializeField]
     private GameObject FirstAnchor, LastAnchor;
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Keypad0))
-        {
-            Debug.Log(JsonConvert.SerializeObject(matrix));
-            string temp = null;
-            foreach (var item in buttonList)
-            {
-                temp += item.name + " ";
-            }
-            Debug.Log(temp);
-        }
-    }
+    //private void Update()
+    //{
+    //    if (Input.GetKeyDown(KeyCode.Keypad0))
+    //    {
+    //        Debug.Log(JsonConvert.SerializeObject(matrix));
+    //        string temp = null;
+    //        foreach (var item in buttonList)
+    //        {
+    //            temp += item.name + " ";
+    //        }
+    //        Debug.Log(temp);
+    //    }
+    //}
 
     void _MakeInstance()
     {
@@ -54,7 +54,7 @@ public class TrialBoard : MonoBehaviour
     void Start()
     {
         dict.Clear();
-        foreach (KeyValuePair<string, Sprite> kvp in ResourceController.spritesDict)
+        foreach (KeyValuePair<string, Sprite> kvp in SpriteController.spritesDict)
         {
             dict.Add(kvp.Key, kvp.Value);
         }
@@ -92,7 +92,7 @@ public class TrialBoard : MonoBehaviour
     {
         int num = NumberOfSameTiles();
         int repeat = 0, index = dict.Count - 1;
-        ResourceController.instance._ShuffleImage(dict);
+        SpriteController.instance._ShuffleImage(dict);
 
         float sideTile = gameObject.GetComponent<RectTransform>().sizeDelta.x / column;
         float temp = gameObject.GetComponent<RectTransform>().sizeDelta.y / row;
@@ -147,20 +147,20 @@ public class TrialBoard : MonoBehaviour
                     {
                         matrix[r, c] = index.ToString();
                         objBtn.Id = index;
-                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = dict[index.ToString()];
+                        objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = dict[index.ToString()];
                         buttonListWithoutBlocker.Add(objBtn);
                         repeat++;
                     }
                     else if (matrix[r, c] == "0")
                     {
                         objBtn.Id = 0;
-                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = dict["0"];
+                        objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = dict["0"];
                         objBtn.GetComponent<Button>().interactable = false;
                     }
                     else
                     {
                         objBtn.Id = int.Parse(matrix[r, c]);
-                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = dict[matrix[r, c]];
+                        objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = dict[matrix[r, c]];
                         buttonListWithoutBlocker.Add(objBtn);
                     }
                     objBtn.Index = (r, c);
@@ -379,7 +379,7 @@ public class TrialBoard : MonoBehaviour
         List<Transform> list = new();
         foreach (var trans in buttonListWithoutBlocker)
         {
-            if (trans.transform.GetChild(0).GetComponent<Image>().sprite == sprite)
+            if (trans.transform.GetChild(1).GetComponent<Image>().sprite == sprite)
             {
                 list.Add(trans.transform);
             }

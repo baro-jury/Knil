@@ -9,9 +9,11 @@ public class SetUpBoard : MonoBehaviour
 {
     public static SetUpBoard instance;
     public static SetUpMap setup;
+    //public static LevelData levelData;
+    //public static ProcessData processData;
     public static LevelData levelData;
     public static ProcessData processData;
-    private int row, column;
+    private int totalTile, row, column;
     private bool pullDown, pullUp, pullLeft, pullRight;
     private string[,] matrix;
     public int sideSmallTile = 112, sideMediumTile = 130, sideLargeTile = 180;
@@ -44,7 +46,7 @@ public class SetUpBoard : MonoBehaviour
     {
         foreach (Transform child in transform)
         {
-            GameObject.Destroy(child.gameObject);
+            Destroy(child.gameObject);
         }
     }
 
@@ -52,13 +54,14 @@ public class SetUpBoard : MonoBehaviour
     {
         Timer.time = levelData.time[0];
 
+        totalTile = processData.TotalTile;
         row = processData.Row;
         column = processData.Column;
+        matrix = processData.Matrix;
         pullDown = processData.PullDown;
         pullUp = processData.PullUp;
         pullLeft = processData.PullLeft;
         pullRight = processData.PullRight;
-        matrix = processData.Matrix;
     }
 
     void _GenerateTiles()
@@ -110,19 +113,19 @@ public class SetUpBoard : MonoBehaviour
                 objBtn.transform.localPosition = tilePos * 40;
                 if (matrix[r, c] == null || matrix[r, c] == "")
                 {
-                    objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = setup.btNone.GetComponent<Image>().sprite;
+                    objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = setup.btNone.transform.GetChild(1).GetComponent<Image>().sprite;
                 }
                 else if (matrix[r, c] == "?")
                 {
-                    objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = setup.btRandom.GetComponent<Image>().sprite;
+                    objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = setup.btRandom.transform.GetChild(1).GetComponent<Image>().sprite;
                 }
                 else if (matrix[r, c] == "0")
                 {
-                    objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = setup.btBlock.GetComponent<Image>().sprite;
+                    objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = setup.btBlock.transform.GetChild(1).GetComponent<Image>().sprite;
                 }
                 else
                 {
-                    objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict[matrix[r, c]];
+                    objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = SpriteController.spritesDict[matrix[r, c]];
                 }
             }
         }

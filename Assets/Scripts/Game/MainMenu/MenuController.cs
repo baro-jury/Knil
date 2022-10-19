@@ -8,8 +8,6 @@ public class MenuController : MonoBehaviour
 {
     public static MenuController instance;
 
-    public Button continueLevelButton;
-
     [SerializeField]
     private GameObject menuPanel, settingPanel, guidePanel;
     [SerializeField]
@@ -35,7 +33,7 @@ public class MenuController : MonoBehaviour
 
     public void _PlayNewGame()
     {
-        LevelController.instance._PlayLv1();
+        LevelController.instance._PlayLevel(1);
         ProgressController.instance._SetMarkedLevel(1);
     }
 

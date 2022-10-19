@@ -7,9 +7,6 @@ public class ProgressController : MonoBehaviour
 {
     public static ProgressController instance;
 
-    [SerializeField]
-    private GameObject menu;
-
     private const string PROGRESS = "Progress";
     private const string COINS = "Coins";
     private const string STARS = "Stars";
@@ -33,7 +30,6 @@ public class ProgressController : MonoBehaviour
         {
             PlayerPrefs.SetInt(PROGRESS, 1);
             PlayerPrefs.SetInt("_CheckFirstTimePlayGame", 0);
-            menu.GetComponent<MenuController>().continueLevelButton.gameObject.SetActive(false);
         }
     }
 

@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro;
 
 public class GameplayController : MonoBehaviour
 {
@@ -84,12 +83,15 @@ public class GameplayController : MonoBehaviour
         pausePanel.transform.GetChild(1).GetComponent<RectTransform>().anchoredPosition = new Vector3(460, 875, 0);
         pausePanel.transform.GetChild(2).GetComponent<RectTransform>().anchoredPosition = new Vector3(460, 875, 0);
 
-        pausePanel.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPosY(725, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        pausePanel.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(575, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        pausePanel.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(425, .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
+        pausePanel.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPosY(725, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(575, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(425, .4f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
             {
                 settingOffButton.interactable = true;
+                //pausePanel.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                //pausePanel.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                //pausePanel.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
             });
         #endregion
 
@@ -226,13 +228,13 @@ public class GameplayController : MonoBehaviour
 
     public void _GoToNextLevel()
     {
-        if (LevelController.level == 20)
+        if (LevelController.level == Resources.LoadAll("Levels").Length)
         {
             _GoToMenu();
         }
         else
         {
-            LevelController.level = LevelController.level + 1;
+            LevelController.level++;
             LevelController.instance._PlayLevel(LevelController.level);
         }
     }
@@ -247,6 +249,7 @@ public class GameplayController : MonoBehaviour
             .OnComplete(() =>
             {
                 currentTile.GetComponent<RectTransform>().DOScale(Vector3.one, .1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                //currentTile.GetChild(0).GetComponent<Image>().color = Color.green;
             });
         Time.timeScale = 1;
         isCoupled = !isCoupled;
@@ -260,15 +263,16 @@ public class GameplayController : MonoBehaviour
             if (siblingIndex == currentTile.GetSiblingIndex())
             {
                 Debug.Log("Click cung 1 tile");
-                tile = currentTile;
-                siblingIndex = currentTile.GetSiblingIndex();
+                //tile = currentTile;
+                //siblingIndex = currentTile.GetSiblingIndex();
                 isCoupled = !isCoupled;
             }
             else
             {
-                if (!_AreTheSameTiles(tile, currentTile))
+                if (tile.GetComponent<TileController>().Id != currentTile.GetComponent<TileController>().Id)
                 {
                     Debug.Log("Click khac tile khac ID");
+                    //tile.GetChild(0).GetComponent<Image>().color = Color.white;
                     tile = currentTile;
                     siblingIndex = currentTile.GetSiblingIndex();
                     isCoupled = !isCoupled;
@@ -288,12 +292,6 @@ public class GameplayController : MonoBehaviour
                 }
             }
         }
-    }
-
-    bool _AreTheSameTiles(Transform tile1, Transform tile2)
-    {
-        return ResourceController.spritesDict[tile1.GetComponent<TileController>().Id.ToString()]
-            == ResourceController.spritesDict[tile2.GetComponent<TileController>().Id.ToString()];
     }
 
     void _ResetTileState()
@@ -322,8 +320,8 @@ public class GameplayController : MonoBehaviour
         _ResetTileState();
         while (!isHinted)
         {
-            int index = Random.Range(1, ResourceController.spritesDict.Count);
-            List<Transform> temp = BoardController.instance._SearchSameTiles(ResourceController.spritesDict[index.ToString()]);
+            int index = Random.Range(1, SpriteController.spritesDict.Count);
+            List<Transform> temp = BoardController.instance._SearchSameTiles(SpriteController.spritesDict[index.ToString()]);
             if (temp.Count != 0)
             {
                 for (int i = 0; i < (temp.Count - 1); i++)
@@ -364,14 +362,14 @@ public class GameplayController : MonoBehaviour
         _ResetTileState();
         EventSystem.current.SetSelectedGameObject(null);
         int numCouple = 0;
-        for (int index = 1; index < ResourceController.spritesDict.Count; index++)
+        for (int index = 1; index < SpriteController.spritesDict.Count; index++)
         {
         check:
             if (numCouple == 2)
             {
                 break;
             }
-            List<Transform> temp = BoardController.instance._SearchSameTiles(ResourceController.spritesDict[index.ToString()]);
+            List<Transform> temp = BoardController.instance._SearchSameTiles(SpriteController.spritesDict[index.ToString()]);
 
             if (temp.Count != 0)
             {
@@ -420,8 +418,8 @@ public class GameplayController : MonoBehaviour
         bool isFounded = false;
         while (!isFounded)
         {
-            int index = Random.Range(1, ResourceController.spritesDict.Count);
-            List<Transform> temp = BoardController.instance._SearchSameTiles(ResourceController.spritesDict[index.ToString()]);
+            int index = Random.Range(1, SpriteController.spritesDict.Count);
+            List<Transform> temp = BoardController.instance._SearchSameTiles(SpriteController.spritesDict[index.ToString()]);
             if (temp.Count != 0)
             {
                 for (int i = 0; i < temp.Count; i++)

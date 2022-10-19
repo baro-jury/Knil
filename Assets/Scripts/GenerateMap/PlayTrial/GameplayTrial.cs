@@ -20,9 +20,11 @@ public class GameplayTrial : MonoBehaviour
     private Transform tile;
 
     [SerializeField]
-    private TextMeshProUGUI titleLv;
-    [SerializeField]
     private GameObject chooseLvPanel;
+    [SerializeField]
+    private InputField lvInput;
+    [SerializeField]
+    private TextMeshProUGUI titleLv;
     [SerializeField]
     private Button pauseButton;
     [SerializeField]
@@ -92,11 +94,12 @@ public class GameplayTrial : MonoBehaviour
         _ScaleBgr();
     }
 
-    public void _PlayLevel(int lv)
+    public void _PlayLevel()
     {
-        var dataStr = Resources.Load("Level_" + lv) as TextAsset;
+        level = int.Parse(lvInput.text);
+        var dataStr = Resources.Load("Levels/Level_" + level) as TextAsset;
         TrialBoard.levelData = JsonConvert.DeserializeObject<LevelData>(dataStr.text);
-        titleLv.text = "LEVEL " + lv;
+        titleLv.text = "LEVEL " + level;
         TrialBoard.instance._GoToProcess(1);
         Time.timeScale = 0;
         Timer.time = 0;
@@ -104,123 +107,16 @@ public class GameplayTrial : MonoBehaviour
         _ScaleBgr();
     }
 
-    public void _PlayLv1()
+    public void _CheckInput(InputField input)
     {
-        level = 1;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv2()
-    {
-        level = 2;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv3()
-    {
-        level = 3;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv4()
-    {
-        level = 4;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv5()
-    {
-        level = 5;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv6()
-    {
-        level = 6;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv7()
-    {
-        level = 7;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv8()
-    {
-        level = 8;
-        _PlayLevel(level);
-    }
-    public void _PlayLv9()
-    {
-        level = 9;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv10()
-    {
-        level = 10;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv11()
-    {
-        level = 11;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv12()
-    {
-        level = 12;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv13()
-    {
-        level = 13;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv14()
-    {
-        level = 14;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv15()
-    {
-        level = 15;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv16()
-    {
-        level = 16;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv17()
-    {
-        level = 17;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv18()
-    {
-        level = 18;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv19()
-    {
-        level = 19;
-        _PlayLevel(level);
-    }
-
-    public void _PlayLv20()
-    {
-        level = 20;
-        _PlayLevel(level);
+        if (input.text == "" || int.Parse(input.text) <= 0)
+        {
+            input.text = "1";
+        }
+        else if (int.Parse(input.text) > Resources.LoadAll("Levels").Length)
+        {
+            input.text = Resources.LoadAll("Levels").Length + "";
+        }
     }
 
     #endregion

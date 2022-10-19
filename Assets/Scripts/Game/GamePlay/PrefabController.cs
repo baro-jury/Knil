@@ -12,6 +12,7 @@ public class PrefabController : MonoBehaviour
             .OnComplete(() =>
             {
                 transform.parent.parent.gameObject.SetActive(false); //panel
+                transform.parent.localScale = Vector3.one;
             });
     }
 

@@ -34,6 +34,7 @@ public class BoardController : MonoBehaviour
     void Awake()
     {
         _MakeInstance();
+        levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelController.level) as TextAsset).text);
     }
 
     void Start()
@@ -73,8 +74,8 @@ public class BoardController : MonoBehaviour
     void _GenerateTiles()
     {
         int num = NumberOfSameTiles();
-        int repeat = 0, index = ResourceController.spritesDict.Count - 1;
-        ResourceController.instance._ShuffleImage(ResourceController.spritesDict);
+        int repeat = 0, index = SpriteController.spritesDict.Count - 1;
+        SpriteController.instance._ShuffleImage(SpriteController.spritesDict);
 
         float sideTile = gameObject.GetComponent<RectTransform>().sizeDelta.x / column;
         float temp = gameObject.GetComponent<RectTransform>().sizeDelta.y / row;
@@ -129,20 +130,20 @@ public class BoardController : MonoBehaviour
                     {
                         matrix[r, c] = index.ToString();
                         objBtn.Id = index;
-                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict[index.ToString()];
+                        objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = SpriteController.spritesDict[index.ToString()];
                         buttonListWithoutBlocker.Add(objBtn);
                         repeat++;
                     }
                     else if (matrix[r, c] == "0")
                     {
                         objBtn.Id = 0;
-                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict["0"];
+                        objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = SpriteController.spritesDict["0"];
                         objBtn.GetComponent<Button>().interactable = false;
                     }
                     else
                     {
                         objBtn.Id = int.Parse(matrix[r, c]);
-                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict[matrix[r, c]];
+                        objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = SpriteController.spritesDict[matrix[r, c]];
                         buttonListWithoutBlocker.Add(objBtn);
                     }
                     objBtn.Index = (r, c);
@@ -194,9 +195,9 @@ public class BoardController : MonoBehaviour
         {
             canConnect = true;
         }
-        for (int index = 1; index < ResourceController.spritesDict.Count; index++)
+        for (int index = 1; index < SpriteController.spritesDict.Count; index++)
         {
-            List<Transform> temp = _SearchSameTiles(ResourceController.spritesDict[index.ToString()]);
+            List<Transform> temp = _SearchSameTiles(SpriteController.spritesDict[index.ToString()]);
             if (temp.Count != 0)
             {
                 for (int i = 0; i < (temp.Count - 1); i++)
@@ -348,9 +349,10 @@ public class BoardController : MonoBehaviour
             }
             else
             {
-                if (levelData.level < 20 && levelData.level == ProgressController.instance._GetMarkedLevel())
+                if (levelData.level < Resources.LoadAll("Levels").Length && levelData.level == ProgressController.instance._GetMarkedLevel())
                 {
                     ProgressController.instance._SetMarkedLevel(levelData.level + 1);
+                    LevelController.level = levelData.level + 1;
                 }
                 GameplayController.instance._CompleteLevel();
             }
@@ -362,7 +364,7 @@ public class BoardController : MonoBehaviour
         List<Transform> list = new();
         foreach (var trans in buttonListWithoutBlocker)
         {
-            if (trans.transform.GetChild(0).GetComponent<Image>().sprite == sprite)
+            if (trans.transform.GetChild(1).GetComponent<Image>().sprite == sprite)
             {
                 list.Add(trans.transform);
             }

@@ -23,13 +23,14 @@ public class LevelData
 
 public class ProcessData
 {
+    public int TotalTile { get; set; }
     public int Row { get; set; }
     public int Column { get; set; }
+    public string[,] Matrix { get; set; }
     public bool PullDown { get; set; }
     public bool PullUp { get; set; }
     public bool PullLeft { get; set; }
     public bool PullRight { get; set; }
-    public string[,] Matrix { get; set; }
 
     public ProcessData() { }
 
@@ -43,9 +44,9 @@ public class ProcessData
         PullRight = pullRight;
     }
 
-    public ProcessData(int row, int column, bool pullDown, bool pullUp, bool pullLeft, bool pullRight, string[,] matrix) : this(row, column, pullDown, pullUp, pullLeft, pullRight)
+    public ProcessData(int totalTile, int row, int column, string[,] matrix, bool pullDown, bool pullUp, bool pullLeft, bool pullRight) : this(row, column, pullDown, pullUp, pullLeft, pullRight)
     {
+        TotalTile = totalTile;
         Matrix = matrix;
     }
-
 }

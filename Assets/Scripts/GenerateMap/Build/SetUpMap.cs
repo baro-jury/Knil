@@ -8,16 +8,18 @@ using TMPro;
 using static UnityEngine.UI.Dropdown;
 using System.Linq;
 using UnityEngine.SceneManagement;
-
+using DG.Tweening;
 public class SetUpMap : MonoBehaviour
 {
     public static SetUpMap instance;
 
     private LevelData levelData = new();
-    private List<OptionData> tileImages = new();
-    private List<ProcessData> map;
+    private List<ProcessData> map = new();
+    private List<(int, ProcessData)> mapContainExistedShape = new();
     private ProcessData dataMap = new();
-    private int index = 0;
+    private List<string[,]> shapeList = new();
+    private List<OptionData> tileImages = new();
+    private int indexMap = 0, indexShape = 0;
     private bool setIngame;
     private string[,] matrix;
 
@@ -27,21 +29,21 @@ public class SetUpMap : MonoBehaviour
     [SerializeField]
     private GameObject preSettingPanel;
     [SerializeField]
-    private InputField level, process, time;
+    private Toggle editCreatedLv;
     [SerializeField]
-    private Dropdown theme;
+    private InputField createdLv, level, process;
+    [SerializeField]
+    private Dropdown theme, themeWhileEditing;
 
     [SerializeField]
-    private InputField timeWhileEditing;
-    [SerializeField]
-    private InputField timestampFor1Star, timestampFor2Star, timestampFor3Star;
+    private InputField time, timestampFor2Star, timestampFor3Star;
 
     [SerializeField]
     private GameObject ingameSettingPanel;
     [SerializeField]
-    private InputField row, column;
+    private InputField totalTile, row, column;
     [SerializeField]
-    private Dropdown themeWhileEditing, pullDown, pullUp, pullLeft, pullRight;
+    private Dropdown pullDown, pullUp, pullLeft, pullRight;
 
     [SerializeField]
     private TextMeshProUGUI titleLv;
@@ -53,7 +55,7 @@ public class SetUpMap : MonoBehaviour
     private Dropdown ddImage;
 
     [SerializeField]
-    private Button btPrev, btNext, btPlayTrial;
+    private Button btPrevMap, btNextMap, btPrevShape, btNextShape, btRotateShapeToLeft, btRotateShapeToRight, btPlayTrial;
 
     void _MakeInstance()
     {
@@ -84,14 +86,40 @@ public class SetUpMap : MonoBehaviour
         //    Debug.Log(pro.ToString());
         //}
 
-        tileImages.Add(new OptionData("", btNone.GetComponent<Image>().sprite));
-        for (int i = 1; i < ResourceController.spritesDict.Count; i++)
+        createdLv.onEndEdit.AddListener(delegate { _CheckInput(createdLv); });
+        level.onEndEdit.AddListener(delegate { _CheckInput(level); });
+        process.onEndEdit.AddListener(delegate { _CheckInput(process); });
+
+        btPrevMap.onClick.AddListener(delegate { _GoToPreviousProcess(); });
+        btNextMap.onClick.AddListener(delegate { _GoToNextProcess(); });
+        btPrevShape.onClick.AddListener(delegate { indexShape--; _GenerateMap(dataMap); });
+        btNextShape.onClick.AddListener(delegate { indexShape++; _GenerateMap(dataMap); });
+        btRotateShapeToLeft.onClick.AddListener(delegate { _RotateShape(false); _GenerateMap(dataMap); });
+        btRotateShapeToRight.onClick.AddListener(delegate { _RotateShape(true); _GenerateMap(dataMap); });
+
+        timestampFor2Star.onEndEdit.AddListener(delegate { _EditDataMap(); });
+        timestampFor3Star.onEndEdit.AddListener(delegate { _EditDataMap(); });
+        time.onEndEdit.AddListener(delegate { _EditDataMap(); });
+        themeWhileEditing.onValueChanged.AddListener(delegate { _EditDataMap(); });
+        totalTile.onEndEdit.AddListener(delegate { _GenerateMap(dataMap); });
+        row.onEndEdit.AddListener(delegate { _GenerateMap(dataMap); });
+        column.onEndEdit.AddListener(delegate { _GenerateMap(dataMap); });
+        pullDown.onValueChanged.AddListener(delegate { _EditDataMap(); });
+        pullUp.onValueChanged.AddListener(delegate { _EditDataMap(); });
+        pullLeft.onValueChanged.AddListener(delegate { _EditDataMap(); });
+        pullRight.onValueChanged.AddListener(delegate { _EditDataMap(); });
+
+        btPlayTrial.onClick.AddListener(delegate { _PlayTrial(); });
+
+        tileImages.Add(new OptionData("", btNone.transform.GetChild(1).GetComponent<Image>().sprite));
+        for (int i = 1; i < SpriteController.spritesDict.Count; i++)
         {
-            tileImages.Add(new OptionData(ResourceController.spritesDict.ElementAt(i).Key, ResourceController.spritesDict.ElementAt(i).Value));
+            tileImages.Add(new OptionData(i.ToString(), SpriteController.spritesDict[i.ToString()]));
         }
         ddImage.AddOptions(tileImages);
     }
 
+    #region Setup
     void _SelectBackground(Dropdown drop)
     {
         bool hasBackground = false;
@@ -111,7 +139,6 @@ public class SetUpMap : MonoBehaviour
         {
             GameObject bgr = background.transform.GetChild(drop.value - 1).gameObject;
             SpriteRenderer sr = bgr.GetComponent<SpriteRenderer>();
-            Vector3 temp = bgr.transform.localScale;
             float height = sr.bounds.size.y;
             float width = sr.bounds.size.x;
             float scaleHeight = Camera.main.orthographicSize * 2f;
@@ -120,86 +147,79 @@ public class SetUpMap : MonoBehaviour
         }
     }
 
-    #region Pre Setting
-    public void _CheckInput(InputField input)
-    {
-        if (input.text == "" || int.Parse(input.text) <= 0)
-        {
-            input.text = "1";
-        }
-    }
-
-    public void _CheckInputTime(InputField lowerTimestamp, InputField higherTimestamp)
-    {
-        if (lowerTimestamp.text == "" || int.Parse(lowerTimestamp.text) <= 0)
-        {
-            lowerTimestamp.text = "0";
-        }
-        if (int.Parse(lowerTimestamp.text) >= int.Parse(higherTimestamp.text))
-        {
-            lowerTimestamp.text = higherTimestamp.text;
-        }
-    }
-
     public void _SetBaseProperties()
     {
-        levelData.level = int.Parse(level.text);
-        levelData.theme = theme.value;
-        levelData.time[0] = float.Parse(time.text);
-        map = new List<ProcessData>();
-        matrix = new string[1, 1];
-        for (int i = 0; i < int.Parse(process.text); i++)
+        if (editCreatedLv.isOn)
         {
-            map.Add(new ProcessData(1, 1, false, false, false, false, matrix));
-        }
+            //var temp = Resources.Load("Levels/Level_" + createdLv.text) as TextAsset;
+            var temp = Resources.Load("demoFile") as TextAsset;
+            levelData = JsonConvert.DeserializeObject<LevelData>(temp.text);
+            time.text = levelData.time[0] + "";
+            timestampFor2Star.text = levelData.time[2] + "";
+            timestampFor3Star.text = levelData.time[3] + "";
+            themeWhileEditing.value = levelData.theme;
+            map = levelData.process;
+            dataMap = map[indexMap];
+            totalTile.text = map[indexMap].TotalTile + "";
+            row.text = map[indexMap].Row + "";
+            column.text = map[indexMap].Column + "";
+            matrix = map[indexMap].Matrix;
+            pullDown.value = map[indexMap].PullDown == true ? 1 : 0;
+            pullUp.value = map[indexMap].PullUp == true ? 1 : 0;
+            pullLeft.value = map[indexMap].PullLeft == true ? 1 : 0;
+            pullRight.value = map[indexMap].PullRight == true ? 1 : 0;
 
-        SetUpBoard.setup = this;
-        SetUpBoard.levelData = levelData;
-        SetUpBoard.processData = map[0];
-        SetUpBoard.instance._StartCreating();
-        _SelectBackground(theme);
-
-        preSettingPanel.SetActive(false);
-        titleLv.text = "LEVEL " + levelData.level;
-        timeWhileEditing.text = time.text;
-        themeWhileEditing.value = theme.value;
-        index = 0;
-
-        if (int.Parse(process.text) > 1)
-        {
-            btNext.gameObject.SetActive(true);
+            string path = Application.dataPath + "/Resources/Shapes/" + totalTile.text + "/" + row.text + "x" + column.text + ".json";
+            StreamReader reader = new(path);
+            string data = reader.ReadToEnd();
+            reader.Close();
+            shapeList = JsonConvert.DeserializeObject<List<string[,]>>(data);
+            _EnableSwitchShape();
+            indexShape = _FindIndexShape(matrix);
+            for (int i = 0; i < map.Count; i++)
+            {
+                mapContainExistedShape.Add((_FindIndexShape(map[i].Matrix), map[i]));
+            }
         }
         else
         {
-            btNext.gameObject.SetActive(false);
-            btPlayTrial.interactable = true;
-        }
-    }
-
-    #endregion
-
-    #region Setting Up
-    void _CheckMatrix()
-    {
-        for(int r = 0; r < matrix.GetLength(0); r++)
-        {
-            for(int c = 0; c < matrix.GetLength(1); c++)
+            levelData.level = int.Parse(level.text);
+            levelData.theme = theme.value;
+            levelData.time[0] = float.Parse(time.text);
+            matrix = new string[1, 1];
+            for (int i = 0; i < int.Parse(process.text); i++)
             {
-                if (matrix[r, c] == null)
-                {
-                    matrix[r, c] = "";
-                }
+                map.Add(new ProcessData(0, 1, 1, matrix, false, false, false, false));
+                mapContainExistedShape.Add((indexShape, map[i]));
             }
+            themeWhileEditing.value = levelData.theme;
+        }
+        indexMap = 0;
+        SetUpBoard.setup = this;
+        SetUpBoard.levelData = levelData;
+        SetUpBoard.processData = map[indexMap];
+        SetUpBoard.instance._StartCreating();
+        _SelectBackground(themeWhileEditing);
+
+        titleLv.text = "LEVEL " + levelData.level;
+        preSettingPanel.SetActive(false);
+
+        if (map.Count > 1)
+        {
+            btNextMap.gameObject.SetActive(true);
+        }
+        else
+        {
+            btNextMap.gameObject.SetActive(false);
+            btPlayTrial.interactable = true;
         }
     }
 
     public void _ChangeSetting()
     {
         preSettingPanel.SetActive(true);
-        //GameObject btClose = GameObject.Find("PreSettingPanel/CloseButton");
-        //btClose.SetActive(true);
     }
-    
+
     public void _SetProperties()
     {
         setIngame = ingameSettingPanel.activeInHierarchy;
@@ -207,38 +227,49 @@ public class SetUpMap : MonoBehaviour
         ingameSettingPanel.SetActive(setIngame);
     }
 
-    public void _EditBoard()
+    #endregion
+
+    #region Edit Map
+    public void _GenerateMap(ProcessData data)
     {
-        _CheckInput(row);
-        _CheckInput(column);
-
-        matrix = new string[int.Parse(row.text), int.Parse(column.text)];
-        _EditDataMap();
-
+        _EditBoard();
         SetUpBoard.levelData = levelData;
-        SetUpBoard.processData = dataMap;
+        SetUpBoard.processData = data;
         SetUpBoard.instance._StartCreating();
     }
 
-    public void _EditDataMap()
+    void _EditBoard()
     {
-        _CheckInput(timeWhileEditing);
-        _CheckInputTime(timestampFor1Star, timestampFor2Star);
-        _CheckInputTime(timestampFor2Star, timestampFor3Star);
-        _CheckInputTime(timestampFor3Star, timeWhileEditing);
+        _CheckInput(row);
+        _CheckInput(column);
+        _CheckInput(totalTile, int.Parse(row.text) * int.Parse(column.text));
 
-        levelData.time[0] = float.Parse(timeWhileEditing.text);
-        levelData.time[1] = float.Parse(timestampFor1Star.text);
+        string folderName = Application.dataPath + "/Resources/Shapes/" + totalTile.text;
+        string fullPath = folderName + "/" + row.text + "x" + column.text + ".json";
+        _EditShape(fullPath, File.Exists(fullPath));
+
+        _EditDataMap();
+    }
+
+    void _EditDataMap()
+    {
+        _CheckInput(time);
+        _CheckInputTime(timestampFor3Star, time);
+        _CheckInputTime(timestampFor2Star, timestampFor3Star);
+
+        levelData.time[0] = float.Parse(time.text);
+        levelData.time[1] = 0;
         levelData.time[2] = float.Parse(timestampFor2Star.text);
         levelData.time[3] = float.Parse(timestampFor3Star.text);
         levelData.theme = themeWhileEditing.value;
+        dataMap.TotalTile = int.Parse(totalTile.text);
         dataMap.Row = int.Parse(row.text);
         dataMap.Column = int.Parse(column.text);
+        dataMap.Matrix = matrix;
         dataMap.PullDown = bool.Parse(pullDown.options[pullDown.value].text);
         dataMap.PullUp = bool.Parse(pullUp.options[pullUp.value].text);
         dataMap.PullLeft = bool.Parse(pullLeft.options[pullLeft.value].text);
         dataMap.PullRight = bool.Parse(pullRight.options[pullRight.value].text);
-        dataMap.Matrix = matrix;
 
         _SelectBackground(themeWhileEditing);
     }
@@ -261,127 +292,378 @@ public class SetUpMap : MonoBehaviour
         ddImage.onValueChanged.RemoveAllListeners();
         ddImage.value = 0;
 
-        btNone.onClick.AddListener(delegate
+        if (matrix[temp[0], temp[1]] == null || matrix[temp[0], temp[1]] == "" || matrix[temp[0], temp[1]] == "0")
         {
-            _NoneTile(currentTile);
-            matrix[temp[0], temp[1]] = "";
-        });
-        btRandom.onClick.AddListener(delegate
+            btNone.onClick.AddListener(delegate
+            {
+                _NoneTile(currentTile);
+                matrix[temp[0], temp[1]] = "";
+            });
+            btRandom.onClick.AddListener(delegate
+            {
+                dataMap.TotalTile++;
+                _RandomTile(currentTile);
+                matrix[temp[0], temp[1]] = "?";
+            });
+            btBlock.onClick.AddListener(delegate
+            {
+                _BlockTile(currentTile);
+                matrix[temp[0], temp[1]] = "0";
+            });
+            ddImage.onValueChanged.AddListener(delegate
+            {
+                dataMap.TotalTile++;
+                _ChooseTile(currentTile);
+                matrix[temp[0], temp[1]] = ddImage.options[ddImage.value].text;
+            });
+        }
+        else
         {
-            _RandomTile(currentTile);
-            matrix[temp[0], temp[1]] = "?";
-        });
-        btBlock.onClick.AddListener(delegate
-        {
-            _BlockTile(currentTile);
-            matrix[temp[0], temp[1]] = "0";
-        });
-        ddImage.onValueChanged.AddListener(delegate
-        {
-            _ChooseTile(currentTile);
-            matrix[temp[0], temp[1]] = ddImage.options[ddImage.value].text;
-        });
+            btNone.onClick.AddListener(delegate
+            {
+                dataMap.TotalTile--;
+                _NoneTile(currentTile);
+                matrix[temp[0], temp[1]] = "";
+            });
+            btRandom.onClick.AddListener(delegate
+            {
+                _RandomTile(currentTile);
+                matrix[temp[0], temp[1]] = "?";
+            });
+            btBlock.onClick.AddListener(delegate
+            {
+                dataMap.TotalTile--;
+                _BlockTile(currentTile);
+                matrix[temp[0], temp[1]] = "0";
+            });
+            ddImage.onValueChanged.AddListener(delegate
+            {
+                _ChooseTile(currentTile);
+                matrix[temp[0], temp[1]] = ddImage.options[ddImage.value].text;
+            });
+        }
     }
 
     void _NoneTile(Transform currentTile)
     {
-        currentTile.GetChild(0).GetComponent<Image>().sprite = btNone.GetComponent<Image>().sprite;
+        totalTile.text = dataMap.TotalTile + "";
+        currentTile.GetChild(1).GetComponent<Image>().sprite = btNone.transform.GetChild(1).GetComponent<Image>().sprite;
         optionPanel.SetActive(false);
     }
 
     void _BlockTile(Transform currentTile)
     {
-        currentTile.GetChild(0).GetComponent<Image>().sprite = btBlock.GetComponent<Image>().sprite;
+        totalTile.text = dataMap.TotalTile + "";
+        currentTile.GetChild(1).GetComponent<Image>().sprite = btBlock.transform.GetChild(1).GetComponent<Image>().sprite;
         optionPanel.SetActive(false);
     }
 
     void _RandomTile(Transform currentTile)
     {
-        currentTile.GetChild(0).GetComponent<Image>().sprite = btRandom.GetComponent<Image>().sprite;
+        totalTile.text = dataMap.TotalTile + "";
+        currentTile.GetChild(1).GetComponent<Image>().sprite = btRandom.transform.GetChild(1).GetComponent<Image>().sprite;
         optionPanel.SetActive(false);
     }
 
     void _ChooseTile(Transform currentTile)
     {
-        currentTile.GetChild(0).GetComponent<Image>().sprite = ResourceController.spritesDict[ddImage.value.ToString()];
+        totalTile.text = dataMap.TotalTile + "";
+        currentTile.GetChild(1).GetComponent<Image>().sprite = SpriteController.spritesDict[ddImage.value.ToString()];
         optionPanel.SetActive(false);
     }
 
     #endregion
 
-    #region Interact
-    public void _GoToNextProcess()
+    #region Validation
+    void _CheckInput(InputField input)
     {
-        _CheckMatrix();
-        map[index] = new ProcessData(dataMap.Row, dataMap.Column, dataMap.PullDown,
-            dataMap.PullUp, dataMap.PullLeft, dataMap.PullRight, matrix);
-        index++;
-
-        btPrev.gameObject.SetActive(true);
-        if (index == int.Parse(process.text) - 1)
+        if (input.text == "" || int.Parse(input.text) <= 0)
         {
-            btNext.gameObject.SetActive(false);
-            btPlayTrial.interactable = true;
+            input.text = "1";
         }
-        row.text = map[index].Row.ToString();
-        column.text = map[index].Column.ToString();
-        pullDown.value = map[index].PullDown == true ? 1 : 0;
-        pullUp.value = map[index].PullUp == true ? 1 : 0;
-        pullLeft.value = map[index].PullLeft == true ? 1 : 0;
-        pullRight.value = map[index].PullRight == true ? 1 : 0;
-        matrix = map[index].Matrix;
-        _EditDataMap();
-
-        SetUpBoard.levelData = levelData;
-        SetUpBoard.processData = map[index];
-        SetUpBoard.instance._StartCreating();
-
-        Debug.Log(index);
     }
 
-    public void _GoToPreviousProcess()
+    void _CheckInput(InputField input, int maxValue)
+    {
+        if (input.text == "" || int.Parse(input.text) <= 0)
+        {
+            input.text = "0";
+        }
+        if (int.Parse(input.text) >= maxValue)
+        {
+            input.text = maxValue + "";
+        }
+    }
+
+    void _CheckInputTime(InputField lowerTimestamp, InputField higherTimestamp)
+    {
+        if (lowerTimestamp.text == "" || int.Parse(lowerTimestamp.text) <= 0)
+        {
+            lowerTimestamp.text = "0";
+        }
+        if (int.Parse(lowerTimestamp.text) >= int.Parse(higherTimestamp.text))
+        {
+            lowerTimestamp.text = higherTimestamp.text;
+        }
+    }
+
+    void _CheckMatrix()
+    {
+        for (int r = 0; r < matrix.GetLength(0); r++)
+        {
+            for (int c = 0; c < matrix.GetLength(1); c++)
+            {
+                if (matrix[r, c] == null)
+                {
+                    matrix[r, c] = "";
+                }
+            }
+        }
+    }
+
+    #endregion
+
+    #region Shape
+    void _EditShape(string filePath, bool shapeIsExisted)
+    {
+        if (shapeIsExisted)
+        {
+            string temp = filePath[filePath.IndexOf("Shapes")..];
+            string path = temp.Remove(temp.IndexOf("."));
+            var data = Resources.Load(path) as TextAsset;
+            shapeList = JsonConvert.DeserializeObject<List<string[,]>>(data.text);
+            matrix = shapeList[indexShape];
+        }
+        else
+        {
+            shapeList = new();
+            matrix = new string[int.Parse(row.text), int.Parse(column.text)];
+            int temp = 0;
+            for (int r = 0; r < int.Parse(row.text); r++)
+            {
+                for (int c = 0; c < int.Parse(column.text); c++)
+                {
+                    if (temp < int.Parse(totalTile.text))
+                    {
+                        matrix[r, c] = "?";
+                        temp++;
+                    }
+                }
+            }
+        }
+
+        _EnableSwitchShape();
+    }
+
+    void _EnableSwitchShape()
+    {
+        if (shapeList.Count > 1)
+        {
+            if (indexShape == 0)
+            {
+                btPrevShape.interactable = false;
+                btNextShape.interactable = true;
+            }
+            else if (indexShape == shapeList.Count - 1)
+            {
+                btPrevShape.interactable = true;
+                btNextShape.interactable = false;
+            }
+            else
+            {
+                btPrevShape.interactable = true;
+                btNextShape.interactable = true;
+            }
+        }
+        else
+        {
+            btPrevShape.interactable = false;
+            btNextShape.interactable = false;
+        }
+    }
+
+    void _RotateShape(bool rotateRight)
+    {
+        int oldRow = matrix.GetLength(0);
+        int oldCol = matrix.GetLength(1);
+        string[,] temp = new string[oldCol, oldRow];
+        if (rotateRight)
+        {
+            for(int c = 0; c < oldCol; c++)
+            {
+                for(int r = oldRow - 1; r >= 0; r--)
+                {
+
+                }
+            }
+        }
+        else
+        {
+            for (int c = oldCol - 1; c >= 0; c--)
+            {
+                for (int r = 0; r < oldRow; r++)
+                {
+
+                }
+            }
+        }
+    }
+
+    int _FindIndexShape(string[,] shape)
+    {
+        if (shapeList.Count != 0)
+        {
+            foreach (var item in shapeList)
+            {
+                if (_AreTheSameShapes(shape, item)) return shapeList.IndexOf(item);
+            }
+        }
+        return 0;
+    }
+
+    void _StoreShapes(ProcessData data)
+    {
+        string[,] shape = data.Matrix;
+        for (int r = 0; r < data.Row; r++)
+        {
+            for (int c = 0; c < data.Column; c++)
+            {
+                if (shape[r, c] != "" && shape[r, c] != "0")
+                {
+                    shape[r, c] = "?";
+                }
+            }
+        }
+
+        string folderName = Application.dataPath + "/Resources/Shapes/" + data.TotalTile;
+        string fullPath = Path.Combine(folderName, data.Row + "x" + data.Column + ".json");
+
+        if (File.Exists(fullPath))
+        {
+            StreamReader reader = new(fullPath);
+            string temp = reader.ReadToEnd();
+            reader.Close();
+            List<string[,]> shapeList = JsonConvert.DeserializeObject<List<string[,]>>(temp);
+            bool isDuplicated = false;
+            foreach (var item in shapeList)
+            {
+                if (_AreTheSameShapes(shape, item))
+                {
+                    isDuplicated = true;
+                    break;
+                }
+            }
+            if (!isDuplicated)
+            {
+                shapeList.Add(shape);
+                string json = JsonConvert.SerializeObject(shapeList);
+                File.WriteAllText(fullPath, json);
+            }
+        }
+        else
+        {
+            List<string[,]> temp = new() { shape };
+            Directory.CreateDirectory(folderName);
+            string json = JsonConvert.SerializeObject(temp);
+            File.WriteAllText(fullPath, json);
+        }
+    }
+
+    bool _AreTheSameShapes(string[,] item1, string[,] item2)
+    {
+        if (item1.GetLength(0) != item2.GetLength(0) || item1.GetLength(1) != item2.GetLength(1)) return false;
+        else
+        {
+            for (int r = 0; r < item1.GetLength(0); r++)
+            {
+                for (int c = 0; c < item2.GetLength(1); c++)
+                {
+                    if (item1[r, c] != item2[r, c])
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    #endregion
+
+    #region Interact
+    void _GoToNextProcess()
     {
         _CheckMatrix();
-        map[index] = new ProcessData(dataMap.Row, dataMap.Column, dataMap.PullDown,
-            dataMap.PullUp, dataMap.PullLeft, dataMap.PullRight, matrix);
-        btNext.gameObject.SetActive(true);
-        btPlayTrial.interactable = false;
-        index--;
-        if (index == 0)
+        map[indexMap] = new ProcessData(dataMap.TotalTile, dataMap.Row, dataMap.Column, matrix,
+            dataMap.PullDown, dataMap.PullUp, dataMap.PullLeft, dataMap.PullRight);
+        mapContainExistedShape[indexMap] = (indexShape, map[indexMap]);
+        indexMap++;
+        indexShape = mapContainExistedShape[indexMap].Item1;
+        btPrevMap.gameObject.SetActive(true);
+        if (indexMap == map.Count - 1)
         {
-            btPrev.gameObject.SetActive(false);
+            btNextMap.gameObject.SetActive(false);
+            btPlayTrial.interactable = true;
         }
-        row.text = map[index].Row.ToString();
-        column.text = map[index].Column.ToString();
-        pullDown.value = map[index].PullDown == true ? 1 : 0;
-        pullUp.value = map[index].PullUp == true ? 1 : 0;
-        pullLeft.value = map[index].PullLeft == true ? 1 : 0;
-        pullRight.value = map[index].PullRight == true ? 1 : 0;
-        matrix = map[index].Matrix;
-        _EditDataMap();
+        totalTile.text = map[indexMap].TotalTile + "";
+        row.text = map[indexMap].Row + "";
+        column.text = map[indexMap].Column + "";
+        matrix = map[indexMap].Matrix;
+        pullDown.value = map[indexMap].PullDown == true ? 1 : 0;
+        pullUp.value = map[indexMap].PullUp == true ? 1 : 0;
+        pullLeft.value = map[indexMap].PullLeft == true ? 1 : 0;
+        pullRight.value = map[indexMap].PullRight == true ? 1 : 0;
+        _GenerateMap(map[indexMap]);
 
-        SetUpBoard.levelData = levelData;
-        SetUpBoard.processData = map[index];
-        SetUpBoard.instance._StartCreating();
-        
-        Debug.Log(index);
+        Debug.Log("Tien trinh " + (indexMap + 1));
+    }
+
+    void _GoToPreviousProcess()
+    {
+        _CheckMatrix();
+        map[indexMap] = new ProcessData(dataMap.TotalTile, dataMap.Row, dataMap.Column, matrix,
+            dataMap.PullDown, dataMap.PullUp, dataMap.PullLeft, dataMap.PullRight);
+        mapContainExistedShape[indexMap] = (indexShape, map[indexMap]);
+        indexMap--;
+        indexShape = mapContainExistedShape[indexMap].Item1;
+        btNextMap.gameObject.SetActive(true);
+        btPlayTrial.interactable = false;
+        if (indexMap == 0)
+        {
+            btPrevMap.gameObject.SetActive(false);
+        }
+        totalTile.text = map[indexMap].TotalTile + "";
+        row.text = map[indexMap].Row + "";
+        column.text = map[indexMap].Column + "";
+        matrix = map[indexMap].Matrix;
+        pullDown.value = map[indexMap].PullDown == true ? 1 : 0;
+        pullUp.value = map[indexMap].PullUp == true ? 1 : 0;
+        pullLeft.value = map[indexMap].PullLeft == true ? 1 : 0;
+        pullRight.value = map[indexMap].PullRight == true ? 1 : 0;
+        _GenerateMap(map[indexMap]);
+
+        Debug.Log("Tien trinh " + (indexMap + 1));
     }
 
     public void _Complete()
     {
         _CheckMatrix();
-        map[index] = new ProcessData(dataMap.Row, dataMap.Column, dataMap.PullDown,
-            dataMap.PullUp, dataMap.PullLeft, dataMap.PullRight, matrix);
+        map[indexMap] = new ProcessData(dataMap.TotalTile, dataMap.Row, dataMap.Column, matrix,
+            dataMap.PullDown, dataMap.PullUp, dataMap.PullLeft, dataMap.PullRight);
         levelData.process = map;
-
+        foreach (var item in map)
+        {
+            _StoreShapes(item);
+            Debug.Log("Map " + (map.IndexOf(item) + 1) + " - " + item.TotalTile + " tiles");
+        }
         string json = JsonConvert.SerializeObject(levelData);
-        File.WriteAllText(Application.dataPath + "/Resources/Level_" + levelData.level + ".json", json);
+        //File.WriteAllText(Application.dataPath + "/Resources/Levels/Level_" + levelData.level + ".json", json);
         //File.WriteAllText(Application.dataPath + "/Resources/demo.json", json);
+        File.WriteAllText(Application.dataPath + "/Resources/demoFile.json", json);
 
         Debug.Log("Doneeeee");
     }
-
-    public void _PlayTrial()
+    void _PlayTrial()
     {
         SceneManager.LoadScene("PlayTrial");
     }
