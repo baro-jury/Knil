@@ -12,14 +12,14 @@ public class SetUpMap : MonoBehaviour
 {
     public static SetUpMap instance;
 
-    private LevelData levelData = new();
-    private List<ProcessData> map = new();
-    private List<(int, ProcessData)> mapContainExistedShape = new();
-    private ProcessData dataMap = new();
-    private List<string[,]> shapeList = new();
-    private List<OptionData> tileImages = new();
+    private LevelData levelData = new LevelData();
+    private List<ProcessData> map = new List<ProcessData>();
+    private List<(int, ProcessData)> mapContainExistedShape = new List<(int, ProcessData)>();
+    private ProcessData dataMap = new ProcessData();
+    private List<string[,]> shapeList = new List<string[,]>();
+    private List<OptionData> tileImages = new List<OptionData>();
     private int indexMap = 0, indexShape = 0;
-    private bool setIngame;
+    private bool setIngame, limitID;
     private string[,] matrix;
 
     [SerializeField]
@@ -32,13 +32,13 @@ public class SetUpMap : MonoBehaviour
     [SerializeField]
     private InputField createdLv, level, process;
     [SerializeField]
-    private Dropdown theme, themeWhileEditing;
+    private Dropdown difficulty, theme, themeWhileEditing;
 
     [SerializeField]
     private InputField time, timestampFor2Star, timestampFor3Star;
 
     [SerializeField]
-    private GameObject ingameSettingPanel;
+    private GameObject ingameSettingPanel, limitIdPanel;
     [SerializeField]
     private InputField totalTile, row, column;
     [SerializeField]
@@ -76,7 +76,7 @@ public class SetUpMap : MonoBehaviour
         ////string json = JsonUtility.ToJson(lv); // <-
         ////LevelData loadLv = JsonUtility.FromJson<LevelData>(json); // <-
 
-        createdLv.onEndEdit.AddListener(delegate { _CheckInput(createdLv); });
+        createdLv.onEndEdit.AddListener(delegate { _CheckInput(createdLv, Resources.LoadAll("Levels").Length); });
         level.onEndEdit.AddListener(delegate { _CheckInput(level); });
         process.onEndEdit.AddListener(delegate { _CheckInput(process); });
 
@@ -91,7 +91,7 @@ public class SetUpMap : MonoBehaviour
         timestampFor3Star.onEndEdit.AddListener(delegate { _EditDataMap(); });
         time.onEndEdit.AddListener(delegate { _EditDataMap(); });
         themeWhileEditing.onValueChanged.AddListener(delegate { _EditDataMap(); });
-        totalTile.onEndEdit.AddListener(delegate { _EditBoard(); });
+        totalTile.onEndEdit.AddListener(delegate { _CheckEvenInput(totalTile); indexShape = 0; _EditBoard(); });
         row.onEndEdit.AddListener(delegate { _EditBoard(); });
         column.onEndEdit.AddListener(delegate { _EditBoard(); });
         pullDown.onValueChanged.AddListener(delegate { _EditDataMap(); });
@@ -174,46 +174,69 @@ public class SetUpMap : MonoBehaviour
         }
     }
 
+    void _CheckProcess(ProcessData data, List<string[,]> listShape)
+    {
+        string path = Application.dataPath + "/Resources/Shapes/" + data.TotalTile + "/" + data.Row + "x" + data.Column + ".json";
+        StreamReader reader = new(path);
+        string temp = reader.ReadToEnd();
+        reader.Close();
+        listShape = JsonConvert.DeserializeObject<List<string[,]>>(temp);
+        mapContainExistedShape.Add((_FindIndexShape(data.Matrix, listShape), data));
+    }
+
     public void _SetBaseProperties()
     {
+        map.Clear();
+        mapContainExistedShape.Clear();
+        indexMap = 0;
         if (editCreatedLv.isOn)
         {
-            //var temp = Resources.Load("Levels/Level_" + createdLv.text) as TextAsset;
-            var temp = Resources.Load("demoFile") as TextAsset;
+            var temp = Resources.Load("Levels/Level_" + createdLv.text) as TextAsset;
+            //var temp = Resources.Load("demoFile") as TextAsset;
             levelData = JsonConvert.DeserializeObject<LevelData>(temp.text);
             time.text = levelData.time[0] + "";
             timestampFor2Star.text = levelData.time[2] + "";
             timestampFor3Star.text = levelData.time[3] + "";
             themeWhileEditing.value = levelData.theme;
-            map = levelData.process;
-            dataMap = map[indexMap];
-            totalTile.text = map[indexMap].TotalTile + "";
-            row.text = map[indexMap].Row + "";
-            column.text = map[indexMap].Column + "";
-            matrix = map[indexMap].Matrix;
-            pullDown.value = map[indexMap].PullDown == true ? 1 : 0;
-            pullUp.value = map[indexMap].PullUp == true ? 1 : 0;
-            pullLeft.value = map[indexMap].PullLeft == true ? 1 : 0;
-            pullRight.value = map[indexMap].PullRight == true ? 1 : 0;
 
+            foreach (var item in levelData.process) map.Add(item);
+            //dataMap = map[indexMap];
+            dataMap = new ProcessData(map[indexMap].TotalTile, map[indexMap].Row, map[indexMap].Column, map[indexMap].Matrix,
+                map[indexMap].PullDown, map[indexMap].PullUp, map[indexMap].PullLeft, map[indexMap].PullRight);
+
+            totalTile.text = dataMap.TotalTile + "";
+            row.text = dataMap.Row + "";
+            column.text = dataMap.Column + "";
+            matrix = dataMap.Matrix;
+            pullDown.value = dataMap.PullDown == true ? 1 : 0;
+            pullUp.value = dataMap.PullUp == true ? 1 : 0;
+            pullLeft.value = dataMap.PullLeft == true ? 1 : 0;
+            pullRight.value = dataMap.PullRight == true ? 1 : 0;
+            
             string path = Application.dataPath + "/Resources/Shapes/" + totalTile.text + "/" + row.text + "x" + column.text + ".json";
             StreamReader reader = new(path);
             string data = reader.ReadToEnd();
             reader.Close();
             shapeList = JsonConvert.DeserializeObject<List<string[,]>>(data);
+            indexShape = _FindIndexShape(matrix, shapeList);
+            mapContainExistedShape.Add((indexShape, dataMap));
             _EnableSwitchShape();
-            indexShape = _FindIndexShape(matrix);
-            for (int i = 0; i < map.Count; i++)
+            List<string[,]> list = new List<string[,]>();
+            for (int i = 1; i < map.Count; i++)
             {
-                mapContainExistedShape.Add((_FindIndexShape(map[i].Matrix), map[i]));
+                _CheckProcess(map[i], list);
             }
+
+            //for (int i = 0; i < map.Count; i++)
+            //{
+            //    mapContainExistedShape.Add((_FindIndexShape(map[i].Matrix), map[i]));
+            //}
         }
         else
         {
-            map.Clear();
             levelData.level = int.Parse(level.text);
+            levelData.difficulty = difficulty.options[difficulty.value].text;
             levelData.theme = theme.value;
-            levelData.time[0] = float.Parse(time.text);
             matrix = new string[1, 1];
             for (int i = 0; i < int.Parse(process.text); i++)
             {
@@ -222,9 +245,8 @@ public class SetUpMap : MonoBehaviour
             }
             themeWhileEditing.value = levelData.theme;
         }
-        indexMap = 0;
         SetUpBoard.setup = this;
-        _GenerateMap(map[indexMap]);
+        _GenerateMap(dataMap);
         _SelectBackground(themeWhileEditing);
 
         titleLv.text = "LEVEL " + levelData.level;
@@ -247,6 +269,13 @@ public class SetUpMap : MonoBehaviour
         setIngame = ingameSettingPanel.activeInHierarchy;
         setIngame = !setIngame;
         ingameSettingPanel.SetActive(setIngame);
+    }
+
+    public void _LimitID()
+    {
+        limitID = limitIdPanel.activeInHierarchy;
+        limitID = !limitID;
+        limitIdPanel.SetActive(limitID);
     }
 
     #endregion
@@ -407,6 +436,14 @@ public class SetUpMap : MonoBehaviour
         }
     }
 
+    void _CheckEvenInput(InputField input)
+    {
+        if (int.Parse(input.text) % 2 != 0)
+        {
+            input.text = int.Parse(input.text) - 1 + "";
+        }
+    }
+
     void _CheckInputTime(InputField lowerTimestamp, InputField higherTimestamp)
     {
         if (lowerTimestamp.text == "" || int.Parse(lowerTimestamp.text) <= 0)
@@ -449,11 +486,19 @@ public class SetUpMap : MonoBehaviour
         string fullPath = folderName + "/" + row.text + "x" + column.text + ".json";
         if (File.Exists(fullPath))
         {
-            string temp = fullPath[fullPath.IndexOf("Shapes")..];
+            //string temp = fullPath[fullPath.IndexOf("Shapes")..];
+            string temp = fullPath.Substring(fullPath.IndexOf("Shapes"));
             string path = temp.Remove(temp.IndexOf("."));
             var data = Resources.Load(path) as TextAsset;
             shapeList = JsonConvert.DeserializeObject<List<string[,]>>(data.text);
-            matrix = shapeList[indexShape];
+            if (_SuitableShape() && indexShape == mapContainExistedShape[indexMap].Item1)
+            {
+                matrix = map[indexMap].Matrix;
+            }
+            else
+            {
+                matrix = shapeList[indexShape];
+            }
         }
         else
         {
@@ -479,6 +524,8 @@ public class SetUpMap : MonoBehaviour
                 }
             }
         }
+
+
         _EnableSwitchShape();
     }
 
@@ -541,13 +588,13 @@ public class SetUpMap : MonoBehaviour
         _GenerateMap(dataMap);
     }
 
-    int _FindIndexShape(string[,] shape)
+    int _FindIndexShape(string[,] shape, List<string[,]> list)
     {
-        if (shapeList.Count != 0)
+        if (list.Count != 0)
         {
-            foreach (var item in shapeList)
+            foreach (var item in list)
             {
-                if (_AreTheSameShapes(shape, item)) return shapeList.IndexOf(item);
+                if (_AreTheSameShapes(shape, item)) return list.IndexOf(item);
             }
         }
         return 0;
@@ -555,7 +602,15 @@ public class SetUpMap : MonoBehaviour
 
     void _StoreShapes(ProcessData data)
     {
-        string[,] shape = data.Matrix;
+        //string[,] shape = data.Matrix;
+        string[,] shape = new string[data.Row, data.Column];
+        for (int r = 0; r < data.Row; r++)
+        {
+            for (int c = 0; c < data.Column; c++)
+            {
+                shape[r, c] = data.Matrix[r, c];
+            }
+        }
         for (int r = 0; r < data.Row; r++)
         {
             for (int c = 0; c < data.Column; c++)
@@ -576,21 +631,16 @@ public class SetUpMap : MonoBehaviour
             string temp = reader.ReadToEnd();
             reader.Close();
             List<string[,]> shapeList = JsonConvert.DeserializeObject<List<string[,]>>(temp);
-            bool isDuplicated = false;
+            bool shapeDuplicated = false, rndTileShapeDuplicated = false;
             foreach (var item in shapeList)
             {
-                if (_AreTheSameShapes(shape, item))
-                {
-                    isDuplicated = true;
-                    break;
-                }
+                if (_AreTheSameShapes(data.Matrix, item)) shapeDuplicated = true;
+                if (_AreTheSameShapes(shape, item)) rndTileShapeDuplicated = true;
             }
-            if (!isDuplicated)
-            {
-                shapeList.Add(shape);
-                string json = JsonConvert.SerializeObject(shapeList);
-                File.WriteAllText(fullPath, json);
-            }
+            if (!shapeDuplicated) shapeList.Add(data.Matrix);
+            if (!rndTileShapeDuplicated) shapeList.Add(shape);
+            string json = JsonConvert.SerializeObject(shapeList);
+            File.WriteAllText(fullPath, json);
         }
         else
         {
@@ -691,7 +741,7 @@ public class SetUpMap : MonoBehaviour
     void _PlayTrial()
     {
         SceneManager.LoadScene("PlayTrial");
-        GameplayTrial.lvInput.text = levelData.level + "";
+        GameplayTrial.instance.lvInput.text = levelData.level + "";
     }
 
     #endregion

@@ -9,8 +9,6 @@ public class SetUpBoard : MonoBehaviour
 {
     public static SetUpBoard instance;
     public static SetUpMap setup;
-    //public static LevelData levelData;
-    //public static ProcessData processData;
     public static LevelData levelData;
     public static ProcessData processData;
     private int totalTile, row, column;

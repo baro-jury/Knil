@@ -6,6 +6,7 @@ using UnityEngine;
 public class LevelData
 {
     public int level;
+    public string difficulty;
     public int theme;
     public float[] time = { 1, 0, 0, 0 };
     public List<ProcessData> process;
@@ -18,6 +19,11 @@ public class LevelData
         this.theme = theme;
         this.time = time;
         this.process = process;
+    }
+
+    public LevelData(int level, string difficulty, int theme, float[] time, List<ProcessData> process) : this(level, theme, time, process)
+    {
+        this.difficulty = difficulty;
     }
 }
 

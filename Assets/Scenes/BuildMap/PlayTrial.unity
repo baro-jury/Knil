@@ -1463,6 +1463,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2313df02a6d8b414aa2ad4439cad371f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lvInput: {fileID: 1755623335}
   chooseLvPanel: {fileID: 888165658}
   titleLv: {fileID: 663761111}
   pauseButton: {fileID: 1229809550}

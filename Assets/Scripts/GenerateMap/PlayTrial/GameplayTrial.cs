@@ -19,8 +19,7 @@ public class GameplayTrial : MonoBehaviour
     private Transform[] points = new Transform[4];
     private Transform tile;
 
-    [SerializeField]
-    public static InputField lvInput;
+    public InputField lvInput;
     [SerializeField]
     private GameObject chooseLvPanel;
     [SerializeField]
@@ -298,8 +297,6 @@ public class GameplayTrial : MonoBehaviour
         isCoupled = true;
         EventSystem.current.SetSelectedGameObject(null);
         TrialBoard.instance._RearrangeTiles();
-        //var effect = Instantiate(shuffle, new Vector3(0, 50, 0), Quaternion.identity, gameObject.transform);
-        //effect.Play();
 
         Debug.Log("shuffle");
     }
@@ -367,8 +364,6 @@ public class GameplayTrial : MonoBehaviour
                 sequence.Join(linePositions[i].GetComponent<RectTransform>().DOSizeDelta(Vector2.zero, 0.4f).SetEase(Ease.InBack).SetUpdate(true)
                     .OnComplete(delegate { linePositions[index].gameObject.SetActive(false); })
                     );
-                //linePositions[i].GetComponent<RectTransform>().DOSizeDelta(Vector2.zero, .65f).SetEase(Ease.InBack).SetUpdate(true)
-                //    .OnComplete(delegate { linePositions[index].gameObject.SetActive(false); });
                 TrialBoard.instance._DeactivateTile(linePositions[i].GetComponent<TileController>());
             }
         }
