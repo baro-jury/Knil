@@ -2,12 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class TimeController : MonoBehaviour
 {
     public static TimeController instance;
     public static bool isSaved;
 
+    [SerializeField]
+    private AudioClip timeWarning;
+    [SerializeField]
+    private Transform iconClock;
     [SerializeField]
     private Slider slider;
     [SerializeField]
@@ -18,7 +23,7 @@ public class TimeController : MonoBehaviour
     private float timestampFor1Star;
     private float timestampFor2Star;
     private float timestampFor3Star;
-    private bool isFreezed;
+    private bool isFreezed, muchTimeLeft;
 
     void _MakeInstance()
     {
@@ -36,11 +41,12 @@ public class TimeController : MonoBehaviour
     void Start()
     {
         isSaved = false;
+        muchTimeLeft = true;
 
-        time = BoardController.levelData.time[0];
-        timestampFor1Star = BoardController.levelData.time[1];
-        timestampFor2Star = BoardController.levelData.time[2];
-        timestampFor3Star = BoardController.levelData.time[3];
+        time = BoardController.levelData.Time[0];
+        timestampFor1Star = BoardController.levelData.Time[1];
+        timestampFor2Star = BoardController.levelData.Time[2];
+        timestampFor3Star = BoardController.levelData.Time[3];
         instance._SetTimeForSlider(false);
 
         slider.transform.GetChild(3).gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(
@@ -85,9 +91,21 @@ public class TimeController : MonoBehaviour
                 {
                     slider.transform.GetChild(3).GetChild(0).gameObject.SetActive(false);
                 }
+
+                if (muchTimeLeft && time <= 15)
+                {
+                    muchTimeLeft = false;
+                    ProgressController.instance.audioSource.PlayOneShot(timeWarning);
+
+                    iconClock.DOScale(new Vector3(1.2f, 1.2f, 1), 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
+                    iconClock.DORotate(new Vector3(0, 0, -20), 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
+                    iconClock.GetComponent<Image>().DOColor(Color.red, 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
+                }
             }
             else
             {
+                muchTimeLeft = true;
+                DOTween.Clear();
                 time = 0;
                 if (isSaved)
                 {

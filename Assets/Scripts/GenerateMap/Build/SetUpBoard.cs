@@ -50,7 +50,7 @@ public class SetUpBoard : MonoBehaviour
 
     void _InstantiateLevel()
     {
-        Timer.time = levelData.time[0];
+        Timer.time = levelData.Time[0];
 
         totalTile = processData.TotalTile;
         row = processData.Row;

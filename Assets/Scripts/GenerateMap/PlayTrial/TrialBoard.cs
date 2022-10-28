@@ -10,13 +10,13 @@ public class TrialBoard : MonoBehaviour
 {
     public static TrialBoard instance;
     public static LevelData levelData;
-    public static List<Transform> buttonList = new();
-    public static List<TileController> buttonListWithoutBlocker = new();
-    public static Dictionary<string, Sprite> dict = new();
+    public static List<Transform> buttonList = new List<Transform>();
+    public static List<TileController> buttonListWithoutBlocker = new List<TileController>();
+    public static Dictionary<string, Sprite> dict = new Dictionary<string, Sprite>();
     public static int row, column;
     public int sideSmallTile = 112, sideMediumTile = 130, sideLargeTile = 180;
-    private int process, orderOfPullingDirection;
-    private bool pullDown, pullUp, pullLeft, pullRight;
+    private int minId, maxId, process, orderOfPullingDirection;
+    private bool shuffle, pullDown, pullUp, pullLeft, pullRight;
     private string[,] matrix;
 
     [SerializeField]
@@ -51,26 +51,20 @@ public class TrialBoard : MonoBehaviour
         _MakeInstance();
     }
 
-    void Start()
-    {
-        dict.Clear();
-        foreach (KeyValuePair<string, Sprite> kvp in SpriteController.spritesDict)
-        {
-            dict.Add(kvp.Key, kvp.Value);
-        }
-    }
-
     #region Khởi tạo màn chơi
     void _InstantiateProcess(int orderNumber)
     {
         process = orderNumber;
-        row = levelData.process[orderNumber - 1].Row;
-        column = levelData.process[orderNumber - 1].Column;
-        pullDown = levelData.process[orderNumber - 1].PullDown;
-        pullUp = levelData.process[orderNumber - 1].PullUp;
-        pullLeft = levelData.process[orderNumber - 1].PullLeft;
-        pullRight = levelData.process[orderNumber - 1].PullRight;
-        matrix = levelData.process[orderNumber - 1].Matrix;
+        minId = levelData.Process[orderNumber - 1].MinID;
+        maxId = levelData.Process[orderNumber - 1].MaxID;
+        shuffle = levelData.Process[orderNumber - 1].Shuffle;
+        row = levelData.Process[orderNumber - 1].Row;
+        column = levelData.Process[orderNumber - 1].Column;
+        pullDown = levelData.Process[orderNumber - 1].PullDown;
+        pullUp = levelData.Process[orderNumber - 1].PullUp;
+        pullLeft = levelData.Process[orderNumber - 1].PullLeft;
+        pullRight = levelData.Process[orderNumber - 1].PullRight;
+        matrix = levelData.Process[orderNumber - 1].Matrix;
     }
 
     public void _GoToProcess(int order)
@@ -83,15 +77,16 @@ public class TrialBoard : MonoBehaviour
         }
         orderOfPullingDirection = 0;
         _InstantiateProcess(order);
+        dict = SpriteController.instance._CreateSubDictionary(minId, maxId);
         _GenerateTiles();
+        _SpreadTiles();
     }
     #endregion
 
     #region Tạo Tiles
     void _GenerateTiles()
     {
-        int num = NumberOfSameTiles();
-        int repeat = 0, index = dict.Count - 1;
+        int repeat = 0, index = minId;
         SpriteController.instance._ShuffleImage(dict);
 
         float sideTile = gameObject.GetComponent<RectTransform>().sizeDelta.x / column;
@@ -168,13 +163,58 @@ public class TrialBoard : MonoBehaviour
                     objBtn.name = objBtn.Id + " - " + objBtn.Index;
                     objBtn.transform.localPosition = tilePos * 40;
                     buttonList.Add(objBtn.transform);
-                    if (repeat == num)
+                    if (repeat == 2)
                     {
                         repeat = 0;
-                        index--;
-                        num = NumberOfSameTiles();
+                        index++;
+                        if (index > maxId)
+                        {
+                            index = minId;
+                        }
                     }
                 }
+            }
+        }
+    }
+
+    void _SpreadTiles()
+    {
+        GameplayTrial.instance._EnableSupporter(false);
+        List<int> source = new List<int>();
+        List<Transform> trsfTiles = new List<Transform>();
+        List<Vector3> posTiles = new List<Vector3>();
+        List<(int, int)> indexTiles = new List<(int, int)>();
+
+        foreach (var item in buttonListWithoutBlocker)
+        {
+            source.Add(buttonListWithoutBlocker.FindIndex(x => x == item));
+            trsfTiles.Add(item.transform);
+            posTiles.Add(item.transform.localPosition);
+            indexTiles.Add(item.Index);
+        }
+        foreach (var item in trsfTiles)
+        {
+            item.DOLocalMove(Vector3.zero, 0f).SetEase(Ease.InBack).SetUpdate(true);
+        }
+        if (shuffle)
+        {
+            _MakeConnectableCouple(source, trsfTiles, posTiles, indexTiles, 0);
+            source = Shuffle(source.Count);
+        }
+        for (int i = 0; i < source.Count; i++)
+        {
+            trsfTiles[i].GetComponent<TileController>().Index = indexTiles[source[i]];
+            trsfTiles[i].name = trsfTiles[i].GetComponent<TileController>().Id
+                + " - " + trsfTiles[i].GetComponent<TileController>().Index;
+            matrix[indexTiles[source[i]].Item1, indexTiles[source[i]].Item2] = trsfTiles[i].GetComponent<TileController>().Id + "";
+            if (i < source.Count - 1)
+            {
+                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.4f).SetEase(Ease.OutBack).SetUpdate(true);
+            }
+            else
+            {
+                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.4f).SetEase(Ease.OutBack).SetUpdate(true)
+                    .OnComplete(() => { GameplayTrial.instance._EnableSupporter(true); });
             }
         }
     }
@@ -214,7 +254,7 @@ public class TrialBoard : MonoBehaviour
         }
         for (int index = 1; index < dict.Count; index++)
         {
-            List<Transform> temp = _SearchSameTiles(dict[index.ToString()]);
+            List<Transform> temp = _SearchSameTiles(dict.ElementAt(index).Value);
             if (temp.Count != 0)
             {
                 for (int i = 0; i < (temp.Count - 1); i++)
@@ -238,10 +278,10 @@ public class TrialBoard : MonoBehaviour
     public void _RearrangeTiles()
     {
         GameplayTrial.instance._EnableSupporter(false);
-        List<int> source = new();
-        List<Transform> trsfTiles = new();
-        List<Vector3> posTiles = new();
-        List<(int, int)> indexTiles = new();
+        List<int> source = new List<int>();
+        List<Transform> trsfTiles = new List<Transform>();
+        List<Vector3> posTiles = new List<Vector3>();
+        List<(int, int)> indexTiles = new List<(int, int)>();
 
         foreach (var item in buttonListWithoutBlocker)
         {
@@ -254,7 +294,7 @@ public class TrialBoard : MonoBehaviour
         {
             item.DOLocalMove(Vector3.zero, 0.4f).SetEase(Ease.InBack).SetUpdate(true);
         }
-        _MakeConnectableCouple(source, trsfTiles, posTiles, indexTiles);
+        _MakeConnectableCouple(source, trsfTiles, posTiles, indexTiles, 0.4f);
         source = Shuffle(source.Count);
         for (int i = 0; i < source.Count; i++)
         {
@@ -287,7 +327,7 @@ public class TrialBoard : MonoBehaviour
         return temp;
     }
 
-    void _MakeConnectableCouple(List<int> source, List<Transform> trsfTiles, List<Vector3> posTiles, List<(int, int)> indexTiles)
+    void _MakeConnectableCouple(List<int> source, List<Transform> trsfTiles, List<Vector3> posTiles, List<(int, int)> indexTiles, float delay)
     {
         Transform tile1 = trsfTiles[0];
         source.Remove(source.Count - 1);
@@ -314,9 +354,9 @@ public class TrialBoard : MonoBehaviour
             }
         }
     arrange:
-        tile1.DOLocalMove(tilePos1, 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.4f);
+        tile1.DOLocalMove(tilePos1, 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(delay);
         posTiles.Remove(tilePos1);
-        tile2.DOLocalMove(tilePos2, 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.4f);
+        tile2.DOLocalMove(tilePos2, 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(delay);
         posTiles.Remove(tilePos2);
 
         tile1.GetComponent<TileController>().Index = index1;
@@ -362,7 +402,7 @@ public class TrialBoard : MonoBehaviour
     {
         if (buttonListWithoutBlocker.Count == 0)
         {
-            if (process != levelData.process.Count)
+            if (process != levelData.Process.Count)
             {
                 _GoToProcess(process + 1);
             }
@@ -376,7 +416,7 @@ public class TrialBoard : MonoBehaviour
 
     public List<Transform> _SearchSameTiles(Sprite sprite)
     {
-        List<Transform> list = new();
+        List<Transform> list = new List<Transform>();
         foreach (var trans in buttonListWithoutBlocker)
         {
             if (trans.transform.GetChild(1).GetComponent<Image>().sprite == sprite)
@@ -454,7 +494,7 @@ public class TrialBoard : MonoBehaviour
                     _PullTilesToLeft(0, column - 1);
                     break;
             }
-            if (levelData.level % 2 == 0)
+            if (levelData.Level % 2 == 0)
             {
                 orderOfPullingDirection++;
             }

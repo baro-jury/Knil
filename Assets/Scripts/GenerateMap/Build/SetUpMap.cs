@@ -19,7 +19,7 @@ public class SetUpMap : MonoBehaviour
     private List<string[,]> shapeList = new List<string[,]>();
     private List<OptionData> tileImages = new List<OptionData>();
     private int indexMap = 0, indexShape = 0;
-    private bool setIngame, limitID;
+    private bool setIngame, setMoreProp;
     private string[,] matrix;
 
     [SerializeField]
@@ -28,7 +28,7 @@ public class SetUpMap : MonoBehaviour
     [SerializeField]
     private GameObject preSettingPanel;
     [SerializeField]
-    private Toggle editCreatedLv;
+    private Toggle editCreatedLv, shuffleTile;
     [SerializeField]
     private InputField createdLv, level, process;
     [SerializeField]
@@ -38,9 +38,9 @@ public class SetUpMap : MonoBehaviour
     private InputField time, timestampFor2Star, timestampFor3Star;
 
     [SerializeField]
-    private GameObject ingameSettingPanel, limitIdPanel;
+    private GameObject ingameSettingPanel, additionalPanel;
     [SerializeField]
-    private InputField totalTile, row, column;
+    private InputField minId, maxId, totalTile, row, column;
     [SerializeField]
     private Dropdown pullDown, pullUp, pullLeft, pullRight;
 
@@ -75,9 +75,13 @@ public class SetUpMap : MonoBehaviour
         ////LevelData lv = new LevelData(11, 1, 420, temp);
         ////string json = JsonUtility.ToJson(lv); // <-
         ////LevelData loadLv = JsonUtility.FromJson<LevelData>(json); // <-
+        minId.text = 1 + "";
+        maxId.text = SpriteController.spritesDict.Count - 1 + "";
+        level.text = Resources.LoadAll("Levels").Length + 1 + "";
+        _CreateDataTile(1, SpriteController.spritesDict.Count - 1);
 
-        createdLv.onEndEdit.AddListener(delegate { _CheckInput(createdLv, Resources.LoadAll("Levels").Length); });
-        level.onEndEdit.AddListener(delegate { _CheckInput(level); });
+        createdLv.onEndEdit.AddListener(delegate { _CheckInput(createdLv, 1, Resources.LoadAll("Levels").Length); });
+        level.onEndEdit.AddListener(delegate { _CheckInput(level, Resources.LoadAll("Levels").Length + 1, int.MaxValue); });
         process.onEndEdit.AddListener(delegate { _CheckInput(process); });
 
         btPrevMap.onClick.AddListener(delegate { _GoToPreviousProcess(); });
@@ -91,22 +95,28 @@ public class SetUpMap : MonoBehaviour
         timestampFor3Star.onEndEdit.AddListener(delegate { _EditDataMap(); });
         time.onEndEdit.AddListener(delegate { _EditDataMap(); });
         themeWhileEditing.onValueChanged.AddListener(delegate { _EditDataMap(); });
+        minId.onEndEdit.AddListener(delegate
+        {
+            _CheckInput(minId, 1, int.Parse(maxId.text) - 1);
+            _CreateDataTile(int.Parse(minId.text), int.Parse(maxId.text));
+            _ScanMatrix();
+        });
+        maxId.onEndEdit.AddListener(delegate
+        {
+            _CheckInput(maxId, 2, SpriteController.spritesDict.Count - 1);
+            _CreateDataTile(int.Parse(minId.text), int.Parse(maxId.text));
+            _ScanMatrix();
+        });
+        shuffleTile.onValueChanged.AddListener(delegate { if (!preSettingPanel.activeInHierarchy) _EditDataMap(); });
         totalTile.onEndEdit.AddListener(delegate { _CheckEvenInput(totalTile); indexShape = 0; _EditBoard(); });
         row.onEndEdit.AddListener(delegate { _EditBoard(); });
         column.onEndEdit.AddListener(delegate { _EditBoard(); });
-        pullDown.onValueChanged.AddListener(delegate { _EditDataMap(); });
-        pullUp.onValueChanged.AddListener(delegate { _EditDataMap(); });
-        pullLeft.onValueChanged.AddListener(delegate { _EditDataMap(); });
-        pullRight.onValueChanged.AddListener(delegate { _EditDataMap(); });
+        pullDown.onValueChanged.AddListener(delegate { if (!preSettingPanel.activeInHierarchy) _EditDataMap(); });
+        pullUp.onValueChanged.AddListener(delegate { if (!preSettingPanel.activeInHierarchy) _EditDataMap(); });
+        pullLeft.onValueChanged.AddListener(delegate { if (!preSettingPanel.activeInHierarchy) _EditDataMap(); });
+        pullRight.onValueChanged.AddListener(delegate { if (!preSettingPanel.activeInHierarchy) _EditDataMap(); });
 
         btPlayTrial.onClick.AddListener(delegate { _PlayTrial(); });
-
-        tileImages.Add(new OptionData("", btNone.transform.GetChild(1).GetComponent<Image>().sprite));
-        for (int i = 1; i < SpriteController.spritesDict.Count; i++)
-        {
-            tileImages.Add(new OptionData(i.ToString(), SpriteController.spritesDict[i.ToString()]));
-        }
-        ddImage.AddOptions(tileImages);
     }
 
     #region Setup
@@ -174,7 +184,40 @@ public class SetUpMap : MonoBehaviour
         }
     }
 
-    void _CheckProcess(ProcessData data, List<string[,]> listShape)
+    void _CreateDataTile(int min, int max)
+    {
+        tileImages.Clear();
+        ddImage.ClearOptions();
+        tileImages.Add(new OptionData("", btNone.transform.GetChild(1).GetComponent<Image>().sprite));
+        for (int i = min; i <= max; i++)
+        {
+            tileImages.Add(new OptionData(i.ToString(), SpriteController.spritesDict[i.ToString()]));
+        }
+        ddImage.AddOptions(tileImages);
+    }
+
+    void _ScanMatrix()
+    {
+        bool isChanged = false;
+        for (int r = 0; r < int.Parse(row.text); r++)
+        {
+            for (int c = 0; c < int.Parse(column.text); c++)
+            {
+                if (matrix[r, c] != null && matrix[r, c] != "" && matrix[r, c] != "?" && matrix[r, c] != "0")
+                {
+                    if (int.Parse(matrix[r, c]) < int.Parse(minId.text) || int.Parse(matrix[r, c]) > int.Parse(maxId.text))
+                    {
+                        matrix[r, c] = "?";
+                        isChanged = true;
+                    }
+                }
+            }
+        }
+        _EditDataMap();
+        if (isChanged) _GenerateMap(dataMap);
+    }
+
+    void _CheckShape(ProcessData data, List<string[,]> listShape)
     {
         string path = Application.dataPath + "/Resources/Shapes/" + data.TotalTile + "/" + data.Row + "x" + data.Column + ".json";
         StreamReader reader = new(path);
@@ -192,18 +235,21 @@ public class SetUpMap : MonoBehaviour
         if (editCreatedLv.isOn)
         {
             var temp = Resources.Load("Levels/Level_" + createdLv.text) as TextAsset;
-            //var temp = Resources.Load("demoFile") as TextAsset;
+            //var temp = Resources.Load("demo") as TextAsset;
             levelData = JsonConvert.DeserializeObject<LevelData>(temp.text);
-            time.text = levelData.time[0] + "";
-            timestampFor2Star.text = levelData.time[2] + "";
-            timestampFor3Star.text = levelData.time[3] + "";
-            themeWhileEditing.value = levelData.theme;
+            time.text = levelData.Time[0] + "";
+            timestampFor2Star.text = levelData.Time[2] + "";
+            timestampFor3Star.text = levelData.Time[3] + "";
+            themeWhileEditing.value = levelData.Theme;
 
-            foreach (var item in levelData.process) map.Add(item);
-            //dataMap = map[indexMap];
-            dataMap = new ProcessData(map[indexMap].TotalTile, map[indexMap].Row, map[indexMap].Column, map[indexMap].Matrix,
-                map[indexMap].PullDown, map[indexMap].PullUp, map[indexMap].PullLeft, map[indexMap].PullRight);
+            foreach (var item in levelData.Process) map.Add(item);
 
+            dataMap = new ProcessData(map[indexMap].MinID, map[indexMap].MaxID, map[indexMap].TotalTile, map[indexMap].Shuffle, map[indexMap].Row, map[indexMap].Column,
+                map[indexMap].Matrix, map[indexMap].PullDown, map[indexMap].PullUp, map[indexMap].PullLeft, map[indexMap].PullRight);
+
+            minId.text = dataMap.MinID + "";
+            maxId.text = dataMap.MaxID + "";
+            shuffleTile.isOn = dataMap.Shuffle;
             totalTile.text = dataMap.TotalTile + "";
             row.text = dataMap.Row + "";
             column.text = dataMap.Column + "";
@@ -212,8 +258,9 @@ public class SetUpMap : MonoBehaviour
             pullUp.value = dataMap.PullUp == true ? 1 : 0;
             pullLeft.value = dataMap.PullLeft == true ? 1 : 0;
             pullRight.value = dataMap.PullRight == true ? 1 : 0;
-            
-            string path = Application.dataPath + "/Resources/Shapes/" + totalTile.text + "/" + row.text + "x" + column.text + ".json";
+
+
+            string path = Application.dataPath + "/Resources/Shapes/" + dataMap.TotalTile + "/" + dataMap.Row + "x" + dataMap.Column + ".json";
             StreamReader reader = new(path);
             string data = reader.ReadToEnd();
             reader.Close();
@@ -224,32 +271,27 @@ public class SetUpMap : MonoBehaviour
             List<string[,]> list = new List<string[,]>();
             for (int i = 1; i < map.Count; i++)
             {
-                _CheckProcess(map[i], list);
+                _CheckShape(map[i], list);
             }
-
-            //for (int i = 0; i < map.Count; i++)
-            //{
-            //    mapContainExistedShape.Add((_FindIndexShape(map[i].Matrix), map[i]));
-            //}
         }
         else
         {
-            levelData.level = int.Parse(level.text);
-            levelData.difficulty = difficulty.options[difficulty.value].text;
-            levelData.theme = theme.value;
+            levelData.Level = int.Parse(level.text);
+            levelData.Difficulty = difficulty.options[difficulty.value].text;
+            levelData.Theme = theme.value;
             matrix = new string[1, 1];
             for (int i = 0; i < int.Parse(process.text); i++)
             {
-                map.Add(new ProcessData(0, 1, 1, matrix, false, false, false, false));
+                map.Add(new ProcessData(1, SpriteController.spritesDict.Count - 1, 0, false, 1, 1, matrix, false, false, false, false));
                 mapContainExistedShape.Add((indexShape, map[i]));
             }
-            themeWhileEditing.value = levelData.theme;
+            themeWhileEditing.value = levelData.Theme;
         }
         SetUpBoard.setup = this;
         _GenerateMap(dataMap);
         _SelectBackground(themeWhileEditing);
 
-        titleLv.text = "LEVEL " + levelData.level;
+        titleLv.text = "LEVEL " + levelData.Level;
         preSettingPanel.SetActive(false);
         _AdjustButtonSwitchMap();
     }
@@ -271,11 +313,11 @@ public class SetUpMap : MonoBehaviour
         ingameSettingPanel.SetActive(setIngame);
     }
 
-    public void _LimitID()
+    public void _AdditionalSetting()
     {
-        limitID = limitIdPanel.activeInHierarchy;
-        limitID = !limitID;
-        limitIdPanel.SetActive(limitID);
+        setMoreProp = additionalPanel.activeInHierarchy;
+        setMoreProp = !setMoreProp;
+        additionalPanel.SetActive(setMoreProp);
     }
 
     #endregion
@@ -285,7 +327,7 @@ public class SetUpMap : MonoBehaviour
     {
         _CheckInput(row);
         _CheckInput(column);
-        _CheckInput(totalTile, int.Parse(row.text) * int.Parse(column.text));
+        _CheckInput(totalTile, 0, int.Parse(row.text) * int.Parse(column.text));
 
         _EditShape();
         _EditDataMap();
@@ -295,15 +337,18 @@ public class SetUpMap : MonoBehaviour
     void _EditDataMap()
     {
         _CheckInput(time);
-        _CheckInputTime(timestampFor3Star, time);
-        _CheckInputTime(timestampFor2Star, timestampFor3Star);
+        _CheckInput(timestampFor3Star, 0, int.Parse(time.text));
+        _CheckInput(timestampFor2Star, 0, int.Parse(timestampFor3Star.text));
 
-        levelData.time[0] = float.Parse(time.text);
-        levelData.time[1] = 0;
-        levelData.time[2] = float.Parse(timestampFor2Star.text);
-        levelData.time[3] = float.Parse(timestampFor3Star.text);
-        levelData.theme = themeWhileEditing.value;
+        levelData.Time[0] = float.Parse(time.text);
+        levelData.Time[1] = 0;
+        levelData.Time[2] = float.Parse(timestampFor2Star.text);
+        levelData.Time[3] = float.Parse(timestampFor3Star.text);
+        levelData.Theme = themeWhileEditing.value;
+        dataMap.MinID = int.Parse(minId.text);
+        dataMap.MaxID = int.Parse(maxId.text);
         dataMap.TotalTile = int.Parse(totalTile.text);
+        dataMap.Shuffle = shuffleTile.isOn;
         dataMap.Row = int.Parse(row.text);
         dataMap.Column = int.Parse(column.text);
         dataMap.Matrix = matrix;
@@ -409,7 +454,7 @@ public class SetUpMap : MonoBehaviour
     void _ChooseTile(Transform currentTile)
     {
         totalTile.text = dataMap.TotalTile + "";
-        currentTile.GetChild(1).GetComponent<Image>().sprite = SpriteController.spritesDict[ddImage.value.ToString()];
+        currentTile.GetChild(1).GetComponent<Image>().sprite = ddImage.options[ddImage.value].image;
         optionPanel.SetActive(false);
     }
 
@@ -424,13 +469,13 @@ public class SetUpMap : MonoBehaviour
         }
     }
 
-    void _CheckInput(InputField input, int maxValue)
+    void _CheckInput(InputField input, int minValue, int maxValue)
     {
-        if (input.text == "" || int.Parse(input.text) <= 0)
+        if (input.text == "" || int.Parse(input.text) < minValue)
         {
-            input.text = "0";
+            input.text = minValue + "";
         }
-        if (int.Parse(input.text) >= maxValue)
+        if (int.Parse(input.text) > maxValue)
         {
             input.text = maxValue + "";
         }
@@ -441,18 +486,6 @@ public class SetUpMap : MonoBehaviour
         if (int.Parse(input.text) % 2 != 0)
         {
             input.text = int.Parse(input.text) - 1 + "";
-        }
-    }
-
-    void _CheckInputTime(InputField lowerTimestamp, InputField higherTimestamp)
-    {
-        if (lowerTimestamp.text == "" || int.Parse(lowerTimestamp.text) <= 0)
-        {
-            lowerTimestamp.text = "0";
-        }
-        if (int.Parse(lowerTimestamp.text) >= int.Parse(higherTimestamp.text))
-        {
-            lowerTimestamp.text = higherTimestamp.text;
         }
     }
 
@@ -470,6 +503,9 @@ public class SetUpMap : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Shape
     bool _SuitableShape()
     {
         return map[indexMap].TotalTile == int.Parse(totalTile.text)
@@ -477,9 +513,6 @@ public class SetUpMap : MonoBehaviour
             && map[indexMap].Column == int.Parse(column.text);
     }
 
-    #endregion
-
-    #region Shape
     void _EditShape()
     {
         string folderName = Application.dataPath + "/Resources/Shapes/" + totalTile.text;
@@ -675,73 +708,99 @@ public class SetUpMap : MonoBehaviour
     #region Interact
     void _GoToNextProcess()
     {
-        _CheckMatrix();
-        map[indexMap] = new ProcessData(dataMap.TotalTile, dataMap.Row, dataMap.Column, matrix,
-            dataMap.PullDown, dataMap.PullUp, dataMap.PullLeft, dataMap.PullRight);
-        mapContainExistedShape[indexMap] = (indexShape, map[indexMap]);
-        indexMap++;
-        indexShape = mapContainExistedShape[indexMap].Item1;
-        _AdjustButtonSwitchMap();
+        if (dataMap.TotalTile % 2 == 0)
+        {
+            _CheckMatrix();
+            map[indexMap] = new ProcessData(dataMap.MinID, dataMap.MaxID, dataMap.TotalTile, dataMap.Shuffle, dataMap.Row, dataMap.Column,
+                matrix, dataMap.PullDown, dataMap.PullUp, dataMap.PullLeft, dataMap.PullRight);
+            mapContainExistedShape[indexMap] = (indexShape, map[indexMap]);
+            indexMap++;
+            indexShape = mapContainExistedShape[indexMap].Item1;
+            _AdjustButtonSwitchMap();
 
-        totalTile.text = map[indexMap].TotalTile + "";
-        row.text = map[indexMap].Row + "";
-        column.text = map[indexMap].Column + "";
-        matrix = map[indexMap].Matrix;
-        pullDown.value = map[indexMap].PullDown == true ? 1 : 0;
-        pullUp.value = map[indexMap].PullUp == true ? 1 : 0;
-        pullLeft.value = map[indexMap].PullLeft == true ? 1 : 0;
-        pullRight.value = map[indexMap].PullRight == true ? 1 : 0;
-        _EditBoard();
+            minId.text = map[indexMap].MinID + "";
+            maxId.text = map[indexMap].MaxID + "";
+            shuffleTile.isOn = map[indexMap].Shuffle;
+            totalTile.text = map[indexMap].TotalTile + "";
+            row.text = map[indexMap].Row + "";
+            column.text = map[indexMap].Column + "";
+            matrix = map[indexMap].Matrix;
+            pullDown.value = map[indexMap].PullDown == true ? 1 : 0;
+            pullUp.value = map[indexMap].PullUp == true ? 1 : 0;
+            pullLeft.value = map[indexMap].PullLeft == true ? 1 : 0;
+            pullRight.value = map[indexMap].PullRight == true ? 1 : 0;
+            _EditBoard();
 
-        Debug.Log("Tien trinh " + (indexMap + 1));
+            Debug.Log("Tien trinh " + (indexMap + 1));
+        }
+        else
+        {
+            Debug.Log("Chỉnh tổng ô về số chẵn đi đã !!!");
+        }
+
     }
 
     void _GoToPreviousProcess()
     {
-        _CheckMatrix();
-        map[indexMap] = new ProcessData(dataMap.TotalTile, dataMap.Row, dataMap.Column, matrix,
-            dataMap.PullDown, dataMap.PullUp, dataMap.PullLeft, dataMap.PullRight);
-        mapContainExistedShape[indexMap] = (indexShape, map[indexMap]);
-        indexMap--;
-        indexShape = mapContainExistedShape[indexMap].Item1;
-        _AdjustButtonSwitchMap();
+        if (dataMap.TotalTile % 2 == 0)
+        {
+            _CheckMatrix();
+            map[indexMap] = new ProcessData(dataMap.MinID, dataMap.MaxID, dataMap.TotalTile, dataMap.Shuffle, dataMap.Row, dataMap.Column,
+                matrix, dataMap.PullDown, dataMap.PullUp, dataMap.PullLeft, dataMap.PullRight);
+            mapContainExistedShape[indexMap] = (indexShape, map[indexMap]);
+            indexMap--;
+            indexShape = mapContainExistedShape[indexMap].Item1;
+            _AdjustButtonSwitchMap();
 
-        totalTile.text = map[indexMap].TotalTile + "";
-        row.text = map[indexMap].Row + "";
-        column.text = map[indexMap].Column + "";
-        matrix = map[indexMap].Matrix;
-        pullDown.value = map[indexMap].PullDown == true ? 1 : 0;
-        pullUp.value = map[indexMap].PullUp == true ? 1 : 0;
-        pullLeft.value = map[indexMap].PullLeft == true ? 1 : 0;
-        pullRight.value = map[indexMap].PullRight == true ? 1 : 0;
-        _EditBoard();
+            minId.text = map[indexMap].MinID + "";
+            maxId.text = map[indexMap].MaxID + "";
+            shuffleTile.isOn = map[indexMap].Shuffle;
+            totalTile.text = map[indexMap].TotalTile + "";
+            row.text = map[indexMap].Row + "";
+            column.text = map[indexMap].Column + "";
+            matrix = map[indexMap].Matrix;
+            pullDown.value = map[indexMap].PullDown == true ? 1 : 0;
+            pullUp.value = map[indexMap].PullUp == true ? 1 : 0;
+            pullLeft.value = map[indexMap].PullLeft == true ? 1 : 0;
+            pullRight.value = map[indexMap].PullRight == true ? 1 : 0;
+            _EditBoard();
 
-        Debug.Log("Tien trinh " + (indexMap + 1));
+            Debug.Log("Tien trinh " + (indexMap + 1));
+        }
+        else
+        {
+            Debug.Log("Chỉnh tổng ô về số chẵn đi đã !!!");
+        }
     }
 
     public void _Complete()
     {
-        _CheckMatrix();
-        map[indexMap] = new ProcessData(dataMap.TotalTile, dataMap.Row, dataMap.Column, matrix,
-            dataMap.PullDown, dataMap.PullUp, dataMap.PullLeft, dataMap.PullRight);
-        levelData.process = map;
-        foreach (var item in map)
+        if (dataMap.TotalTile % 2 == 0)
         {
-            _StoreShapes(item);
-            Debug.Log("Map " + (map.IndexOf(item) + 1) + " - " + item.TotalTile + " tiles");
-        }
-        string json = JsonConvert.SerializeObject(levelData);
-        //File.WriteAllText(Application.dataPath + "/Resources/Levels/Level_" + levelData.level + ".json", json);
-        //File.WriteAllText(Application.dataPath + "/Resources/demo.json", json);
-        File.WriteAllText(Application.dataPath + "/Resources/demoFile.json", json);
+            _CheckMatrix();
+            map[indexMap] = new ProcessData(dataMap.MinID, dataMap.MaxID, dataMap.TotalTile, dataMap.Shuffle, dataMap.Row, dataMap.Column,
+                matrix, dataMap.PullDown, dataMap.PullUp, dataMap.PullLeft, dataMap.PullRight);
+            levelData.Process = map;
+            foreach (var item in map)
+            {
+                _StoreShapes(item);
+                Debug.Log("Map " + (map.IndexOf(item) + 1) + " - " + item.TotalTile + " tiles");
+            }
+            string json = JsonConvert.SerializeObject(levelData);
+            File.WriteAllText(Application.dataPath + "/Resources/Levels/Level_" + levelData.Level + ".json", json);
+            //File.WriteAllText(Application.dataPath + "/Resources/demo.json", json);
 
-        Debug.Log("Doneeeee");
+            Debug.Log("Done");
+        }
+        else
+        {
+            Debug.Log("Chỉnh tổng ô về số chẵn đi đã !!!");
+        }
     }
 
     void _PlayTrial()
     {
         SceneManager.LoadScene("PlayTrial");
-        GameplayTrial.instance.lvInput.text = levelData.level + "";
     }
 
     #endregion

@@ -1,11 +1,14 @@
 {
-    "level": 15,
-    "difficulty": "Hard",
-    "theme": 3,
-    "time": [ 250.0, 0.0, 50.0, 100.0 ],
-    "process": [
+    "Level": 15,
+    "Difficulty": "Hard",
+    "Theme": 3,
+    "Time": [ 250.0, 0.0, 50.0, 100.0 ],
+    "Process": [
         {
+            "MinID": 1,
+            "MaxID": 86,
             "TotalTile": 24,
+            "Shuffle": false,
             "Row": 7,
             "Column": 7,
             "Matrix": [
@@ -23,7 +26,10 @@
             "PullRight": false
         },
         {
+            "MinID": 1,
+            "MaxID": 86,
             "TotalTile": 108,
+            "Shuffle": false,
             "Row": 12,
             "Column": 9,
             "Matrix": [

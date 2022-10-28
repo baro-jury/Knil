@@ -1,11 +1,14 @@
 {
-    "level": 12,
-    "difficulty": "Normal",
-    "theme": 3,
-    "time": [ 200.0, 0.0, 50.0, 100.0 ],
-    "process": [
+    "Level": 12,
+    "Difficulty": "Normal",
+    "Theme": 3,
+    "Time": [ 200.0, 0.0, 50.0, 100.0 ],
+    "Process": [
         {
+            "MinID": 1,
+            "MaxID": 86,
             "TotalTile": 34,
+            "Shuffle": false,
             "Row": 8,
             "Column": 8,
             "Matrix": [

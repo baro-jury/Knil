@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class ProgressController : MonoBehaviour
 {
     public static ProgressController instance;
+    public AudioSource audioSource;
+    public AudioSource musicSource;
 
     private const string PROGRESS = "Progress";
     private const string COINS = "Coins";
@@ -37,6 +39,7 @@ public class ProgressController : MonoBehaviour
     {
         _MakeSingleInstance();
         _CheckFirstTimePlayGame();
+        //if (LevelController.level == 1) _SetMarkedLevel(1);
     }
 
     public int _GetMarkedLevel()

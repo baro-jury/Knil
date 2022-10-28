@@ -1328,6 +1328,7 @@ GameObject:
   - component: {fileID: 486150550}
   - component: {fileID: 486150547}
   - component: {fileID: 486150551}
+  - component: {fileID: 486150552}
   m_Layer: 0
   m_Name: TrialPlay
   m_TagString: Untagged
@@ -1409,7 +1410,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 6849622e790ddf24a89a980bb7047c79, type: 3}
   - {fileID: 21300000, guid: f4ddcb39123116f40b8bee39ffabfc4d, type: 3}
   - {fileID: 21300000, guid: e99b5c007ab75e9489441016215fb04b, type: 3}
-  - {fileID: 21300000, guid: e99b5c007ab75e9489441016215fb04b, type: 3}
   - {fileID: 21300000, guid: 97f1580c3dea16343b8541febf85fb48, type: 3}
   - {fileID: 21300000, guid: 7ed0cab1f62a26b42a46e91bedb2114c, type: 3}
   - {fileID: 21300000, guid: 0016f037e6f6471418df44fa6343622c, type: 3}
@@ -1463,6 +1463,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2313df02a6d8b414aa2ad4439cad371f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioSource: {fileID: 486150552}
+  clickButtonClip: {fileID: 8300000, guid: 95b21bdbd9e14884ebee329f5a5e5e8e, type: 3}
+  matchTileClip: {fileID: 8300000, guid: b0fc1d65f891300468ebd6959723aab1, type: 3}
+  switchClip: {fileID: 8300000, guid: 2236bbf30e592434fb1f218c84ea79e7, type: 3}
+  timeWizardClip: {fileID: 8300000, guid: ee90bf0b539cca64f8a7e2ad36baeaf6, type: 3}
+  hintClip: {fileID: 8300000, guid: dd93ba1563978c14cad0f313f9cc6553, type: 3}
+  magicWandClip: {fileID: 8300000, guid: 40b526e18ce2368458fc3f74a40b987e, type: 3}
+  freezeTimeClip: {fileID: 8300000, guid: e0e220e6c246964498090022c73bf9b8, type: 3}
+  shuffleClip: {fileID: 8300000, guid: c9a056b71dc0f8a43bccd97002969edb, type: 3}
   lvInput: {fileID: 1755623335}
   chooseLvPanel: {fileID: 888165658}
   titleLv: {fileID: 663761111}
@@ -1490,6 +1499,102 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeText: {fileID: 1957048011}
+--- !u!82 &486150552
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 486150544}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -3227,6 +3332,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de1528c092be9d74a97d52d80442796d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  clickTileClip: {fileID: 0}
 --- !u!1 &1022627996
 GameObject:
   m_ObjectHideFlags: 0
@@ -4662,6 +4768,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de1528c092be9d74a97d52d80442796d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  clickTileClip: {fileID: 0}
 --- !u!1 &1755623333
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,15 +17,21 @@ public class TileController : MonoBehaviour
         Size = size;
     }
 
+
+    [SerializeField]
+    private AudioClip clickTileClip;
+
     //object ingame
     public void _TileClicked()
     {
+        ProgressController.instance.audioSource.PlayOneShot(clickTileClip);
         GameplayController.instance._ClickTile(gameObject.transform);
     }
 
     //object in trial game
     public void _TileTrialClicked()
     {
+        GameplayTrial.instance.audioSource.PlayOneShot(clickTileClip);
         GameplayTrial.instance._ClickTile(gameObject.transform);
     }
 }

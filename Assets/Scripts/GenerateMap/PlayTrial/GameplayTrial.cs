@@ -13,13 +13,19 @@ public class GameplayTrial : MonoBehaviour
 {
     public static GameplayTrial instance;
     public static int level;
+    public AudioSource audioSource;
 
     private bool isCoupled = true, isHinted = false;
     private int siblingIndex;
     private Transform[] points = new Transform[4];
     private Transform tile;
 
-    public InputField lvInput;
+    [SerializeField]
+    private AudioClip clickButtonClip, matchTileClip, switchClip;
+    [SerializeField]
+    private AudioClip timeWizardClip, hintClip, magicWandClip, freezeTimeClip, shuffleClip;
+    [SerializeField]
+    private InputField lvInput;
     [SerializeField]
     private GameObject chooseLvPanel;
     [SerializeField]
@@ -52,10 +58,10 @@ public class GameplayTrial : MonoBehaviour
     void _ScaleBgr()
     {
         Transform temp = GameObject.Find("Background").transform;
-        GameObject background = temp.GetChild(TrialBoard.levelData.theme - 1).gameObject;
+        GameObject background = temp.GetChild(TrialBoard.levelData.Theme - 1).gameObject;
         for (int i = 0; i < temp.childCount; i++)
         {
-            if (TrialBoard.levelData.theme - 1 != i)
+            if (TrialBoard.levelData.Theme - 1 != i)
             {
                 temp.GetChild(i).gameObject.SetActive(false);
             }
@@ -76,12 +82,14 @@ public class GameplayTrial : MonoBehaviour
     #region Choose level
     public void _ChooseLevel()
     {
+        audioSource.PlayOneShot(clickButtonClip);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void _PlayLvTest()
     {
-        var dataStr = Resources.Load("demo") as TextAsset;
+        audioSource.PlayOneShot(clickButtonClip);
+        var dataStr = Resources.Load("demoFile") as TextAsset;
         TrialBoard.levelData = JsonConvert.DeserializeObject<LevelData>(dataStr.text);
         titleLv.text = "DEMO";
         TrialBoard.instance._GoToProcess(1);
@@ -93,6 +101,7 @@ public class GameplayTrial : MonoBehaviour
 
     public void _PlayLevel()
     {
+        audioSource.PlayOneShot(clickButtonClip);
         level = int.Parse(lvInput.text);
         var dataStr = Resources.Load("Levels/Level_" + level) as TextAsset;
         TrialBoard.levelData = JsonConvert.DeserializeObject<LevelData>(dataStr.text);
@@ -121,18 +130,21 @@ public class GameplayTrial : MonoBehaviour
     #region Play trial
     public void _Pause()
     {
+        audioSource.PlayOneShot(switchClip);
         pauseButton.transform.GetChild(0).gameObject.SetActive(true);
         Time.timeScale = 0;
     }
 
     public void _Resume()
     {
+        audioSource.PlayOneShot(switchClip);
         pauseButton.transform.GetChild(0).gameObject.SetActive(false);
         Time.timeScale = 1;
     }
 
     public void _Quit()
     {
+        audioSource.PlayOneShot(clickButtonClip);
         SceneManager.LoadScene("GenerateMap");
     }
 
@@ -175,6 +187,7 @@ public class GameplayTrial : MonoBehaviour
                     {
                         StopAllCoroutines();
                         StartCoroutine(MakeConnection(points));
+                        audioSource.PlayOneShot(matchTileClip);
                         StartCoroutine(DestroyTiles(points));
                     }
                     else
@@ -214,11 +227,12 @@ public class GameplayTrial : MonoBehaviour
 
     public void _SupporterHint() //Hint: Khi sử dụng sẽ gợi ý 1 kết quả
     {
+        audioSource.PlayOneShot(hintClip);
         _ResetTileState();
         while (!isHinted)
         {
             int index = Random.Range(1, TrialBoard.dict.Count);
-            List<Transform> temp = TrialBoard.instance._SearchSameTiles(TrialBoard.dict[index.ToString()]);
+            List<Transform> temp = TrialBoard.instance._SearchSameTiles(TrialBoard.dict.ElementAt(index).Value);
             if (temp.Count != 0)
             {
                 for (int i = 0; i < (temp.Count - 1); i++)
@@ -255,6 +269,7 @@ public class GameplayTrial : MonoBehaviour
 
     public void _SupporterMagicWand() //Đũa thần: 2 kết quả hoàn thành
     {
+        audioSource.PlayOneShot(magicWandClip);
         Time.timeScale = 1;
         _ResetTileState();
         EventSystem.current.SetSelectedGameObject(null);
@@ -266,7 +281,7 @@ public class GameplayTrial : MonoBehaviour
             {
                 break;
             }
-            List<Transform> temp = TrialBoard.instance._SearchSameTiles(TrialBoard.dict[index.ToString()]);
+            List<Transform> temp = TrialBoard.instance._SearchSameTiles(TrialBoard.dict.ElementAt(index).Value);
 
             if (temp.Count != 0)
             {
@@ -287,12 +302,14 @@ public class GameplayTrial : MonoBehaviour
 
     public void _SupporterFreezeTime() //Snow: Đóng băng thời gian 10 giây
     {
-        Debug.Log("Đóng băng thời gian 10 giây");
+        audioSource.PlayOneShot(freezeTimeClip);
+        Time.timeScale = 1;
         StartCoroutine(FreezeTime());
     }
 
     public void _SupporterShuffle() //Đổi vị trí: Khi người chơi sử dụng, các item thay đổi vị trí cho nhau.
     {
+        audioSource.PlayOneShot(shuffleClip);
         _ResetTileState();
         isCoupled = true;
         EventSystem.current.SetSelectedGameObject(null);
@@ -303,17 +320,18 @@ public class GameplayTrial : MonoBehaviour
 
     public void _BoosterTimeWizard() //Time : Tăng 10 giây khi sử dụng
     {
-
+        audioSource.PlayOneShot(timeWizardClip);
         Timer.time += 10;
     }
 
     public void _BoosterEarthquake() //Remove All: Xoá 1 hình bất kỳ
     {
+        audioSource.PlayOneShot(clickButtonClip);
         bool isFounded = false;
         while (!isFounded)
         {
             int index = Random.Range(1, TrialBoard.dict.Count);
-            List<Transform> temp = TrialBoard.instance._SearchSameTiles(TrialBoard.dict[index.ToString()]);
+            List<Transform> temp = TrialBoard.instance._SearchSameTiles(TrialBoard.dict.ElementAt(index).Value);
             if (temp.Count != 0)
             {
                 for (int i = 0; i < temp.Count; i++)
@@ -327,6 +345,7 @@ public class GameplayTrial : MonoBehaviour
 
     public void _BoosterMirror() //Mirror: gấp đôi số sao đạt được
     {
+        audioSource.PlayOneShot(clickButtonClip);
 
     }
 

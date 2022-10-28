@@ -9,10 +9,12 @@ using UnityEngine.UI;
 public class LevelController : MonoBehaviour
 {
     public static LevelController instance;
-
     public static int level = 1;
+
     [SerializeField]
-    private List<Button> lvButtons = new();
+    private InputField lvInput;
+    [SerializeField]
+    private Button btPlay;
 
     void _MakeInstance()
     {
@@ -43,40 +45,42 @@ public class LevelController : MonoBehaviour
     //    return default;
     //}
 
-    public LevelData _GetLevelData(int level)
+    void Start()
+    {
+        lvInput.onEndEdit.AddListener(delegate { _CheckInput(lvInput); });
+        btPlay.onClick.AddListener(delegate { _PlayLevel(int.Parse(lvInput.text)); });
+    }
+
+    LevelData _GetLevelData(int level)
     {
         var dataStr = Resources.Load("Levels/Level_" + level) as TextAsset;
-        LevelData temp = JsonConvert.DeserializeObject<LevelData>(dataStr.text);
-        return temp;
+        return JsonConvert.DeserializeObject<LevelData>(dataStr.text);
     }
 
     #region Play
-    public void _UnlockLevel(int lv)
-    {
-        for (int i = 0; i < lvButtons.Count; i++)
-        {
-            if (i < lv)
-            {
-                lvButtons[i].interactable = true;
-            }
-            else
-            {
-                lvButtons[i].interactable = false;
-            }
-        }
-    }
-
-    public void _PlayLvTest()
-    {
-        var dataStr = Resources.Load("demo") as TextAsset;
-        BoardController.levelData = JsonConvert.DeserializeObject<LevelData>(dataStr.text);
-        SceneManager.LoadScene(1);
-    }
+    //public void _PlayLvTest()
+    //{
+    //    var dataStr = Resources.Load("demo") as TextAsset;
+    //    BoardController.levelData = JsonConvert.DeserializeObject<LevelData>(dataStr.text);
+    //    SceneManager.LoadScene("GamePlay");
+    //}
     public void _PlayLevel(int lv)
     {
         level = lv;
         BoardController.levelData = _GetLevelData(lv);
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("GamePlay");
+    }
+
+    void _CheckInput(InputField input)
+    {
+        if (input.text == "" || int.Parse(input.text) <= 0)
+        {
+            input.text = "1";
+        }
+        else if (int.Parse(input.text) > Resources.LoadAll("Levels").Length)
+        {
+            input.text = Resources.LoadAll("Levels").Length + "";
+        }
     }
 
     #endregion

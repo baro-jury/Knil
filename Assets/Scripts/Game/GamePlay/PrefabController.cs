@@ -5,9 +5,27 @@ using UnityEngine;
 
 public class PrefabController : MonoBehaviour
 {
-    //nut x
+    [SerializeField]
+    private AudioSource audioSource;
+    [SerializeField]
+    private AudioClip clickButtonClip, clickTileClip;
+
+    //close in game
     public void _Close()
     {
+        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
+        transform.parent.GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true) //gameObject: form
+            .OnComplete(() =>
+            {
+                transform.parent.parent.gameObject.SetActive(false); //panel
+                transform.parent.localScale = Vector3.one;
+            });
+    }
+
+    //close while custom map
+    public void _X()
+    {
+        audioSource.PlayOneShot(clickButtonClip);
         transform.parent.GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true) //gameObject: form
             .OnComplete(() =>
             {
@@ -19,6 +37,7 @@ public class PrefabController : MonoBehaviour
     //edit object
     public void _Click()
     {
+        audioSource.PlayOneShot(clickTileClip);
         SetUpMap.instance._EditTile(gameObject.transform);
     }
 

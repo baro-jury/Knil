@@ -1,16 +1,19 @@
 {
-    "level": 6,
-    "difficulty": "Normal",
-    "theme": 2,
-    "time": [
+    "Level": 6,
+    "Difficulty": "Normal",
+    "Theme": 2,
+    "Time": [
         200.0,
         0.0,
         50.0,
         100.0
     ],
-    "process": [
+    "Process": [
         {
+            "MinID": 1,
+            "MaxID": 86,
             "TotalTile": 30,
+            "Shuffle": false,
             "Row": 6,
             "Column": 5,
             "Matrix": [

@@ -1,1 +1,100 @@
-{"level":1,"difficulty":"Normal","theme":1,"time":[1.0,0.0,0.0,0.0],"process":[{"TotalTile":20,"Row":5,"Column":5,"Matrix":[["","?","?","?",""],["?","?","?","?","?"],["?","?","0","?","?"],["?","?","?","?","?"],["","?","?","?",""]],"PullDown":false,"PullUp":false,"PullLeft":false,"PullRight":false}]}
+{
+    "Level": 1,
+    "Difficulty": "Normal",
+    "Theme": 1,
+    "Time": [
+        1000.0,
+        0.0,
+        300.0,
+        600.0
+    ],
+    "Process": [
+        {
+            "MinID": 1,
+            "MaxID": 4,
+            "TotalTile": 16,
+            "Shuffle": true,
+            "Row": 4,
+            "Column": 4,
+            "Matrix": [
+                [
+                    "?",
+                    "?",
+                    "?",
+                    "?"
+                ],
+                [
+                    "?",
+                    "?",
+                    "?",
+                    "?"
+                ],
+                [
+                    "?",
+                    "?",
+                    "?",
+                    "?"
+                ],
+                [
+                    "?",
+                    "?",
+                    "?",
+                    "?"
+                ]
+            ],
+            "PullDown": true,
+            "PullUp": true,
+            "PullLeft": false,
+            "PullRight": false
+        },
+        {
+            "MinID": 5,
+            "MaxID": 9,
+            "TotalTile": 24,
+            "Shuffle": false,
+            "Row": 5,
+            "Column": 5,
+            "Matrix": [
+                [
+                    "?",
+                    "?",
+                    "?",
+                    "?",
+                    "?"
+                ],
+                [
+                    "?",
+                    "?",
+                    "?",
+                    "?",
+                    "?"
+                ],
+                [
+                    "?",
+                    "?",
+                    "",
+                    "?",
+                    "?"
+                ],
+                [
+                    "?",
+                    "?",
+                    "?",
+                    "?",
+                    "?"
+                ],
+                [
+                    "?",
+                    "?",
+                    "?",
+                    "?",
+                    "?"
+                ]
+            ],
+            "PullDown": false,
+            "PullUp": false,
+            "PullLeft": false,
+            "PullRight": false
+        }
+    ]
+}

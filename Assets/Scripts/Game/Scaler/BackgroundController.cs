@@ -8,10 +8,10 @@ public class BackgroundController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GameObject background = transform.GetChild(BoardController.levelData.theme - 1).gameObject;
+        GameObject background = transform.GetChild(BoardController.levelData.Theme - 1).gameObject;
         for (int i = 0; i < transform.childCount; i++)
         {
-            if (BoardController.levelData.theme - 1 != i)
+            if (BoardController.levelData.Theme - 1 != i)
             {
                 transform.GetChild(i).gameObject.SetActive(false);
             }

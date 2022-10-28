@@ -5,7 +5,10 @@
     "time": [ 200.0, 0.0, 50.0, 100.0 ],
     "process": [
         {
+            "MinID": 1,
+            "MaxID": 86,
             "TotalTile": 36,
+            "Shuffle": false,
             "Row": 9,
             "Column": 9,
             "Matrix": [
@@ -25,7 +28,10 @@
             "PullRight": false
         },
         {
+            "MinID": 1,
+            "MaxID": 86,
             "TotalTile": 36,
+            "Shuffle": false,
             "Row": 8,
             "Column": 8,
             "Matrix": [
