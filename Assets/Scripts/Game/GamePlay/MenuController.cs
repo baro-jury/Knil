@@ -36,6 +36,8 @@ public class MenuController : MonoBehaviour
         stars.text = ProgressController.instance._GetStarsAchieved() + "";
         coins.text = ProgressController.instance._GetCoinsInPossession() + "";
         level.text = "LEVEL " + ProgressController.instance._GetMarkedLevel();
+        settingPanel.transform.GetChild(0).GetChild(3).GetChild(0).GetChild(0).GetChild(0).gameObject.SetActive(ProgressController.instance.audioSource.mute);
+        settingPanel.transform.GetChild(0).GetChild(3).GetChild(0).GetChild(1).GetChild(0).gameObject.SetActive(ProgressController.instance.musicSource.mute);
     }
 
     public void _PlayGame()

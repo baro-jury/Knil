@@ -56,8 +56,14 @@ public class GameplayController : MonoBehaviour
         titleComplete.text = "LEVEL " + LevelController.level;
         pausePanel.transform.GetChild(0).GetChild(0).gameObject.SetActive(ProgressController.instance.audioSource.mute);
         pausePanel.transform.GetChild(1).GetChild(0).gameObject.SetActive(ProgressController.instance.musicSource.mute);
-        Time.timeScale = 0;
-        TutorialController.instance._CheckTut();
+        if (LevelController.level != 1) Time.timeScale = 0;
+        else
+        {
+            Time.timeScale = 1;
+            TutorialController.instance._DisableObject();
+            //TutorialController.instance._InitFinger(TutorialController.point[0].Item1);
+            //TutorialController.instance._InitFinger(TutorialController.point[TutorialController.index]);
+        }
     }
 
     #region Ingame
@@ -258,6 +264,7 @@ public class GameplayController : MonoBehaviour
     #region Click Tiles
     public void _ClickTile(Transform currentTile)
     {
+        //if (LevelController.level == 1) TutorialController.instance._InitFinger(TutorialController.point[TutorialController.index]);
         currentTile.DOComplete();
         currentTile.DOKill();
         currentTile.GetComponent<RectTransform>().DOScale(new Vector3(.8f, .8f, 1), .1f).SetEase(Ease.InOutQuad).SetUpdate(true)
