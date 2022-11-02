@@ -13,7 +13,7 @@ public class PrefabController : MonoBehaviour
     //close in game
     public void _Close()
     {
-        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         transform.parent.GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true) //gameObject: form
             .OnComplete(() =>
             {
@@ -35,9 +35,9 @@ public class PrefabController : MonoBehaviour
     }
 
     //edit object
-    public void _Click()
+    public void _SetObject()
     {
-        audioSource.PlayOneShot(clickTileClip);
+        SetUpMap.instance.audioSource.PlayOneShot(clickTileClip);
         SetUpMap.instance._EditTile(gameObject.transform);
     }
 

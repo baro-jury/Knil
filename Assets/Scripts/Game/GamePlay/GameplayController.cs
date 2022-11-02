@@ -22,13 +22,12 @@ public class GameplayController : MonoBehaviour
     [SerializeField]
     private AudioClip timeWizardClip, hintClip, magicWandClip, freezeTimeClip, shuffleClip;
     [SerializeField]
-    private GameObject boosterPanel;
+    private GameObject boosterPanel, buySpPanel;
     [SerializeField]
     private Text titleLv, titleGameover, titleComplete;
     [SerializeField]
     private GameObject pausePanel, quitPanel;
-    [SerializeField]
-    private Button settingOnButton, settingOffButton;
+    public Button settingOnButton, settingOffButton;
     [SerializeField]
     private Button btSpHint, btSpMagicWand, btSpFreeze, btSpShuffle;
     [SerializeField]
@@ -54,22 +53,37 @@ public class GameplayController : MonoBehaviour
         titleLv.text = "LEVEL " + LevelController.level;
         titleGameover.text = "LEVEL " + LevelController.level;
         titleComplete.text = "LEVEL " + LevelController.level;
-        pausePanel.transform.GetChild(0).GetChild(0).gameObject.SetActive(ProgressController.instance.audioSource.mute);
-        pausePanel.transform.GetChild(1).GetChild(0).gameObject.SetActive(ProgressController.instance.musicSource.mute);
-        if (LevelController.level != 1) Time.timeScale = 0;
-        else
+        pausePanel.transform.GetChild(0).GetChild(0).gameObject.SetActive(PlayerPrefsController.instance.audioSource.mute);
+        pausePanel.transform.GetChild(1).GetChild(0).gameObject.SetActive(PlayerPrefsController.instance.musicSource.mute);
+        
+        if (LevelController.level == 1)
         {
             Time.timeScale = 1;
-            TutorialController.instance._DisableObject();
-            //TutorialController.instance._InitFinger(TutorialController.point[0].Item1);
-            //TutorialController.instance._InitFinger(TutorialController.point[TutorialController.index]);
+            TimeController.instance._FreezeTime(true);
         }
+        else Time.timeScale = 0;
+
+        if (LevelController.level < 3) btSpHint.transform.parent.GetChild(1).gameObject.SetActive(true);
+        else if (LevelController.level == 3) btSpHint.transform.GetChild(0).GetComponent<Text>().text = "∞";
+        else btSpHint.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfHint() + "";
+        
+        if (LevelController.level < 5) btSpMagicWand.transform.parent.GetChild(1).gameObject.SetActive(true);
+        else if (LevelController.level == 5) btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = "∞";
+        else btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfMagicWand() + "";
+        
+        if (LevelController.level < 7) btSpFreeze.transform.parent.GetChild(1).gameObject.SetActive(true);
+        else if (LevelController.level == 7) btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = "∞";
+        else btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfFreezeTime() + "";
+
+        if (LevelController.level < 9) btSpShuffle.transform.parent.GetChild(1).gameObject.SetActive(true);
+        else if (LevelController.level == 9) btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = "∞";
+        else btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfShuffle() + "";
     }
 
     #region Ingame
     public void _Pause()
     {
-        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         settingOnButton.interactable = false;
         pausePanel.SetActive(true);
         pausePanel.GetComponent<Button>().interactable = false;
@@ -99,7 +113,7 @@ public class GameplayController : MonoBehaviour
 
     public void _Resume()
     {
-        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         settingOffButton.interactable = false;
         pausePanel.GetComponent<Button>().interactable = false;
         pausePanel.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
@@ -123,39 +137,39 @@ public class GameplayController : MonoBehaviour
 
     public void _TurnOffSound()
     {
-        ProgressController.instance.audioSource.mute = true;
-        ProgressController.instance.audioSource.PlayOneShot(switchClip);
+        PlayerPrefsController.instance.audioSource.mute = true;
+        PlayerPrefsController.instance.audioSource.PlayOneShot(switchClip);
         pausePanel.transform.GetChild(0).GetChild(0).gameObject.SetActive(true);
         //             sound on button   sound off button
     }
 
     public void _TurnOnSound()
     {
-        ProgressController.instance.audioSource.mute = false;
-        ProgressController.instance.audioSource.PlayOneShot(switchClip);
+        PlayerPrefsController.instance.audioSource.mute = false;
+        PlayerPrefsController.instance.audioSource.PlayOneShot(switchClip);
         pausePanel.transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
         //            sound on button    sound off button
     }
 
     public void _TurnOffMusic()
     {
-        ProgressController.instance.audioSource.PlayOneShot(switchClip);
-        ProgressController.instance.musicSource.mute = true;
+        PlayerPrefsController.instance.audioSource.PlayOneShot(switchClip);
+        PlayerPrefsController.instance.musicSource.mute = true;
         pausePanel.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
         //           music on button     music off button
     }
 
     public void _TurnOnMusic()
     {
-        ProgressController.instance.audioSource.PlayOneShot(switchClip);
-        ProgressController.instance.musicSource.mute = false;
+        PlayerPrefsController.instance.audioSource.PlayOneShot(switchClip);
+        PlayerPrefsController.instance.musicSource.mute = false;
         pausePanel.transform.GetChild(1).GetChild(0).gameObject.SetActive(false);
         //           music on button     music off button
     }
 
     public void _QuitConfirmation()
     {
-        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         quitPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
         quitPanel.SetActive(true);
         quitPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
@@ -163,7 +177,7 @@ public class GameplayController : MonoBehaviour
 
     public void _GoToMenu()
     {
-        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         SceneManager.LoadScene("MainMenu");
     }
 
@@ -177,9 +191,9 @@ public class GameplayController : MonoBehaviour
 
     public void _GetMoreTime()
     {
-        if (ProgressController.instance._GetCoinsInPossession() >= 100)
+        if (PlayerPrefsController.instance._GetCoinsInPossession() >= 100)
         {
-            ProgressController.instance._SetCoinsInPossession(100, false);
+            PlayerPrefsController.instance._SetCoinsInPossession(100, false);
             TimeController.time += 60;
             lastChancePanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
@@ -195,7 +209,7 @@ public class GameplayController : MonoBehaviour
     {
         //code xem quang cao
 
-        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         TimeController.time += 15;
         lastChancePanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
         .OnComplete(() =>
@@ -208,7 +222,7 @@ public class GameplayController : MonoBehaviour
 
     public void _RejectChance()
     {
-        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         rejectChancePanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
         rejectChancePanel.SetActive(true);
         rejectChancePanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
@@ -224,7 +238,7 @@ public class GameplayController : MonoBehaviour
 
     public void _Replay()
     {
-        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -241,13 +255,13 @@ public class GameplayController : MonoBehaviour
         winPanel.SetActive(true);
         winPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
 
-        ProgressController.instance._SetStarsAchieved(numberOfStars);
-        ProgressController.instance._SetCoinsInPossession(numberOfStars * 50, true);
+        PlayerPrefsController.instance._SetStarsAchieved(numberOfStars);
+        PlayerPrefsController.instance._SetCoinsInPossession(numberOfStars * 50, true);
     }
 
     public void _GoToNextLevel()
     {
-        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         if (LevelController.level == Resources.LoadAll("Levels").Length)
         {
             _GoToMenu();
@@ -264,7 +278,6 @@ public class GameplayController : MonoBehaviour
     #region Click Tiles
     public void _ClickTile(Transform currentTile)
     {
-        //if (LevelController.level == 1) TutorialController.instance._InitFinger(TutorialController.point[TutorialController.index]);
         currentTile.DOComplete();
         currentTile.DOKill();
         currentTile.GetComponent<RectTransform>().DOScale(new Vector3(.8f, .8f, 1), .1f).SetEase(Ease.InOutQuad).SetUpdate(true)
@@ -301,11 +314,29 @@ public class GameplayController : MonoBehaviour
                     {
                         StopAllCoroutines();
                         StartCoroutine(MakeConnection(points));
-                        ProgressController.instance.audioSource.PlayOneShot(matchTileClip);
+                        PlayerPrefsController.instance.audioSource.PlayOneShot(matchTileClip);
                         StartCoroutine(DestroyTiles(points));
                     }
                     else
                     {
+                        if (LevelController.level == 1)
+                        {
+                            if (TutorialController.order <= 2)
+                            {
+                                TutorialController.instance._FocusOnCoupleTile(
+                                TutorialController.instance._FindTransform(BoardController.buttonListWithoutBlocker, TutorialController.coupleIndex[TutorialController.order].Item1),
+                                TutorialController.instance._FindTransform(BoardController.buttonListWithoutBlocker, TutorialController.coupleIndex[TutorialController.order].Item2));
+                            }
+                            if (TutorialController.order == 3)
+                            {
+                                TutorialController.instance.connectFailTutorial.transform.GetChild(0).gameObject.SetActive(true);
+                            }
+                            if (TutorialController.order == 4)
+                            {
+                                TutorialController.instance.connectFailTutorial.transform.GetChild(1).gameObject.SetActive(true);
+                            }
+                            TutorialController.order++;
+                        }
                         Debug.Log("Khong the ket noi");
                     }
                 }
@@ -326,6 +357,45 @@ public class GameplayController : MonoBehaviour
     #endregion
 
     #region Supporter
+    void _BuySupporter(int order)
+    {
+        GameObject sp = buySpPanel.transform.GetChild(order).gameObject;
+        sp.SetActive(true);
+        Button btBuy = sp.transform.GetChild(0).GetChild(4).GetComponent<Button>();
+        btBuy.onClick.RemoveAllListeners();
+        btBuy.onClick.AddListener(delegate
+        {
+            PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
+            if (PlayerPrefsController.instance._GetCoinsInPossession() >= 290)
+            {
+                PlayerPrefsController.instance._SetCoinsInPossession(290, false);
+                switch (order)
+                {
+                    case 0:
+                        PlayerPrefsController.instance._SetNumOfHint(3, true);
+                        btSpHint.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfHint() + "";
+                        btBuy.transform.parent.parent.gameObject.SetActive(false);
+                        break;
+                    case 1:
+                        PlayerPrefsController.instance._SetNumOfMagicWand(3, true);
+                        btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfMagicWand() + "";
+                        btBuy.transform.parent.parent.gameObject.SetActive(false);
+                        break;
+                    case 2:
+                        PlayerPrefsController.instance._SetNumOfFreezeTime(3, true);
+                        btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfFreezeTime() + "";
+                        btBuy.transform.parent.parent.gameObject.SetActive(false);
+                        break;
+                    case 3:
+                        PlayerPrefsController.instance._SetNumOfShuffle(3, true);
+                        btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfShuffle() + "";
+                        btBuy.transform.parent.parent.gameObject.SetActive(false);
+                        break;
+                }
+            }
+        });
+    }
+
     public void _EnableSupporter(bool isEnabled)
     {
         btSpHint.interactable = isEnabled;
@@ -336,93 +406,153 @@ public class GameplayController : MonoBehaviour
 
     public void _SupporterHint() //Hint: Khi sử dụng sẽ gợi ý 1 kết quả
     {
-        ProgressController.instance.audioSource.PlayOneShot(hintClip);
-        _ResetTileState();
-        while (!isHinted)
+        if (PlayerPrefsController.instance._GetNumOfHint() > 0)
         {
-            int index = Random.Range(1, SpriteController.spritesDict.Count);
-            List<Transform> temp = BoardController.instance._SearchSameTiles(BoardController.dict.ElementAt(index).Value);
-            if (temp.Count != 0)
+            if (LevelController.level != 3)
             {
-                for (int i = 0; i < (temp.Count - 1); i++)
+                PlayerPrefsController.instance._SetNumOfHint(1, false);
+                if (PlayerPrefsController.instance._GetNumOfHint() == 0) btSpHint.transform.GetChild(0).GetComponent<Text>().text = "+";
+                else btSpHint.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfHint() + "";
+            }
+            PlayerPrefsController.instance.audioSource.PlayOneShot(hintClip);
+            _ResetTileState();
+            
+            while (!isHinted)
+            {
+                int index = Random.Range(1, SpriteController.spritesDict.Count);
+                List<Transform> temp = BoardController.instance._SearchSameTiles(BoardController.dict.ElementAt(index).Value);
+                if (temp.Count != 0)
                 {
-                    for (int j = (i + 1); j < temp.Count; j++)
+                    for (int i = 0; i < (temp.Count - 1); i++)
                     {
-                        if (_HasAvailableConnection(temp[i], temp[j]))
+                        for (int j = (i + 1); j < temp.Count; j++)
                         {
-                            isHinted = true;
-                            goto endloop;
+                            if (_HasAvailableConnection(temp[i], temp[j]))
+                            {
+                                isHinted = true;
+                                goto endloop;
+                            }
                         }
                     }
+                endloop:;
                 }
-            endloop:;
             }
-        }
-
-        int n = points.Length;
-        for (int i = 0; i < points.Length; i++)
-        {
-            if (points[i] == null)
+            int n = points.Length;
+            for (int i = 0; i < points.Length; i++)
             {
-                n--;
+                if (points[i] == null)
+                {
+                    n--;
+                }
             }
-        }
-        for (int i = 0; i < n; i++)
-        {
-            if (i == 0 || i == n - 1)
+            for (int i = 0; i < n; i++)
             {
-                points[i].DOScale(new Vector3(.8f, .8f, .8f), .5f).SetEase(Ease.InOutQuad).SetUpdate(true).SetLoops(-1, LoopType.Yoyo);
+                if (i == 0 || i == n - 1)
+                {
+                    points[i].DOScale(new Vector3(.8f, .8f, .8f), .5f).SetEase(Ease.InOutQuad).SetUpdate(true).SetLoops(-1, LoopType.Yoyo);
+                }
             }
         }
+        else
+        {
+            PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
+            _BuySupporter(0);
+        }
+        
     }
 
     public void _SupporterMagicWand() //Đũa thần: 2 kết quả hoàn thành
     {
-        ProgressController.instance.audioSource.PlayOneShot(magicWandClip);
-        Time.timeScale = 1;
-        _ResetTileState();
-        EventSystem.current.SetSelectedGameObject(null);
-        int numCouple = 0;
-        for (int index = 1; index < SpriteController.spritesDict.Count; index++)
+        if (PlayerPrefsController.instance._GetNumOfMagicWand() > 0)
         {
-        check:
-            if (numCouple == 2)
+            if (LevelController.level != 5)
             {
-                break;
+                PlayerPrefsController.instance._SetNumOfMagicWand(1, false);
+                if (PlayerPrefsController.instance._GetNumOfMagicWand() == 0) btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = "+";
+                else btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfMagicWand() + "";
             }
-            List<Transform> temp = BoardController.instance._SearchSameTiles(BoardController.dict.ElementAt(index).Value);
-
-            if (temp.Count != 0)
+            PlayerPrefsController.instance.audioSource.PlayOneShot(magicWandClip);
+            Time.timeScale = 1;
+            _ResetTileState();
+            EventSystem.current.SetSelectedGameObject(null);
+            
+            int numCouple = 0;
+            for (int index = 1; index < SpriteController.spritesDict.Count; index++)
             {
-                for (int i = 0; i < temp.Count / 2; i++)
+            check:
+                if (numCouple == 2)
                 {
-                    if (numCouple == 2)
-                    {
-                        goto check;
-                    }
+                    break;
+                }
+                List<Transform> temp = BoardController.instance._SearchSameTiles(BoardController.dict.ElementAt(index).Value);
 
-                    StopAllCoroutines();
-                    StartCoroutine(DestroyTiles(temp[2 * i], temp[2 * i + 1]));
-                    numCouple++;
+                if (temp.Count != 0)
+                {
+                    for (int i = 0; i < temp.Count / 2; i++)
+                    {
+                        if (numCouple == 2)
+                        {
+                            goto check;
+                        }
+
+                        StopAllCoroutines();
+                        StartCoroutine(DestroyTiles(temp[2 * i], temp[2 * i + 1]));
+                        numCouple++;
+                    }
                 }
             }
+        }
+        else
+        {
+            PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
+            _BuySupporter(1);
         }
     }
 
     public void _SupporterFreezeTime() //Snow: Đóng băng thời gian 10 giây
     {
-        ProgressController.instance.audioSource.PlayOneShot(freezeTimeClip);
-        Time.timeScale = 1;
-        StartCoroutine(FreezeTime());
+        if (PlayerPrefsController.instance._GetNumOfFreezeTime() > 0)
+        {
+            if (LevelController.level != 7)
+            {
+                PlayerPrefsController.instance._SetNumOfFreezeTime(1, false);
+                if (PlayerPrefsController.instance._GetNumOfFreezeTime() == 0) btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = "+";
+                else btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfFreezeTime() + "";
+            }
+            PlayerPrefsController.instance.audioSource.PlayOneShot(freezeTimeClip);
+            Time.timeScale = 1;
+            
+            StartCoroutine(FreezeTime());
+        }
+        else
+        {
+            PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
+            _BuySupporter(2);
+        }
     }
 
     public void _SupporterShuffle() //Đổi vị trí: Khi người chơi sử dụng, các item thay đổi vị trí cho nhau.
     {
-        ProgressController.instance.audioSource.PlayOneShot(shuffleClip);
-        _ResetTileState();
-        isCoupled = true;
-        EventSystem.current.SetSelectedGameObject(null);
-        BoardController.instance._RearrangeTiles();
+        if (PlayerPrefsController.instance._GetNumOfShuffle() > 0)
+        {
+            if (LevelController.level != 9)
+            {
+                PlayerPrefsController.instance._SetNumOfShuffle(1, false);
+                if (PlayerPrefsController.instance._GetNumOfShuffle() == 0) btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = "+";
+                else btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfShuffle() + "";
+            }
+            PlayerPrefsController.instance.audioSource.PlayOneShot(shuffleClip);
+            _ResetTileState();
+            isCoupled = true;
+            EventSystem.current.SetSelectedGameObject(null);
+            
+            BoardController.instance._RearrangeTiles();
+        }
+        else
+        {
+            PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
+            _BuySupporter(3);
+        }
     }
 
     #endregion
@@ -430,14 +560,14 @@ public class GameplayController : MonoBehaviour
     #region Booster
     public void _BoosterTimeWizard() //Time : Tăng 10 giây khi sử dụng
     {
-        ProgressController.instance.audioSource.PlayOneShot(timeWizardClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(timeWizardClip);
         boosterPanel.SetActive(false);
         TimeController.instance._SetTimeForSlider(true);
     }
 
     public void _BoosterEarthquake() //Remove All: Xoá 1 hình bất kỳ
     {
-        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         boosterPanel.SetActive(false);
         bool isFounded = false;
         while (!isFounded)
@@ -457,7 +587,7 @@ public class GameplayController : MonoBehaviour
 
     public void _BoosterMirror() //Mirror: gấp đôi số sao đạt được
     {
-        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         boosterPanel.SetActive(false);
 
     }
@@ -499,6 +629,17 @@ public class GameplayController : MonoBehaviour
         yield return new WaitForSeconds(0.4f);
         _ResetTileState();
         BoardController.instance._ActivateGravity();
+        if (LevelController.level == 1)
+        {
+            TutorialController.order++;
+            if (TutorialController.order < 5)
+            {
+                TutorialController.instance._FocusOnCoupleTile(
+                TutorialController.instance._FindTransform(BoardController.buttonListWithoutBlocker, TutorialController.coupleIndex[TutorialController.order].Item1),
+                TutorialController.instance._FindTransform(BoardController.buttonListWithoutBlocker, TutorialController.coupleIndex[TutorialController.order].Item2));
+            }
+        }
+
         yield return new WaitForSeconds(0.2f);
         settingOnButton.interactable = true;
         _EnableSupporter(true);
@@ -509,8 +650,10 @@ public class GameplayController : MonoBehaviour
     IEnumerator FreezeTime()
     {
         TimeController.instance._FreezeTime(true);
+        btSpFreeze.interactable = false;
         yield return new WaitForSeconds(10);
         TimeController.instance._FreezeTime(false);
+        btSpFreeze.interactable = true;
     }
 
     #endregion

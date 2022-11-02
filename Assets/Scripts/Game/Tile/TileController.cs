@@ -24,7 +24,7 @@ public class TileController : MonoBehaviour
     //object ingame
     public void _TileClicked()
     {
-        ProgressController.instance.audioSource.PlayOneShot(clickTileClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickTileClip);
         GameplayController.instance._ClickTile(gameObject.transform);
     }
 

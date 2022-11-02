@@ -89,7 +89,7 @@ public class GameplayTrial : MonoBehaviour
     public void _PlayLvTest()
     {
         audioSource.PlayOneShot(clickButtonClip);
-        var dataStr = Resources.Load("demoFile") as TextAsset;
+        var dataStr = Resources.Load("demo") as TextAsset;
         TrialBoard.levelData = JsonConvert.DeserializeObject<LevelData>(dataStr.text);
         titleLv.text = "DEMO";
         TrialBoard.instance._GoToProcess(1);
@@ -314,8 +314,6 @@ public class GameplayTrial : MonoBehaviour
         isCoupled = true;
         EventSystem.current.SetSelectedGameObject(null);
         TrialBoard.instance._RearrangeTiles();
-
-        Debug.Log("shuffle");
     }
 
     public void _BoosterTimeWizard() //Time : Tăng 10 giây khi sử dụng

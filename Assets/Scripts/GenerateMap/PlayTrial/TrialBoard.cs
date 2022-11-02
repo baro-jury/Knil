@@ -411,7 +411,6 @@ public class TrialBoard : MonoBehaviour
                 Time.timeScale = 0;
             }
         }
-        Debug.Log(JsonConvert.SerializeObject(matrix));
     }
 
     public List<Transform> _SearchSameTiles(Sprite sprite)

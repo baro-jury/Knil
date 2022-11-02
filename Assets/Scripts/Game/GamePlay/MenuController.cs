@@ -33,78 +33,78 @@ public class MenuController : MonoBehaviour
 
     void Start()
     {
-        stars.text = ProgressController.instance._GetStarsAchieved() + "";
-        coins.text = ProgressController.instance._GetCoinsInPossession() + "";
-        level.text = "LEVEL " + ProgressController.instance._GetMarkedLevel();
-        settingPanel.transform.GetChild(0).GetChild(3).GetChild(0).GetChild(0).GetChild(0).gameObject.SetActive(ProgressController.instance.audioSource.mute);
-        settingPanel.transform.GetChild(0).GetChild(3).GetChild(0).GetChild(1).GetChild(0).gameObject.SetActive(ProgressController.instance.musicSource.mute);
+        stars.text = PlayerPrefsController.instance._GetStarsAchieved() + "";
+        coins.text = PlayerPrefsController.instance._GetCoinsInPossession() + "";
+        level.text = "LEVEL " + PlayerPrefsController.instance._GetMarkedLevel();
+        settingPanel.transform.GetChild(0).GetChild(3).GetChild(0).GetChild(0).GetChild(0).gameObject.SetActive(PlayerPrefsController.instance.audioSource.mute);
+        settingPanel.transform.GetChild(0).GetChild(3).GetChild(0).GetChild(1).GetChild(0).gameObject.SetActive(PlayerPrefsController.instance.musicSource.mute);
     }
 
     public void _PlayGame()
     {
-        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
-        LevelController.instance._PlayLevel(ProgressController.instance._GetMarkedLevel());
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
+        LevelController.instance._PlayLevel(PlayerPrefsController.instance._GetMarkedLevel());
     }
 
     public void _ChooseLevel()
     {
-        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         menuPanel.SetActive(false);
     }
 
     public void _BackToMenu()
     {
-        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         menuPanel.SetActive(true);
     }
 
     public void _CreateCustomMap()
     {
-        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         SceneManager.LoadScene("GenerateMap");
     }
 
     public void _GoToSetting()
     {
-        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         settingPanel.SetActive(true);
     }
 
     public void _TurnOffSound()
     {
-        ProgressController.instance.audioSource.mute = true;
-        ProgressController.instance.audioSource.PlayOneShot(switchClip);
+        PlayerPrefsController.instance.audioSource.mute = true;
+        PlayerPrefsController.instance.audioSource.PlayOneShot(switchClip);
         settingPanel.transform.GetChild(0).GetChild(3).GetChild(0).GetChild(0).GetChild(0).gameObject.SetActive(true);
         //              setting form         body        middle      sound on   sound off
     }
 
     public void _TurnOnSound()
     {
-        ProgressController.instance.audioSource.mute = false;
-        ProgressController.instance.audioSource.PlayOneShot(switchClip);
+        PlayerPrefsController.instance.audioSource.mute = false;
+        PlayerPrefsController.instance.audioSource.PlayOneShot(switchClip);
         settingPanel.transform.GetChild(0).GetChild(3).GetChild(0).GetChild(0).GetChild(0).gameObject.SetActive(false);
         //              setting form         body        middle      sound on   sound off
     }
 
     public void _TurnOffMusic()
     {
-        ProgressController.instance.audioSource.PlayOneShot(switchClip);
-        ProgressController.instance.musicSource.mute = true;
+        PlayerPrefsController.instance.audioSource.PlayOneShot(switchClip);
+        PlayerPrefsController.instance.musicSource.mute = true;
         settingPanel.transform.GetChild(0).GetChild(3).GetChild(0).GetChild(1).GetChild(0).gameObject.SetActive(true);
         //              setting form         body        middle      music on   music off
     }
 
     public void _TurnOnMusic()
     {
-        ProgressController.instance.audioSource.PlayOneShot(switchClip);
-        ProgressController.instance.musicSource.mute = false;
+        PlayerPrefsController.instance.audioSource.PlayOneShot(switchClip);
+        PlayerPrefsController.instance.musicSource.mute = false;
         settingPanel.transform.GetChild(0).GetChild(3).GetChild(0).GetChild(1).GetChild(0).gameObject.SetActive(false);
         //              setting form         body        middle      music on   music off
     }
 
     public void _ShowHowToPlay()
     {
-        ProgressController.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         guidePanel.SetActive(true);
     }
 

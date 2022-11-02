@@ -95,7 +95,7 @@ public class TimeController : MonoBehaviour
                 if (muchTimeLeft && time <= 15)
                 {
                     muchTimeLeft = false;
-                    ProgressController.instance.audioSource.PlayOneShot(timeWarning);
+                    PlayerPrefsController.instance.audioSource.PlayOneShot(timeWarning);
 
                     iconClock.DOScale(new Vector3(1.2f, 1.2f, 1), 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
                     iconClock.DORotate(new Vector3(0, 0, -20), 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);

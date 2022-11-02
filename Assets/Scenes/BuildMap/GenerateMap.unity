@@ -3674,6 +3674,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 752a8af61f9fc73479a1caebb9cbc3bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioSource: {fileID: 302435916}
   background: {fileID: 1491613526}
   preSettingPanel: {fileID: 1871259222}
   editCreatedLv: {fileID: 327557467}

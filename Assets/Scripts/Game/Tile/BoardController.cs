@@ -41,6 +41,9 @@ public class BoardController : MonoBehaviour
     void Start()
     {
         _GoToProcess(1);
+        GameplayController.instance.settingOnButton.transform.SetAsLastSibling();
+        TutorialController.instance.tutorialPanel.transform.SetAsLastSibling();
+        TutorialController.instance.connectFailTutorial.transform.SetAsLastSibling();
     }
 
     #region Khởi tạo level
@@ -63,10 +66,6 @@ public class BoardController : MonoBehaviour
     {
         buttonList.Clear();
         buttonListWithoutBlocker.Clear();
-        for (int i = 0; i < gameObject.transform.childCount; i++)
-        {
-            Destroy(gameObject.transform.GetChild(i).gameObject);
-        }
         orderOfPullingDirection = 0;
         _InstantiateProcess(order);
         dict = SpriteController.instance._CreateSubDictionary(minId, maxId);
@@ -206,7 +205,55 @@ public class BoardController : MonoBehaviour
             else
             {
                 trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.4f).SetEase(Ease.OutBack).SetUpdate(true)
-                    .OnComplete(() => { GameplayController.instance._EnableSupporter(true); });
+                    .OnComplete(() => 
+                    { 
+                        GameplayController.instance._EnableSupporter(true);
+                        switch (LevelController.level)
+                        {
+                            case 1:
+                                TutorialController.instance._ChangeObjectState();
+                                TutorialController.instance._FocusOnCoupleTile(
+                                    TutorialController.instance._FindTransform(buttonListWithoutBlocker, TutorialController.coupleIndex[TutorialController.order].Item1),
+                                    TutorialController.instance._FindTransform(buttonListWithoutBlocker, TutorialController.coupleIndex[TutorialController.order].Item2));
+                                break;
+                            case 3:
+                                TutorialController.instance.tutorialPanel.SetActive(true);
+                                TutorialController.instance.tutorialPanel.transform.GetChild(1).gameObject.SetActive(true);
+                                TutorialController.instance.tutorialPanel.transform.GetChild(1).GetChild(1).GetComponent<Button>().onClick.AddListener(delegate
+                                {
+                                    TutorialController.instance.tutorialPanel.SetActive(false);
+                                    TutorialController.instance.tutorialPanel.transform.GetChild(1).gameObject.SetActive(false);
+                                });
+                                break;
+                            case 5:
+                                TutorialController.instance.tutorialPanel.SetActive(true);
+                                TutorialController.instance.tutorialPanel.transform.GetChild(2).gameObject.SetActive(true);
+                                TutorialController.instance.tutorialPanel.transform.GetChild(2).GetChild(1).GetComponent<Button>().onClick.AddListener(delegate
+                                {
+                                    TutorialController.instance.tutorialPanel.SetActive(false);
+                                    TutorialController.instance.tutorialPanel.transform.GetChild(2).gameObject.SetActive(false);
+                                });
+                                break;
+                            case 7:
+                                TutorialController.instance.tutorialPanel.SetActive(true);
+                                TutorialController.instance.tutorialPanel.transform.GetChild(3).gameObject.SetActive(true);
+                                TutorialController.instance.tutorialPanel.transform.GetChild(3).GetChild(1).GetComponent<Button>().onClick.AddListener(delegate
+                                {
+                                    TutorialController.instance.tutorialPanel.SetActive(false);
+                                    TutorialController.instance.tutorialPanel.transform.GetChild(3).gameObject.SetActive(false);
+                                });
+                                break;
+                            case 9:
+                                TutorialController.instance.tutorialPanel.SetActive(true);
+                                TutorialController.instance.tutorialPanel.transform.GetChild(4).gameObject.SetActive(true);
+                                TutorialController.instance.tutorialPanel.transform.GetChild(4).GetChild(1).GetComponent<Button>().onClick.AddListener(delegate
+                                {
+                                    TutorialController.instance.tutorialPanel.SetActive(false);
+                                    TutorialController.instance.tutorialPanel.transform.GetChild(4).gameObject.SetActive(false);
+                                });
+                                break;
+                        }
+                    });
             }
         }
     }
@@ -398,10 +445,10 @@ public class BoardController : MonoBehaviour
             }
             else
             {
-                if (levelData.Level < Resources.LoadAll("Levels").Length && levelData.Level == ProgressController.instance._GetMarkedLevel())
+                if (levelData.Level < Resources.LoadAll("Levels").Length && levelData.Level == PlayerPrefsController.instance._GetMarkedLevel())
                 {
                     //LevelController.level = levelData.Level + 1;
-                    ProgressController.instance._SetMarkedLevel(levelData.Level + 1);
+                    PlayerPrefsController.instance._SetMarkedLevel(levelData.Level + 1);
                 }
                 GameplayController.instance._CompleteLevel();
             }

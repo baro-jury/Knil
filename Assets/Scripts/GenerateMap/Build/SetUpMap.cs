@@ -11,6 +11,7 @@ using UnityEngine.SceneManagement;
 public class SetUpMap : MonoBehaviour
 {
     public static SetUpMap instance;
+    public AudioSource audioSource;
 
     private LevelData levelData = new LevelData();
     private List<ProcessData> map = new List<ProcessData>();
@@ -325,8 +326,8 @@ public class SetUpMap : MonoBehaviour
     #region Edit Map
     void _EditBoard()
     {
-        _CheckInput(row);
-        _CheckInput(column);
+        _CheckInput(row, 1, 12);
+        _CheckInput(column, 1, 9);
         _CheckInput(totalTile, 0, int.Parse(row.text) * int.Parse(column.text));
 
         _EditShape();
@@ -336,6 +337,9 @@ public class SetUpMap : MonoBehaviour
 
     void _EditDataMap()
     {
+        _CheckInput(row, 1, 12);
+        _CheckInput(column, 1, 9);
+        _CheckInput(totalTile, 0, int.Parse(row.text) * int.Parse(column.text));
         _CheckInput(time);
         _CheckInput(timestampFor3Star, 0, int.Parse(time.text));
         _CheckInput(timestampFor2Star, 0, int.Parse(timestampFor3Star.text));
