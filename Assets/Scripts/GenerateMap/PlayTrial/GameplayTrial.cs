@@ -155,6 +155,7 @@ public class GameplayTrial : MonoBehaviour
             .OnComplete(() =>
             {
                 currentTile.GetComponent<RectTransform>().DOScale(Vector3.one, .1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                currentTile.GetChild(0).GetComponent<Image>().DOColor(Color.green, .1f).SetEase(Ease.InOutQuad).SetUpdate(true);
             });
         Time.timeScale = 1;
         isCoupled = !isCoupled;
@@ -168,6 +169,10 @@ public class GameplayTrial : MonoBehaviour
             if (siblingIndex == currentTile.GetSiblingIndex())
             {
                 Debug.Log("Click cung 1 tile");
+                foreach (var tile in TrialBoard.buttonList)
+                {
+                    if (tile != currentTile) tile.GetChild(0).GetComponent<Image>().color = Color.white;
+                }
                 tile = currentTile;
                 siblingIndex = currentTile.GetSiblingIndex();
                 isCoupled = !isCoupled;
@@ -177,6 +182,10 @@ public class GameplayTrial : MonoBehaviour
                 if (!_AreTheSameTiles(tile, currentTile))
                 {
                     Debug.Log("Click khac tile khac ID");
+                    foreach (var tile in TrialBoard.buttonList)
+                    {
+                        if (tile != currentTile) tile.GetChild(0).GetComponent<Image>().color = Color.white;
+                    }
                     tile = currentTile;
                     siblingIndex = currentTile.GetSiblingIndex();
                     isCoupled = !isCoupled;
@@ -193,6 +202,13 @@ public class GameplayTrial : MonoBehaviour
                     else
                     {
                         Debug.Log("Khong the ket noi");
+                        foreach (var tile in TrialBoard.buttonList)
+                        {
+                            if (tile != currentTile) tile.GetChild(0).GetComponent<Image>().color = Color.white;
+                        }
+                        tile = currentTile;
+                        siblingIndex = currentTile.GetSiblingIndex();
+                        isCoupled = !isCoupled;
                     }
                 }
             }
@@ -206,9 +222,9 @@ public class GameplayTrial : MonoBehaviour
 
     void _ResetTileState()
     {
-        DOTween.Clear();
         foreach (var tile in TrialBoard.buttonList)
         {
+            DOTween.Kill(tile);
             tile.localScale = Vector3.one;
         }
         isHinted = false;
@@ -272,6 +288,11 @@ public class GameplayTrial : MonoBehaviour
         audioSource.PlayOneShot(magicWandClip);
         Time.timeScale = 1;
         _ResetTileState();
+        isCoupled = true;
+        foreach (var tile in TrialBoard.buttonList)
+        {
+            tile.GetChild(0).GetComponent<Image>().color = Color.white;
+        }
         EventSystem.current.SetSelectedGameObject(null);
         int numCouple = 0;
         for (int index = 1; index < TrialBoard.dict.Count; index++)
@@ -304,7 +325,13 @@ public class GameplayTrial : MonoBehaviour
     {
         audioSource.PlayOneShot(freezeTimeClip);
         Time.timeScale = 1;
-        StartCoroutine(FreezeTime());
+        Timer.instance._FreezeTime(true);
+        btSpFreeze.interactable = false;
+        btSpFreeze.transform.DOScale(Vector3.one, 10).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(delegate
+        {
+            Timer.instance._FreezeTime(false);
+            btSpFreeze.interactable = true;
+        });
     }
 
     public void _SupporterShuffle() //Đổi vị trí: Khi người chơi sử dụng, các item thay đổi vị trí cho nhau.
@@ -312,6 +339,10 @@ public class GameplayTrial : MonoBehaviour
         audioSource.PlayOneShot(shuffleClip);
         _ResetTileState();
         isCoupled = true;
+        foreach (var tile in TrialBoard.buttonList)
+        {
+            tile.GetChild(0).GetComponent<Image>().color = Color.white;
+        }
         EventSystem.current.SetSelectedGameObject(null);
         TrialBoard.instance._RearrangeTiles();
     }
@@ -389,17 +420,10 @@ public class GameplayTrial : MonoBehaviour
         _ResetTileState();
         TrialBoard.instance._ActivateGravity();
         yield return new WaitForSeconds(0.2f);
-        
+
         _EnableSupporter(true);
         TrialBoard.instance._CheckPossibleConnection();
         TrialBoard.instance._CheckProcess();
-    }
-
-    IEnumerator FreezeTime()
-    {
-        Timer.instance._FreezeTime(true);
-        yield return new WaitForSeconds(10);
-        Timer.instance._FreezeTime(false);
     }
 
     #endregion

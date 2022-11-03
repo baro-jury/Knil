@@ -13,7 +13,7 @@ public class GameplayController : MonoBehaviour
     public static GameplayController instance;
 
     private bool isCoupled = true, isHinted = false;
-    private int siblingIndex, numberOfStars;
+    private int numberOfStars;
     private Transform[] points = new Transform[4];
     private Transform tile;
 
@@ -64,7 +64,11 @@ public class GameplayController : MonoBehaviour
         else Time.timeScale = 0;
 
         if (LevelController.level < 3) btSpHint.transform.parent.GetChild(1).gameObject.SetActive(true);
-        else if (LevelController.level == 3) btSpHint.transform.GetChild(0).GetComponent<Text>().text = "∞";
+        else if (LevelController.level == 3)
+        {
+            btSpHint.transform.GetChild(0).GetComponent<Text>().text = "∞";
+            //TutorialController.instance.tutorialPanel.transform.GetChild(1).localPosition = btSpHint.transform.parent.localPosition;
+        }
         else btSpHint.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfHint() + "";
         
         if (LevelController.level < 5) btSpMagicWand.transform.parent.GetChild(1).gameObject.SetActive(true);
@@ -223,17 +227,17 @@ public class GameplayController : MonoBehaviour
     public void _RejectChance()
     {
         PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
-        rejectChancePanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
+        //rejectChancePanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
         rejectChancePanel.SetActive(true);
-        rejectChancePanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        //rejectChancePanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
     }
 
     public void _GameOver()
     {
         Time.timeScale = 0;
-        //gameOverPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
+        gameOverPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
         gameOverPanel.SetActive(true);
-        //gameOverPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        gameOverPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
     }
 
     public void _Replay()
@@ -278,25 +282,31 @@ public class GameplayController : MonoBehaviour
     #region Click Tiles
     public void _ClickTile(Transform currentTile)
     {
+        Color color = new Color(0, 0.9f, 0.08f, 1);
+        //Color color = new Color32(0, 230, 20, 255);
         currentTile.DOComplete();
         currentTile.DOKill();
         currentTile.GetComponent<RectTransform>().DOScale(new Vector3(.8f, .8f, 1), .1f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
             {
                 currentTile.GetComponent<RectTransform>().DOScale(Vector3.one, .1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                currentTile.GetChild(0).GetComponent<Image>().DOColor(color, .1f).SetEase(Ease.InOutQuad).SetUpdate(true);
             });
         Time.timeScale = 1;
         isCoupled = !isCoupled;
         if (!isCoupled)
         {
             tile = currentTile;
-            siblingIndex = currentTile.GetSiblingIndex();
         }
         else
         {
-            if (siblingIndex == currentTile.GetSiblingIndex())
+            if (tile.GetComponent<TileController>().Index == currentTile.GetComponent<TileController>().Index)
             {
                 Debug.Log("Click cung 1 tile");
+                foreach (var tile in BoardController.buttonList)
+                {
+                    if (tile != currentTile) tile.GetChild(0).GetComponent<Image>().color = Color.white;
+                }
                 isCoupled = !isCoupled;
             }
             else
@@ -304,8 +314,11 @@ public class GameplayController : MonoBehaviour
                 if (tile.GetComponent<TileController>().Id != currentTile.GetComponent<TileController>().Id)
                 {
                     Debug.Log("Click khac tile khac ID");
+                    foreach (var tile in BoardController.buttonList)
+                    {
+                        if (tile != currentTile) tile.GetChild(0).GetComponent<Image>().color = Color.white;
+                    }
                     tile = currentTile;
-                    siblingIndex = currentTile.GetSiblingIndex();
                     isCoupled = !isCoupled;
                 }
                 else
@@ -321,23 +334,23 @@ public class GameplayController : MonoBehaviour
                     {
                         if (LevelController.level == 1)
                         {
-                            if (TutorialController.order <= 2)
-                            {
-                                TutorialController.instance._FocusOnCoupleTile(
-                                TutorialController.instance._FindTransform(BoardController.buttonListWithoutBlocker, TutorialController.coupleIndex[TutorialController.order].Item1),
-                                TutorialController.instance._FindTransform(BoardController.buttonListWithoutBlocker, TutorialController.coupleIndex[TutorialController.order].Item2));
-                            }
                             if (TutorialController.order == 3)
                             {
                                 TutorialController.instance.connectFailTutorial.transform.GetChild(0).gameObject.SetActive(true);
                             }
-                            if (TutorialController.order == 4)
+                            else if (TutorialController.order == 4)
                             {
                                 TutorialController.instance.connectFailTutorial.transform.GetChild(1).gameObject.SetActive(true);
                             }
                             TutorialController.order++;
                         }
                         Debug.Log("Khong the ket noi");
+                        foreach (var tile in BoardController.buttonList)
+                        {
+                            if (tile != currentTile) tile.GetChild(0).GetComponent<Image>().color = Color.white;
+                        }
+                        tile = currentTile;
+                        isCoupled = !isCoupled;
                     }
                 }
             }
@@ -346,9 +359,9 @@ public class GameplayController : MonoBehaviour
 
     void _ResetTileState()
     {
-        DOTween.Clear();
         foreach (var tile in BoardController.buttonList)
         {
+            DOTween.Kill(tile);
             tile.localScale = Vector3.one;
         }
         isHinted = false;
@@ -473,9 +486,12 @@ public class GameplayController : MonoBehaviour
             }
             PlayerPrefsController.instance.audioSource.PlayOneShot(magicWandClip);
             Time.timeScale = 1;
-            _ResetTileState();
-            EventSystem.current.SetSelectedGameObject(null);
-            
+            //_ResetTileState();
+            isCoupled = true;
+            foreach (var tile in BoardController.buttonList)
+            {
+                tile.GetChild(0).GetComponent<Image>().color = Color.white;
+            }
             int numCouple = 0;
             for (int index = 1; index < SpriteController.spritesDict.Count; index++)
             {
@@ -485,7 +501,6 @@ public class GameplayController : MonoBehaviour
                     break;
                 }
                 List<Transform> temp = BoardController.instance._SearchSameTiles(BoardController.dict.ElementAt(index).Value);
-
                 if (temp.Count != 0)
                 {
                     for (int i = 0; i < temp.Count / 2; i++)
@@ -521,8 +536,22 @@ public class GameplayController : MonoBehaviour
             }
             PlayerPrefsController.instance.audioSource.PlayOneShot(freezeTimeClip);
             Time.timeScale = 1;
-            
-            StartCoroutine(FreezeTime());
+            Color ice = new Color32(0, 221, 255, 255);
+            TimeController.instance._FreezeTime(true);
+            btSpFreeze.interactable = false;
+            TimeController.instance.iconClock.DOScale(new Vector3(1.2f, 1.2f, 1), 1).SetEase(Ease.InOutQuad).SetUpdate(true);
+            TimeController.instance.iconClock.DORotate(new Vector3(0, 0, -20), 1).SetEase(Ease.InOutQuad).SetUpdate(true);
+            TimeController.instance.iconClock.GetComponent<Image>().DOColor(ice, 1).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(delegate
+            {
+                TimeController.instance.iconClock.DOScale(Vector3.one, 1).SetEase(Ease.InOutQuad).SetDelay(8.5f).SetUpdate(true);
+                TimeController.instance.iconClock.DORotate(Vector3.zero, 1).SetEase(Ease.InOutQuad).SetDelay(8.5f).SetUpdate(true);
+                TimeController.instance.iconClock.GetComponent<Image>().DOColor(Color.white, 1).SetEase(Ease.InOutQuad).SetDelay(8.5f).SetUpdate(true)
+                .OnComplete(delegate
+                {
+                    TimeController.instance._FreezeTime(false);
+                    btSpFreeze.interactable = true;
+                });
+            });
         }
         else
         {
@@ -544,8 +573,10 @@ public class GameplayController : MonoBehaviour
             PlayerPrefsController.instance.audioSource.PlayOneShot(shuffleClip);
             _ResetTileState();
             isCoupled = true;
-            EventSystem.current.SetSelectedGameObject(null);
-            
+            foreach (var tile in BoardController.buttonList)
+            {
+                tile.GetChild(0).GetComponent<Image>().color = Color.white;
+            }
             BoardController.instance._RearrangeTiles();
         }
         else
@@ -639,21 +670,11 @@ public class GameplayController : MonoBehaviour
                 TutorialController.instance._FindTransform(BoardController.buttonListWithoutBlocker, TutorialController.coupleIndex[TutorialController.order].Item2));
             }
         }
-
         yield return new WaitForSeconds(0.2f);
         settingOnButton.interactable = true;
         _EnableSupporter(true);
         BoardController.instance._CheckPossibleConnection();
         BoardController.instance._CheckProcess();
-    }
-
-    IEnumerator FreezeTime()
-    {
-        TimeController.instance._FreezeTime(true);
-        btSpFreeze.interactable = false;
-        yield return new WaitForSeconds(10);
-        TimeController.instance._FreezeTime(false);
-        btSpFreeze.interactable = true;
     }
 
     #endregion

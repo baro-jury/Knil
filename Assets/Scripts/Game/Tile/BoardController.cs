@@ -41,9 +41,6 @@ public class BoardController : MonoBehaviour
     void Start()
     {
         _GoToProcess(1);
-        GameplayController.instance.settingOnButton.transform.SetAsLastSibling();
-        TutorialController.instance.tutorialPanel.transform.SetAsLastSibling();
-        TutorialController.instance.connectFailTutorial.transform.SetAsLastSibling();
     }
 
     #region Khởi tạo level
@@ -66,11 +63,18 @@ public class BoardController : MonoBehaviour
     {
         buttonList.Clear();
         buttonListWithoutBlocker.Clear();
+        for (int i = 0; i < gameObject.transform.childCount - 3; i++)
+        {
+            Destroy(gameObject.transform.GetChild(i).gameObject);
+        }
         orderOfPullingDirection = 0;
         _InstantiateProcess(order);
         dict = SpriteController.instance._CreateSubDictionary(minId, maxId);
         _GenerateTiles();
         _SpreadTiles();
+        GameplayController.instance.settingOnButton.transform.SetAsLastSibling();
+        TutorialController.instance.tutorialPanel.transform.SetAsLastSibling();
+        TutorialController.instance.connectFailTutorial.transform.SetAsLastSibling();
     }
     #endregion
 
@@ -205,8 +209,8 @@ public class BoardController : MonoBehaviour
             else
             {
                 trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.4f).SetEase(Ease.OutBack).SetUpdate(true)
-                    .OnComplete(() => 
-                    { 
+                    .OnComplete(() =>
+                    {
                         GameplayController.instance._EnableSupporter(true);
                         switch (LevelController.level)
                         {
@@ -256,16 +260,6 @@ public class BoardController : MonoBehaviour
                     });
             }
         }
-    }
-
-    int NumberOfSameTiles()
-    {
-        int num = Random.Range(2, 5);
-        while (num % 2 == 1)
-        {
-            num = Random.Range(2, 5);
-        }
-        return num;
     }
 
     (int, int) _ConvertPositionToMatrixIndex(float x, float y, float boardWidth, float boardHeight, float tileSize)

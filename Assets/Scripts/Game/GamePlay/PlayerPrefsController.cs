@@ -43,6 +43,10 @@ public class PlayerPrefsController : MonoBehaviour
     {
         _MakeSingleInstance();
         _CheckFirstTimePlayGame();
+        //_SetNumOfHint(100, true);
+        //_SetNumOfMagicWand(100, true);
+        //_SetNumOfFreezeTime(100, true);
+        //_SetNumOfShuffle(100, true);
     }
 
     public int _GetMarkedLevel()

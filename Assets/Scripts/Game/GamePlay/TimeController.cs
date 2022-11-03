@@ -11,8 +11,7 @@ public class TimeController : MonoBehaviour
 
     [SerializeField]
     private AudioClip timeWarning;
-    [SerializeField]
-    private Transform iconClock;
+    public Transform iconClock;
     [SerializeField]
     private Slider slider;
     [SerializeField]
@@ -106,6 +105,7 @@ public class TimeController : MonoBehaviour
             {
                 muchTimeLeft = true;
                 DOTween.Clear();
+                LineController.instance._EraseLine();
                 time = 0;
                 if (isSaved)
                 {

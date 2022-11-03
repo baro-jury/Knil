@@ -64,7 +64,7 @@ public class TutorialController : MonoBehaviour
         connectFailTutorial.SetActive(true);
         booster.SetActive(false);
         timer.SetActive(false);
-        supporter.SetActive(false);
+        //supporter.SetActive(false);
     }
 
     #region Tao anim finger
@@ -121,6 +121,7 @@ public class TutorialController : MonoBehaviour
 
     public void _FocusOnCoupleTile(Transform t1, Transform t2)
     {
+        GameplayController.instance.settingOnButton.transform.SetAsLastSibling();
         tutorialPanel.transform.SetAsLastSibling();
         t1.SetAsLastSibling();
         t2.SetAsLastSibling();
