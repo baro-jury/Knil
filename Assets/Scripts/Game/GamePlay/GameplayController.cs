@@ -55,7 +55,8 @@ public class GameplayController : MonoBehaviour
         titleComplete.text = "LEVEL " + LevelController.level;
         pausePanel.transform.GetChild(0).GetChild(0).gameObject.SetActive(PlayerPrefsController.instance.audioSource.mute);
         pausePanel.transform.GetChild(1).GetChild(0).gameObject.SetActive(PlayerPrefsController.instance.musicSource.mute);
-        
+        Vector3 temp;
+
         if (LevelController.level == 1)
         {
             Time.timeScale = 1;
@@ -67,20 +68,40 @@ public class GameplayController : MonoBehaviour
         else if (LevelController.level == 3)
         {
             btSpHint.transform.GetChild(0).GetComponent<Text>().text = "∞";
-            //TutorialController.instance.tutorialPanel.transform.GetChild(1).localPosition = btSpHint.transform.parent.localPosition;
+            temp = TutorialController.instance.tutorialPanel.transform.GetChild(1).localPosition;
+            TutorialController.instance.tutorialPanel.transform.GetChild(1).localPosition = new Vector3
+                (temp.x, btSpHint.transform.parent.parent.parent.localPosition.y + 105 + 185, temp.z);
         }
         else btSpHint.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfHint() + "";
-        
+
         if (LevelController.level < 5) btSpMagicWand.transform.parent.GetChild(1).gameObject.SetActive(true);
-        else if (LevelController.level == 5) btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = "∞";
+        else if (LevelController.level == 5)
+        {
+            btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = "∞";
+            temp = TutorialController.instance.tutorialPanel.transform.GetChild(2).localPosition;
+            TutorialController.instance.tutorialPanel.transform.GetChild(2).localPosition = new Vector3
+                (temp.x, btSpMagicWand.transform.parent.parent.parent.localPosition.y + 105 + 185, temp.z);
+        }
         else btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfMagicWand() + "";
-        
+
         if (LevelController.level < 7) btSpFreeze.transform.parent.GetChild(1).gameObject.SetActive(true);
-        else if (LevelController.level == 7) btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = "∞";
+        else if (LevelController.level == 7)
+        {
+            btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = "∞";
+            temp = TutorialController.instance.tutorialPanel.transform.GetChild(3).localPosition;
+            TutorialController.instance.tutorialPanel.transform.GetChild(3).localPosition = new Vector3
+                (temp.x, btSpFreeze.transform.parent.parent.parent.localPosition.y + 105 + 185, temp.z);
+        }
         else btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfFreezeTime() + "";
 
         if (LevelController.level < 9) btSpShuffle.transform.parent.GetChild(1).gameObject.SetActive(true);
-        else if (LevelController.level == 9) btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = "∞";
+        else if (LevelController.level == 9)
+        {
+            btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = "∞";
+            temp = TutorialController.instance.tutorialPanel.transform.GetChild(4).localPosition;
+            TutorialController.instance.tutorialPanel.transform.GetChild(4).localPosition = new Vector3
+                (temp.x, btSpShuffle.transform.parent.parent.parent.localPosition.y + 105 + 185, temp.z);
+        }
         else btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfShuffle() + "";
     }
 
@@ -657,9 +678,6 @@ public class GameplayController : MonoBehaviour
                 BoardController.instance._DeactivateTile(linePositions[index].GetComponent<TileController>());
             }
         }
-        yield return new WaitForSeconds(0.4f);
-        _ResetTileState();
-        BoardController.instance._ActivateGravity();
         if (LevelController.level == 1)
         {
             TutorialController.order++;
@@ -670,6 +688,10 @@ public class GameplayController : MonoBehaviour
                 TutorialController.instance._FindTransform(BoardController.buttonListWithoutBlocker, TutorialController.coupleIndex[TutorialController.order].Item2));
             }
         }
+        yield return new WaitForSeconds(0.4f);
+        _ResetTileState();
+        BoardController.instance._ActivateGravity();
+        
         yield return new WaitForSeconds(0.2f);
         settingOnButton.interactable = true;
         _EnableSupporter(true);

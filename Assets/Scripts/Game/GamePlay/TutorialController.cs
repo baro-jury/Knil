@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -59,15 +60,30 @@ public class TutorialController : MonoBehaviour
 
     public void _ChangeObjectState()
     {
-        tutorialPanel.SetActive(true);
-        tutorialPanel.transform.GetChild(0).gameObject.SetActive(true);
+        GameplayController.instance.settingOnButton.transform.SetAsLastSibling();
+        tutorialPanel.transform.SetAsLastSibling();
+        connectFailTutorial.transform.SetAsLastSibling();
+        _TweeningObject();
         connectFailTutorial.SetActive(true);
         booster.SetActive(false);
         timer.SetActive(false);
-        //supporter.SetActive(false);
     }
 
-    #region Tao anim finger
+    void _TweeningObject()
+    {
+        tutorialPanel.transform.GetComponent<Image>().color = new Color(0, 0, 0, 0);
+        tutorialPanel.SetActive(true);
+        tutorialPanel.transform.GetComponent<Image>().DOFade(.5f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
+            .OnComplete(delegate { _FreeTile(true); });
+        if (order < 3)
+        {
+            tutorialPanel.transform.GetChild(0).GetComponent<Image>().color = new Color(255, 255, 255, 0);
+            tutorialPanel.transform.GetChild(0).gameObject.SetActive(true);
+            tutorialPanel.transform.GetChild(0).GetComponent<Image>().DOColor(Color.white, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+            tutorialPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        }
+    }
+
     public void _InitFinger(Vector3 pos)
     {
         _ChangeObjectState();
@@ -77,7 +93,7 @@ public class TutorialController : MonoBehaviour
 
         order++;
         Debug.Log(order + "  " + point.Length);
-        if (order == point.Length) _FreeTile();
+        if (order == point.Length) _FreeTile(true);
     }
 
     IEnumerator _FocusOn1Tile(Vector3 pos)
@@ -100,18 +116,13 @@ public class TutorialController : MonoBehaviour
         }
     }
 
-    public void _FreeTile()
+    public void _FreeTile(bool canPress)
     {
-        if (gameObject.transform.childCount != 0)
-        {
-            Destroy(gameObject.transform.GetChild(0).gameObject);
-        }
         foreach (var item in BoardController.buttonListWithoutBlocker)
         {
-            item.transform.GetComponent<Button>().interactable = true;
+            item.transform.GetComponent<Button>().interactable = canPress;
         }
     }
-    #endregion
 
     #region Tutorial Gameplay
     public Transform _FindTransform(List<TileController> list, (int, int) index)
@@ -121,11 +132,24 @@ public class TutorialController : MonoBehaviour
 
     public void _FocusOnCoupleTile(Transform t1, Transform t2)
     {
-        GameplayController.instance.settingOnButton.transform.SetAsLastSibling();
-        tutorialPanel.transform.SetAsLastSibling();
-        t1.SetAsLastSibling();
-        t2.SetAsLastSibling();
-        connectFailTutorial.transform.SetAsLastSibling();
+        _FreeTile(false);
+        //if (order > 0)
+        //{
+            tutorialPanel.transform.GetComponent<Image>().DOFade(0, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+            tutorialPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
+                .OnComplete(delegate { _TweeningObject();
+                    GameplayController.instance.settingOnButton.transform.SetAsLastSibling();
+                    tutorialPanel.transform.SetAsLastSibling();
+                    t1.SetAsLastSibling();
+                    t2.SetAsLastSibling();
+                    connectFailTutorial.transform.SetAsLastSibling();
+                });
+        //}
+        //GameplayController.instance.settingOnButton.transform.SetAsLastSibling();
+        //tutorialPanel.transform.SetAsLastSibling();
+        //t1.SetAsLastSibling();
+        //t2.SetAsLastSibling();
+        //connectFailTutorial.transform.SetAsLastSibling();
     }
 
     public void _SwitchTut(GameObject connectFailPanel)
