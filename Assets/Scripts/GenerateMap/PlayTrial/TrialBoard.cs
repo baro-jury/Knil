@@ -91,15 +91,12 @@ public class TrialBoard : MonoBehaviour
 
         float sideTile = gameObject.GetComponent<RectTransform>().sizeDelta.x / column;
         float temp = gameObject.GetComponent<RectTransform>().sizeDelta.y / row;
+        sideTile = sideTile < temp ? (int)sideTile : (int)temp;
         if (sideMax < sideTile)
         {
             sideTile = sideMax;
         }
-        else if (sideMin <= sideTile && sideTile <= sideMax)
-        {
-            sideTile = sideTile < temp ? (int)sideTile : (int)temp;
-        }
-        else
+        else if (sideTile < sideMin)
         {
             sideTile = sideMin;
         }

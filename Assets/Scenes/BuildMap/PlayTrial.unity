@@ -5661,7 +5661,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sideMin: 112
-  sideMax: 300
+  sideMax: 180
   Tile: {fileID: 5121327937221274675, guid: c2d60c98cd1eb47449ae3f677d9949c4, type: 3}
   FirstAnchor: {fileID: 984740228}
   LastAnchor: {fileID: 1753354762}

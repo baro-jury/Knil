@@ -86,15 +86,12 @@ public class BoardController : MonoBehaviour
 
         float sideTile = gameObject.GetComponent<RectTransform>().rect.width / column;
         float temp = gameObject.GetComponent<RectTransform>().rect.height / row;
+        sideTile = sideTile < temp ? (int)sideTile : (int)temp;
         if (sideMax < sideTile)
         {
             sideTile = sideMax;
         }
-        else if (sideMin <= sideTile && sideTile <= sideMax)
-        {
-            sideTile = sideTile < temp ? (int)sideTile : (int)temp;
-        }
-        else
+        else if (sideTile < sideMin)
         {
             sideTile = sideMin;
         }

@@ -493,7 +493,7 @@ public class GameplayController : MonoBehaviour
             
             while (!isHinted)
             {
-                int index = Random.Range(1, SpriteController.spritesDict.Count);
+                int index = Random.Range(1, BoardController.dict.Count);
                 List<Transform> temp = BoardController.instance._SearchSameTiles(BoardController.dict.ElementAt(index).Value);
                 if (temp.Count != 0)
                 {
@@ -554,7 +554,7 @@ public class GameplayController : MonoBehaviour
                 tile.GetChild(0).GetComponent<Image>().color = Color.white;
             }
             int numCouple = 0;
-            for (int index = 1; index < SpriteController.spritesDict.Count; index++)
+            for (int index = 1; index < BoardController.dict.Count; index++)
             {
             check:
                 if (numCouple == 2)
@@ -664,7 +664,7 @@ public class GameplayController : MonoBehaviour
         bool isFounded = false;
         while (!isFounded)
         {
-            int index = Random.Range(1, SpriteController.spritesDict.Count);
+            int index = Random.Range(1, BoardController.dict.Count);
             List<Transform> temp = BoardController.instance._SearchSameTiles(BoardController.dict.ElementAt(index).Value);
             if (temp.Count != 0)
             {
