@@ -14,7 +14,7 @@ public class BoardController : MonoBehaviour
     public static List<TileController> buttonListWithoutBlocker = new List<TileController>();
     public static Dictionary<string, Sprite> dict = new Dictionary<string, Sprite>();
     public static int row, column;
-    public int sideSmallTile = 112, sideMediumTile = 130, sideLargeTile = 180;
+    public int sideMin = 112, sideMax = 180;
     private int minId, maxId, process, orderOfPullingDirection;
     private bool shuffle, pullDown, pullUp, pullLeft, pullRight;
     private string[,] matrix;
@@ -84,38 +84,19 @@ public class BoardController : MonoBehaviour
         int repeat = 0, index = minId;
         SpriteController.instance._ShuffleImage(dict);
 
-        float sideTile = gameObject.GetComponent<RectTransform>().sizeDelta.x / column;
-        float temp = gameObject.GetComponent<RectTransform>().sizeDelta.y / row;
-        if (sideLargeTile <= sideTile)
+        float sideTile = gameObject.GetComponent<RectTransform>().rect.width / column;
+        float temp = gameObject.GetComponent<RectTransform>().rect.height / row;
+        if (sideMax < sideTile)
         {
-            if (sideLargeTile <= temp)
-            {
-                sideTile = sideLargeTile;
-            }
-            else if (sideMediumTile <= temp && temp < sideLargeTile)
-            {
-                sideTile = sideMediumTile;
-            }
-            else
-            {
-                sideTile = sideSmallTile;
-            }
-
+            sideTile = sideMax;
         }
-        else if (sideMediumTile <= sideTile && sideTile < sideLargeTile)
+        else if (sideMin <= sideTile && sideTile <= sideMax)
         {
-            if (sideMediumTile <= temp)
-            {
-                sideTile = sideMediumTile;
-            }
-            else
-            {
-                sideTile = sideSmallTile;
-            }
+            sideTile = sideTile < temp ? (int)sideTile : (int)temp;
         }
         else
         {
-            sideTile = sideSmallTile;
+            sideTile = sideMin;
         }
         float boardWidth = column * sideTile;
         float boardHeight = row * sideTile;

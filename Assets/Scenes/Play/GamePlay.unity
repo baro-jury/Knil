@@ -5011,7 +5011,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -45, y: 0}
-  m_SizeDelta: {x: 90, y: 92}
+  m_SizeDelta: {x: 78, y: 78}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &626064066
 MonoBehaviour:
@@ -12589,7 +12589,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -45, y: 0}
-  m_SizeDelta: {x: 90, y: 92}
+  m_SizeDelta: {x: 78, y: 78}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1416170379
 MonoBehaviour:
@@ -13601,7 +13601,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -45, y: 0}
-  m_SizeDelta: {x: 90, y: 92}
+  m_SizeDelta: {x: 82, y: 78}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1507526384
 MonoBehaviour:
@@ -15119,9 +15119,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d791ceba3500b694ea41ab415030a86a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sideSmallTile: 112
-  sideMediumTile: 130
-  sideLargeTile: 180
+  sideMin: 112
+  sideMax: 300
   Tile: {fileID: 9070188257198298591, guid: 2d5fccfa57065fe459832efcbf569c9e, type: 3}
   FirstAnchor: {fileID: 984740228}
   LastAnchor: {fileID: 1753354762}
@@ -18935,7 +18934,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -45, y: 0}
-  m_SizeDelta: {x: 90, y: 92}
+  m_SizeDelta: {x: 82, y: 78}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2097726474
 MonoBehaviour:
