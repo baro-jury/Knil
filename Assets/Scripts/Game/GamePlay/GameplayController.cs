@@ -12,6 +12,8 @@ public class GameplayController : MonoBehaviour
 {
     public static GameplayController instance;
 
+    public GameObject pause;
+
     private bool isCoupled = true, isHinted = false;
     private int numberOfStars;
     private Transform[] points = new Transform[4];
@@ -27,7 +29,8 @@ public class GameplayController : MonoBehaviour
     private Text titleLv, titleGameover, titleComplete;
     [SerializeField]
     private GameObject pausePanel, quitPanel;
-    public Button settingOnButton, settingOffButton;
+    [SerializeField]
+    private Button settingOnButton, settingOffButton;
     [SerializeField]
     private Button btSpHint, btSpMagicWand, btSpFreeze, btSpShuffle;
     [SerializeField]
@@ -116,13 +119,33 @@ public class GameplayController : MonoBehaviour
 
         settingOffButton.transform.DORotate(new Vector3(0, 0, 0), .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
 
-        pausePanel.transform.GetChild(0).GetComponent<RectTransform>().anchoredPosition = new Vector3(460, 875, 0);
-        pausePanel.transform.GetChild(1).GetComponent<RectTransform>().anchoredPosition = new Vector3(460, 875, 0);
-        pausePanel.transform.GetChild(2).GetComponent<RectTransform>().anchoredPosition = new Vector3(460, 875, 0);
+        #region Child cua btSettingOn
+        //pausePanel.transform.GetChild(0).GetComponent<RectTransform>().anchoredPosition = new Vector3(460, 875, 0);
+        //pausePanel.transform.GetChild(1).GetComponent<RectTransform>().anchoredPosition = new Vector3(460, 875, 0);
+        //pausePanel.transform.GetChild(2).GetComponent<RectTransform>().anchoredPosition = new Vector3(460, 875, 0);
 
-        pausePanel.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPosY(725, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        pausePanel.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(575, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        pausePanel.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(425, .4f).SetEase(Ease.InOutQuad).SetUpdate(true)
+        //pausePanel.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPosY(725, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        //pausePanel.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(575, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        //pausePanel.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(425, .4f).SetEase(Ease.InOutQuad).SetUpdate(true)
+        //    .OnComplete(() =>
+        //    {
+        //        settingOffButton.interactable = true;
+        //        pausePanel.GetComponent<Button>().interactable = true;
+        //        pausePanel.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        //        pausePanel.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        //        pausePanel.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        //        pausePanel.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        //    });
+        #endregion
+
+        #region Tach rieng
+        pausePanel.transform.GetChild(0).GetComponent<RectTransform>().anchoredPosition = new Vector3(-80, -85, 0);
+        pausePanel.transform.GetChild(1).GetComponent<RectTransform>().anchoredPosition = new Vector3(-80, -85, 0);
+        pausePanel.transform.GetChild(2).GetComponent<RectTransform>().anchoredPosition = new Vector3(-80, -85, 0);
+
+        pausePanel.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPosY(-235, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(-385, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(-535, .4f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
             {
                 settingOffButton.interactable = true;
@@ -132,6 +155,7 @@ public class GameplayController : MonoBehaviour
                 pausePanel.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
                 pausePanel.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
             });
+        #endregion
 
         Time.timeScale = 0;
     }
@@ -149,14 +173,28 @@ public class GameplayController : MonoBehaviour
 
         settingOffButton.transform.DORotate(new Vector3(0, 0, 180), .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
 
-        pausePanel.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPosY(875, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        pausePanel.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(875, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        pausePanel.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(875, .4f).SetEase(Ease.InOutQuad).SetUpdate(true)
+        #region Child cua btSettingOn
+        //pausePanel.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPosY(875, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        //pausePanel.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(875, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        //pausePanel.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(875, .4f).SetEase(Ease.InOutQuad).SetUpdate(true)
+        //    .OnComplete(() =>
+        //    {
+        //        pausePanel.SetActive(false);
+        //        settingOnButton.interactable = true;
+        //    });
+        #endregion
+
+        #region Tach rieng
+        pausePanel.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPosY(-85, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(-85, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(-85, .4f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
             {
                 pausePanel.SetActive(false);
                 settingOnButton.interactable = true;
             });
+        #endregion
+
         Time.timeScale = 1;
     }
 
@@ -355,15 +393,17 @@ public class GameplayController : MonoBehaviour
                     {
                         if (LevelController.level == 1)
                         {
-                            if (TutorialController.order == 3)
+                            Handheld.Vibrate();
+                            TutorialController.order++;
+                            if (TutorialController.order == 4)
                             {
                                 TutorialController.instance.connectFailTutorial.transform.GetChild(0).gameObject.SetActive(true);
                             }
-                            else if (TutorialController.order == 4)
+                            else if (TutorialController.order == 5)
                             {
                                 TutorialController.instance.connectFailTutorial.transform.GetChild(1).gameObject.SetActive(true);
                             }
-                            TutorialController.order++;
+                            
                         }
                         Debug.Log("Khong the ket noi");
                         foreach (var tile in BoardController.buttonList)
@@ -686,6 +726,10 @@ public class GameplayController : MonoBehaviour
                 TutorialController.instance._FocusOnCoupleTile(
                 TutorialController.instance._FindTransform(BoardController.buttonListWithoutBlocker, TutorialController.coupleIndex[TutorialController.order].Item1),
                 TutorialController.instance._FindTransform(BoardController.buttonListWithoutBlocker, TutorialController.coupleIndex[TutorialController.order].Item2));
+            }
+            else
+            {
+                TutorialController.instance.connectFailTutorial.transform.GetChild(2).gameObject.SetActive(false);
             }
         }
         yield return new WaitForSeconds(0.4f);

@@ -43,7 +43,7 @@ public class TutorialController : MonoBehaviour
 
     public GameObject fingerPoint, tutorialPanel, connectFailTutorial;
     [SerializeField]
-    private GameObject booster, timer, supporter, pauseButton;
+    private GameObject booster, timer, supporter, pause;
 
     void _MakeInstance()
     {
@@ -60,9 +60,6 @@ public class TutorialController : MonoBehaviour
 
     public void _ChangeObjectState()
     {
-        GameplayController.instance.settingOnButton.transform.SetAsLastSibling();
-        tutorialPanel.transform.SetAsLastSibling();
-        connectFailTutorial.transform.SetAsLastSibling();
         _TweeningObject();
         connectFailTutorial.SetActive(true);
         booster.SetActive(false);
@@ -73,50 +70,17 @@ public class TutorialController : MonoBehaviour
     {
         tutorialPanel.transform.GetComponent<Image>().color = new Color(0, 0, 0, 0);
         tutorialPanel.SetActive(true);
-        tutorialPanel.transform.GetComponent<Image>().DOFade(.5f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
-            .OnComplete(delegate { _FreeTile(true); });
         if (order < 3)
         {
-            tutorialPanel.transform.GetChild(0).GetComponent<Image>().color = new Color(255, 255, 255, 0);
             tutorialPanel.transform.GetChild(0).gameObject.SetActive(true);
-            tutorialPanel.transform.GetChild(0).GetComponent<Image>().DOColor(Color.white, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
-            tutorialPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+            tutorialPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
         }
+        tutorialPanel.transform.GetComponent<Image>().DOFade(0.5f, .4f).SetEase(Ease.InOutQuad).SetUpdate(true)
+            .OnComplete(delegate { _EnableTile(true); });
+
     }
 
-    public void _InitFinger(Vector3 pos)
-    {
-        _ChangeObjectState();
-        _FocusOn1Tile(pos);
-        Vector3 temp = new Vector3(pos.x - 140, pos.y + 30, 0);
-        var finger = Instantiate(fingerPoint, temp / 96, Quaternion.identity, gameObject.transform);
-
-        order++;
-        Debug.Log(order + "  " + point.Length);
-        if (order == point.Length) _FreeTile(true);
-    }
-
-    IEnumerator _FocusOn1Tile(Vector3 pos)
-    {
-        if (gameObject.transform.childCount != 0)
-        {
-            Destroy(gameObject.transform.GetChild(0).gameObject);
-        }
-        yield return new WaitForSeconds(0.2f);
-        foreach (var item in BoardController.buttonListWithoutBlocker)
-        {
-            if (item.transform.localPosition != pos)
-            {
-                item.transform.GetComponent<Button>().interactable = false;
-            }
-            else
-            {
-                item.transform.GetComponent<Button>().interactable = true;
-            }
-        }
-    }
-
-    public void _FreeTile(bool canPress)
+    void _EnableTile(bool canPress)
     {
         foreach (var item in BoardController.buttonListWithoutBlocker)
         {
@@ -132,24 +96,30 @@ public class TutorialController : MonoBehaviour
 
     public void _FocusOnCoupleTile(Transform t1, Transform t2)
     {
-        _FreeTile(false);
-        //if (order > 0)
-        //{
-            tutorialPanel.transform.GetComponent<Image>().DOFade(0, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
-            tutorialPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
-                .OnComplete(delegate { _TweeningObject();
-                    GameplayController.instance.settingOnButton.transform.SetAsLastSibling();
+        if (order == 0)
+        {
+            GameplayController.instance.pause.transform.SetAsLastSibling();
+            tutorialPanel.transform.SetAsLastSibling();
+            t1.SetAsLastSibling();
+            t2.SetAsLastSibling();
+            connectFailTutorial.transform.SetAsLastSibling();
+        }
+        else
+        {
+            _EnableTile(false);
+            tutorialPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
+            tutorialPanel.transform.GetComponent<Image>().DOFade(0, .4f).SetEase(Ease.InOutQuad).SetUpdate(true)
+                .OnComplete(delegate
+                {
+                    _TweeningObject();
+                    GameplayController.instance.pause.transform.SetAsLastSibling();
                     tutorialPanel.transform.SetAsLastSibling();
                     t1.SetAsLastSibling();
                     t2.SetAsLastSibling();
                     connectFailTutorial.transform.SetAsLastSibling();
                 });
-        //}
-        //GameplayController.instance.settingOnButton.transform.SetAsLastSibling();
-        //tutorialPanel.transform.SetAsLastSibling();
-        //t1.SetAsLastSibling();
-        //t2.SetAsLastSibling();
-        //connectFailTutorial.transform.SetAsLastSibling();
+        }
+
     }
 
     public void _SwitchTut(GameObject connectFailPanel)
@@ -163,11 +133,12 @@ public class TutorialController : MonoBehaviour
         if (order == 5)
         {
             tutorialPanel.SetActive(false);
-            pauseButton.transform.SetAsLastSibling();
+            pause.transform.SetAsLastSibling();
             tutorialPanel.transform.SetAsLastSibling();
             connectFailTutorial.transform.SetAsLastSibling();
+            connectFailTutorial.transform.GetChild(2).DOScale(Vector3.one, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
         }
-    } 
+    }
     #endregion
 
 

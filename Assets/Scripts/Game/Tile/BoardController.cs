@@ -72,6 +72,9 @@ public class BoardController : MonoBehaviour
         dict = SpriteController.instance._CreateSubDictionary(minId, maxId);
         _GenerateTiles();
         _SpreadTiles();
+        GameplayController.instance.pause.transform.SetAsLastSibling();
+        TutorialController.instance.tutorialPanel.transform.SetAsLastSibling();
+        TutorialController.instance.connectFailTutorial.transform.SetAsLastSibling();
     }
     #endregion
 
