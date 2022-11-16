@@ -14,7 +14,7 @@ public class SetUpBoard : MonoBehaviour
     private int totalTile, row, column;
     private bool pullDown, pullUp, pullLeft, pullRight;
     private string[,] matrix;
-    public int sideSmallTile = 112, sideMediumTile = 130, sideLargeTile = 180;
+    public int sideMin = 112, sideMax = 180;
 
     [SerializeField]
     private Button Tile;
@@ -66,36 +66,14 @@ public class SetUpBoard : MonoBehaviour
     {
         float sideTile = gameObject.GetComponent<RectTransform>().sizeDelta.x / column;
         float temp = gameObject.GetComponent<RectTransform>().sizeDelta.y / row;
-        if (sideLargeTile <= sideTile)
+        sideTile = sideTile < temp ? (int)sideTile : (int)temp;
+        if (sideMax < sideTile)
         {
-            if (sideLargeTile <= temp)
-            {
-                sideTile = sideLargeTile;
-            }
-            else if (sideMediumTile <= temp && temp < sideLargeTile)
-            {
-                sideTile = sideMediumTile;
-            }
-            else
-            {
-                sideTile = sideSmallTile;
-            }
-
+            sideTile = sideMax;
         }
-        else if (sideMediumTile <= sideTile && sideTile < sideLargeTile)
+        else if (sideTile < sideMin)
         {
-            if (sideMediumTile <= temp)
-            {
-                sideTile = sideMediumTile;
-            }
-            else
-            {
-                sideTile = sideSmallTile;
-            }
-        }
-        else
-        {
-            sideTile = sideSmallTile;
+            sideTile = sideMin;
         }
         float boardWidth = column * sideTile;
         float boardHeight = row * sideTile;

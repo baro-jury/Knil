@@ -104,7 +104,11 @@ public class TimeController : MonoBehaviour
             else
             {
                 muchTimeLeft = true;
-                DOTween.Clear();
+                foreach (var tile in BoardController.buttonList)
+                {
+                    DOTween.Kill(tile);
+                    tile.localScale = Vector3.one;
+                }
                 LineController.instance._EraseLine();
                 time = 0;
                 if (isSaved)

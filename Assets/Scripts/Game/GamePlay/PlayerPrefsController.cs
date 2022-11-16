@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -43,8 +44,9 @@ public class PlayerPrefsController : MonoBehaviour
     {
         _MakeSingleInstance();
         _CheckFirstTimePlayGame();
+        BoardController.levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + _GetMarkedLevel()) as TextAsset).text);
         //_SetNumOfHint(100, true);
-        //_SetNumOfMagicWand(100, true);
+        //_SetNumOfMagicWand(1000, true);
         //_SetNumOfFreezeTime(100, true);
         //_SetNumOfShuffle(100, true);
     }

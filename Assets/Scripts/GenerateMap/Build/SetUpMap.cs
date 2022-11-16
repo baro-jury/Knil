@@ -151,7 +151,8 @@ public class SetUpMap : MonoBehaviour
     void _GenerateMap(ProcessData data)
     {
         SetUpBoard.levelData = levelData;
-        SetUpBoard.processData = data;
+        SetUpBoard.processData = new ProcessData(data.MinID, data.MaxID, data.TotalTile, data.Shuffle,
+            data.Row, data.Column, data.Matrix, data.PullDown, data.PullUp, data.PullLeft, data.PullRight);
         SetUpBoard.instance._StartCreating();
     }
 
@@ -233,6 +234,7 @@ public class SetUpMap : MonoBehaviour
         map.Clear();
         mapContainExistedShape.Clear();
         indexMap = 0;
+        indexShape = 0;
         if (editCreatedLv.isOn)
         {
             var temp = Resources.Load("Levels/Level_" + createdLv.text) as TextAsset;
@@ -260,7 +262,6 @@ public class SetUpMap : MonoBehaviour
             pullLeft.value = dataMap.PullLeft == true ? 1 : 0;
             pullRight.value = dataMap.PullRight == true ? 1 : 0;
 
-
             string path = Application.dataPath + "/Resources/Shapes/" + dataMap.TotalTile + "/" + dataMap.Row + "x" + dataMap.Column + ".json";
             StreamReader reader = new(path);
             string data = reader.ReadToEnd();
@@ -268,7 +269,6 @@ public class SetUpMap : MonoBehaviour
             shapeList = JsonConvert.DeserializeObject<List<string[,]>>(data);
             indexShape = _FindIndexShape(matrix, shapeList);
             mapContainExistedShape.Add((indexShape, dataMap));
-            _EnableSwitchShape();
             List<string[,]> list = new List<string[,]>();
             for (int i = 1; i < map.Count; i++)
             {
@@ -281,13 +281,15 @@ public class SetUpMap : MonoBehaviour
             levelData.Difficulty = difficulty.options[difficulty.value].text;
             levelData.Theme = theme.value;
             matrix = new string[1, 1];
+            dataMap = new ProcessData(1, SpriteController.spritesDict.Count - 1, 0, false, 1, 1, matrix, false, false, false, false);
             for (int i = 0; i < int.Parse(process.text); i++)
             {
-                map.Add(new ProcessData(1, SpriteController.spritesDict.Count - 1, 0, false, 1, 1, matrix, false, false, false, false));
+                map.Add(dataMap);
                 mapContainExistedShape.Add((indexShape, map[i]));
             }
             themeWhileEditing.value = levelData.Theme;
         }
+        _EnableSwitchShape();
         SetUpBoard.setup = this;
         _GenerateMap(dataMap);
         _SelectBackground(themeWhileEditing);
@@ -675,7 +677,10 @@ public class SetUpMap : MonoBehaviour
                 if (_AreTheSameShapes(shape, item)) rndTileShapeDuplicated = true;
             }
             if (!shapeDuplicated) shapeList.Add(data.Matrix);
-            if (!rndTileShapeDuplicated) shapeList.Add(shape);
+            if (!rndTileShapeDuplicated)
+            {
+                if(!_AreTheSameShapes(data.Matrix, shape)) shapeList.Add(shape);
+            }
             string json = JsonConvert.SerializeObject(shapeList);
             File.WriteAllText(fullPath, json);
         }
@@ -788,7 +793,7 @@ public class SetUpMap : MonoBehaviour
             foreach (var item in map)
             {
                 _StoreShapes(item);
-                Debug.Log("Map " + (map.IndexOf(item) + 1) + " - " + item.TotalTile + " tiles");
+                Debug.Log("Level " + levelData.Level + " - " + "Map " + (map.IndexOf(item) + 1) + " - " + item.TotalTile + " tiles");
             }
             string json = JsonConvert.SerializeObject(levelData);
             File.WriteAllText(Application.dataPath + "/Resources/Levels/Level_" + levelData.Level + ".json", json);

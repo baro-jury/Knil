@@ -22,6 +22,18 @@ public class PrefabController : MonoBehaviour
             });
     }
 
+    //close in demo game
+    public void _DemoClose()
+    {
+        PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickButtonClip);
+        transform.parent.GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true) //gameObject: form
+            .OnComplete(() =>
+            {
+                transform.parent.parent.gameObject.SetActive(false); //panel
+                transform.parent.localScale = Vector3.one;
+            });
+    }
+
     //close while custom map
     public void _X()
     {

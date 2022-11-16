@@ -35,11 +35,11 @@ public class BoardController : MonoBehaviour
     void Awake()
     {
         _MakeInstance();
-        levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelController.level) as TextAsset).text);
     }
 
     void Start()
     {
+        //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelController.level) as TextAsset).text);
         _GoToProcess(1);
     }
 
@@ -190,7 +190,7 @@ public class BoardController : MonoBehaviour
                     .OnComplete(() =>
                     {
                         GameplayController.instance._EnableSupporter(true);
-                        switch (LevelController.level)
+                        switch (levelData.Level)
                         {
                             case 1:
                                 TutorialController.instance._ChangeObjectState();
@@ -456,7 +456,6 @@ public class BoardController : MonoBehaviour
             if (t.Index == (rowBefore, colBefore))
             {
                 t.Index = (rowAfter, colAfter);
-                //t.transform.localPosition = posAfter;
                 t.transform.DOLocalMove(_ConvertMatrixIndexToLocalPos(rowAfter, colAfter, column * Tile.Size, row * Tile.Size, Tile.Size), 0.2f)
                     .SetEase(Ease.InOutQuad).SetUpdate(true);
                 t.name = t.Id.ToString() + " - " + t.Index.ToString();

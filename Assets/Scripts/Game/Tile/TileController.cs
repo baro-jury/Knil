@@ -28,6 +28,13 @@ public class TileController : MonoBehaviour
         GameplayController.instance._ClickTile(gameObject.transform);
     }
 
+    //object in demo game
+    public void _TileDemoClicked()
+    {
+        PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickTileClip);
+        GameplayDemo.instance._ClickTile(gameObject.transform);
+    }
+
     //object in trial game
     public void _TileTrialClicked()
     {

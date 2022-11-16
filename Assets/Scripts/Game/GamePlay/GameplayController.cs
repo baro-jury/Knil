@@ -53,22 +53,22 @@ public class GameplayController : MonoBehaviour
 
     void Start()
     {
-        titleLv.text = "LEVEL " + LevelController.level;
-        titleGameover.text = "LEVEL " + LevelController.level;
-        titleComplete.text = "LEVEL " + LevelController.level;
+        titleLv.text = "LEVEL " + BoardController.levelData.Level;
+        titleGameover.text = "LEVEL " + BoardController.levelData.Level;
+        titleComplete.text = "LEVEL " + BoardController.levelData.Level;
         pausePanel.transform.GetChild(0).GetChild(0).gameObject.SetActive(PlayerPrefsController.instance.audioSource.mute);
         pausePanel.transform.GetChild(1).GetChild(0).gameObject.SetActive(PlayerPrefsController.instance.musicSource.mute);
-        Vector3 temp;
 
-        if (LevelController.level == 1)
+        Vector3 temp;
+        if (BoardController.levelData.Level == 1)
         {
             Time.timeScale = 1;
             TimeController.instance._FreezeTime(true);
         }
         else Time.timeScale = 0;
 
-        if (LevelController.level < 3) btSpHint.transform.parent.GetChild(1).gameObject.SetActive(true);
-        else if (LevelController.level == 3)
+        if (BoardController.levelData.Level < 3) btSpHint.transform.parent.GetChild(1).gameObject.SetActive(true);
+        else if (BoardController.levelData.Level == 3)
         {
             btSpHint.transform.GetChild(0).GetComponent<Text>().text = "∞";
             temp = TutorialController.instance.tutorialPanel.transform.GetChild(1).localPosition;
@@ -77,8 +77,8 @@ public class GameplayController : MonoBehaviour
         }
         else btSpHint.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfHint() + "";
 
-        if (LevelController.level < 5) btSpMagicWand.transform.parent.GetChild(1).gameObject.SetActive(true);
-        else if (LevelController.level == 5)
+        if (BoardController.levelData.Level < 5) btSpMagicWand.transform.parent.GetChild(1).gameObject.SetActive(true);
+        else if (BoardController.levelData.Level == 5)
         {
             btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = "∞";
             temp = TutorialController.instance.tutorialPanel.transform.GetChild(2).localPosition;
@@ -87,8 +87,8 @@ public class GameplayController : MonoBehaviour
         }
         else btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfMagicWand() + "";
 
-        if (LevelController.level < 7) btSpFreeze.transform.parent.GetChild(1).gameObject.SetActive(true);
-        else if (LevelController.level == 7)
+        if (BoardController.levelData.Level < 7) btSpFreeze.transform.parent.GetChild(1).gameObject.SetActive(true);
+        else if (BoardController.levelData.Level == 7)
         {
             btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = "∞";
             temp = TutorialController.instance.tutorialPanel.transform.GetChild(3).localPosition;
@@ -97,8 +97,8 @@ public class GameplayController : MonoBehaviour
         }
         else btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfFreezeTime() + "";
 
-        if (LevelController.level < 9) btSpShuffle.transform.parent.GetChild(1).gameObject.SetActive(true);
-        else if (LevelController.level == 9)
+        if (BoardController.levelData.Level < 9) btSpShuffle.transform.parent.GetChild(1).gameObject.SetActive(true);
+        else if (BoardController.levelData.Level == 9)
         {
             btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = "∞";
             temp = TutorialController.instance.tutorialPanel.transform.GetChild(4).localPosition;
@@ -153,7 +153,8 @@ public class GameplayController : MonoBehaviour
                 pausePanel.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
                 pausePanel.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
                 pausePanel.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
-                pausePanel.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                settingOffButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                PlayerPrefsController.instance.audioSource.Pause();
             });
         #endregion
 
@@ -162,13 +163,14 @@ public class GameplayController : MonoBehaviour
 
     public void _Resume()
     {
+        PlayerPrefsController.instance.audioSource.UnPause();
         PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         settingOffButton.interactable = false;
         pausePanel.GetComponent<Button>().interactable = false;
         pausePanel.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
         pausePanel.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
         pausePanel.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        pausePanel.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        settingOffButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
         pausePanel.transform.GetComponent<Image>().DOFade(0f, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
 
         settingOffButton.transform.DORotate(new Vector3(0, 0, 180), .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
@@ -185,6 +187,7 @@ public class GameplayController : MonoBehaviour
         #endregion
 
         #region Tach rieng
+        quitPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
         pausePanel.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPosY(-85, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
         pausePanel.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(-85, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
         pausePanel.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPosY(-85, .4f).SetEase(Ease.InOutQuad).SetUpdate(true)
@@ -192,6 +195,8 @@ public class GameplayController : MonoBehaviour
             {
                 pausePanel.SetActive(false);
                 settingOnButton.interactable = true;
+                quitPanel.SetActive(false);
+                quitPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.one;
             });
         #endregion
 
@@ -286,17 +291,17 @@ public class GameplayController : MonoBehaviour
     public void _RejectChance()
     {
         PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
-        //rejectChancePanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
+        rejectChancePanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
         rejectChancePanel.SetActive(true);
-        //rejectChancePanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        rejectChancePanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
     }
 
     public void _GameOver()
     {
         Time.timeScale = 0;
-        gameOverPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
+        //gameOverPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
         gameOverPanel.SetActive(true);
-        gameOverPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        //gameOverPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
     }
 
     public void _Replay()
@@ -308,7 +313,7 @@ public class GameplayController : MonoBehaviour
     public void _CompleteLevel()
     {
         Time.timeScale = 0;
-
+        PlayerPrefsDemo.instance.audioSource.Stop();
         numberOfStars = TimeController.instance._NumberOfStarsAchieved();
         for (int i = 0; i < numberOfStars; i++)
         {
@@ -325,14 +330,14 @@ public class GameplayController : MonoBehaviour
     public void _GoToNextLevel()
     {
         PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
-        if (LevelController.level == Resources.LoadAll("Levels").Length)
+        if (BoardController.levelData.Level == Resources.LoadAll("Levels").Length)
         {
             _GoToMenu();
         }
         else
         {
-            LevelController.level++;
-            LevelController.instance._PlayLevel(LevelController.level);
+            BoardController.levelData.Level++;
+            LevelController.instance._PlayLevel(BoardController.levelData.Level);
         }
     }
 
@@ -391,7 +396,7 @@ public class GameplayController : MonoBehaviour
                     }
                     else
                     {
-                        if (LevelController.level == 1)
+                        if (BoardController.levelData.Level == 1)
                         {
                             Handheld.Vibrate();
                             TutorialController.order++;
@@ -482,7 +487,7 @@ public class GameplayController : MonoBehaviour
     {
         if (PlayerPrefsController.instance._GetNumOfHint() > 0)
         {
-            if (LevelController.level != 3)
+            if (BoardController.levelData.Level != 3)
             {
                 PlayerPrefsController.instance._SetNumOfHint(1, false);
                 if (PlayerPrefsController.instance._GetNumOfHint() == 0) btSpHint.transform.GetChild(0).GetComponent<Text>().text = "+";
@@ -539,7 +544,7 @@ public class GameplayController : MonoBehaviour
     {
         if (PlayerPrefsController.instance._GetNumOfMagicWand() > 0)
         {
-            if (LevelController.level != 5)
+            if (BoardController.levelData.Level != 5)
             {
                 PlayerPrefsController.instance._SetNumOfMagicWand(1, false);
                 if (PlayerPrefsController.instance._GetNumOfMagicWand() == 0) btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = "+";
@@ -589,7 +594,7 @@ public class GameplayController : MonoBehaviour
     {
         if (PlayerPrefsController.instance._GetNumOfFreezeTime() > 0)
         {
-            if (LevelController.level != 7)
+            if (BoardController.levelData.Level != 7)
             {
                 PlayerPrefsController.instance._SetNumOfFreezeTime(1, false);
                 if (PlayerPrefsController.instance._GetNumOfFreezeTime() == 0) btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = "+";
@@ -600,13 +605,13 @@ public class GameplayController : MonoBehaviour
             Color ice = new Color32(0, 221, 255, 255);
             TimeController.instance._FreezeTime(true);
             btSpFreeze.interactable = false;
-            TimeController.instance.iconClock.DOScale(new Vector3(1.2f, 1.2f, 1), 1).SetEase(Ease.InOutQuad).SetUpdate(true);
-            TimeController.instance.iconClock.DORotate(new Vector3(0, 0, -20), 1).SetEase(Ease.InOutQuad).SetUpdate(true);
-            TimeController.instance.iconClock.GetComponent<Image>().DOColor(ice, 1).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(delegate
+            TimeController.instance.iconClock.DOScale(new Vector3(1.2f, 1.2f, 1), 1).SetEase(Ease.InOutQuad);
+            TimeController.instance.iconClock.DORotate(new Vector3(0, 0, -20), 1).SetEase(Ease.InOutQuad);
+            TimeController.instance.iconClock.GetComponent<Image>().DOColor(ice, 1).SetEase(Ease.InOutQuad).OnComplete(delegate
             {
-                TimeController.instance.iconClock.DOScale(Vector3.one, 1).SetEase(Ease.InOutQuad).SetDelay(8.5f).SetUpdate(true);
-                TimeController.instance.iconClock.DORotate(Vector3.zero, 1).SetEase(Ease.InOutQuad).SetDelay(8.5f).SetUpdate(true);
-                TimeController.instance.iconClock.GetComponent<Image>().DOColor(Color.white, 1).SetEase(Ease.InOutQuad).SetDelay(8.5f).SetUpdate(true)
+                TimeController.instance.iconClock.DOScale(Vector3.one, 1).SetEase(Ease.InOutQuad).SetDelay(8.5f);
+                TimeController.instance.iconClock.DORotate(Vector3.zero, 1).SetEase(Ease.InOutQuad).SetDelay(8.5f);
+                TimeController.instance.iconClock.GetComponent<Image>().DOColor(Color.white, 1).SetEase(Ease.InOutQuad).SetDelay(8.5f)
                 .OnComplete(delegate
                 {
                     TimeController.instance._FreezeTime(false);
@@ -625,7 +630,7 @@ public class GameplayController : MonoBehaviour
     {
         if (PlayerPrefsController.instance._GetNumOfShuffle() > 0)
         {
-            if (LevelController.level != 9)
+            if (BoardController.levelData.Level != 9)
             {
                 PlayerPrefsController.instance._SetNumOfShuffle(1, false);
                 if (PlayerPrefsController.instance._GetNumOfShuffle() == 0) btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = "+";
@@ -718,7 +723,7 @@ public class GameplayController : MonoBehaviour
                 BoardController.instance._DeactivateTile(linePositions[index].GetComponent<TileController>());
             }
         }
-        if (LevelController.level == 1)
+        if (BoardController.levelData.Level == 1)
         {
             TutorialController.order++;
             if (TutorialController.order < 5)

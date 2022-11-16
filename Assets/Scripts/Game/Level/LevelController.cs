@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class LevelController : MonoBehaviour
 {
     public static LevelController instance;
-    public static int level = 3;
+    //public static int level = 7;
 
     [SerializeField]
     private InputField lvInput;
@@ -47,6 +47,7 @@ public class LevelController : MonoBehaviour
 
     void Start()
     {
+        lvInput.text = BoardController.levelData.Level + "";
         lvInput.onEndEdit.AddListener(delegate { _CheckInput(lvInput); });
         btPlay.onClick.AddListener(delegate { _PlayLevel(int.Parse(lvInput.text)); });
     }
@@ -66,7 +67,7 @@ public class LevelController : MonoBehaviour
     //}
     public void _PlayLevel(int lv)
     {
-        level = lv;
+        //level = lv;
         BoardController.levelData = _GetLevelData(lv);
         SceneManager.LoadScene("GamePlay");
     }
