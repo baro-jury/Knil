@@ -1634,6 +1634,7 @@ RectTransform:
   - {fileID: 2008448061}
   - {fileID: 609606335}
   - {fileID: 1688674365}
+  - {fileID: 2076017945}
   m_Father: {fileID: 1905048878}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4815,11 +4816,14 @@ MonoBehaviour:
   clickButtonClip: {fileID: 8300000, guid: 95b21bdbd9e14884ebee329f5a5e5e8e, type: 3}
   matchTileClip: {fileID: 8300000, guid: b0fc1d65f891300468ebd6959723aab1, type: 3}
   switchClip: {fileID: 8300000, guid: 2236bbf30e592434fb1f218c84ea79e7, type: 3}
+  passLevelClip: {fileID: 8300000, guid: c19e745937083e84b8aadeabc3c48e62, type: 3}
   timeWizardClip: {fileID: 8300000, guid: ee90bf0b539cca64f8a7e2ad36baeaf6, type: 3}
   hintClip: {fileID: 8300000, guid: dd93ba1563978c14cad0f313f9cc6553, type: 3}
   magicWandClip: {fileID: 8300000, guid: 40b526e18ce2368458fc3f74a40b987e, type: 3}
   freezeTimeClip: {fileID: 8300000, guid: e0e220e6c246964498090022c73bf9b8, type: 3}
   shuffleClip: {fileID: 8300000, guid: c9a056b71dc0f8a43bccd97002969edb, type: 3}
+  startCoinAnimPos: {fileID: 2076017945}
+  endCoinAnimPos: {fileID: 922460271}
   coins: {fileID: 1800293405}
   titleLv: {fileID: 646820684}
   titleComplete: {fileID: 1378257655}
@@ -17877,6 +17881,42 @@ Transform:
   m_Father: {fileID: 1491613528}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2076017944
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2076017945}
+  m_Layer: 5
+  m_Name: CoinAnimPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2076017945
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2076017944}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 204357077}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -68, y: 900}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2097726471
 GameObject:
   m_ObjectHideFlags: 0

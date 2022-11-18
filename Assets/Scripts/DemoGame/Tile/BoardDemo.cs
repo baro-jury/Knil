@@ -39,7 +39,7 @@ public class BoardDemo : MonoBehaviour
 
     void Start()
     {
-        levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelDemo.level) as TextAsset).text);
+        //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelDemo.level) as TextAsset).text);
         _GoToProcess(1);
     }
 
@@ -95,6 +95,7 @@ public class BoardDemo : MonoBehaviour
         {
             sideTile = sideMin;
         }
+        if (sideTile % 2 != 0) sideTile -= 1;
         float boardWidth = column * sideTile;
         float boardHeight = row * sideTile;
 
@@ -103,9 +104,9 @@ public class BoardDemo : MonoBehaviour
         FirstAnchor.GetComponent<TileController>().Size = (int)sideTile;
         LastAnchor.GetComponent<TileController>().Size = (int)sideTile;
 
-        for (int r = 0; r < row; ++r)
+        for (int r = 0; r < row; r++)
         {
-            for (int c = 0; c < column; ++c)
+            for (int c = 0; c < column; c++)
             {
                 if (matrix[r, c] != "")
                 {
@@ -265,7 +266,6 @@ public class BoardDemo : MonoBehaviour
         }
         for (int index = 1; index < dict.Count; ++index)
         {
-            //List<Transform> temp = _SearchSameTiles(dict.ElementAt(index).Value);
             List<Transform> temp = _SearchSameTiles(dict.ElementAt(index).Value);
             if (temp.Count != 0)
             {
@@ -396,14 +396,7 @@ public class BoardDemo : MonoBehaviour
 
     public void _DeactivateTile(TileController t)
     {
-        int rTemp = (int)(
-                ((row * t.Size - t.Size) / 2 - t.transform.localPosition.y) / t.Size
-                );
-        int cTemp = (int)(
-            ((column * t.Size - t.Size) / 2 + t.transform.localPosition.x) / t.Size
-            );
-
-        matrix[rTemp, cTemp] = "";
+        matrix[t.Index.Item1, t.Index.Item2] = "";
         buttonList.Remove(t.transform);
         buttonListWithoutBlocker.Remove(t);
     }
@@ -462,6 +455,7 @@ public class BoardDemo : MonoBehaviour
         {
             if (t.Index == (rowBefore, colBefore))
             {
+                Debug.Log("_SearchAndPullTile "+rowBefore+" "+colBefore+"; "+rowAfter+" "+colAfter+"; "+t.name);
                 t.Index = (rowAfter, colAfter);
                 t.transform.DOLocalMove(_ConvertMatrixIndexToLocalPos(rowAfter, colAfter, column * Tile.Size, row * Tile.Size, Tile.Size), 0.2f)
                     .SetEase(Ease.InOutQuad).SetUpdate(true);
@@ -531,9 +525,9 @@ public class BoardDemo : MonoBehaviour
     void _PullTilesToBottom(int rowFirst, int rowLast)
     {
         int blankTiles = 0;
-        for (int c = 0; c < column; ++c)
+        for (int c = 0; c < column; c++)
         {
-            for (int r = rowLast; r >= rowFirst; --r)
+            for (int r = rowLast; r >= rowFirst; r--)
             {
                 if (matrix[r, c] == "")
                 {
@@ -555,7 +549,6 @@ public class BoardDemo : MonoBehaviour
                     }
                 }
             }
-
             blankTiles = 0;
         }
     }
@@ -563,12 +556,13 @@ public class BoardDemo : MonoBehaviour
     void _PullTilesToTop(int rowFirst, int rowLast)
     {
         int blankTiles = 0;
-        for (int c = 0; c < column; ++c)
+        for (int c = 0; c < column; c++)
         {
-            for (int r = rowFirst; r <= rowLast; ++r)
+            for (int r = rowFirst; r <= rowLast; r++)
             {
                 if (matrix[r, c] == "")
                 {
+                    Debug.Log("_PullTilesToTop: " + r + " _ " + c);
                     blankTiles++;
                 }
                 else
@@ -587,7 +581,6 @@ public class BoardDemo : MonoBehaviour
                     }
                 }
             }
-
             blankTiles = 0;
         }
     }
@@ -595,9 +588,9 @@ public class BoardDemo : MonoBehaviour
     void _PullTilesToLeft(int colFirst, int colLast)
     {
         int blankTiles = 0;
-        for (int r = 0; r < row; ++r)
+        for (int r = 0; r < row; r++)
         {
-            for (int c = colFirst; c <= colLast; ++c)
+            for (int c = colFirst; c <= colLast; c++)
             {
                 if (matrix[r, c] == "")
                 {
@@ -619,7 +612,6 @@ public class BoardDemo : MonoBehaviour
                     }
                 }
             }
-
             blankTiles = 0;
         }
     }
@@ -627,10 +619,9 @@ public class BoardDemo : MonoBehaviour
     void _PullTilesToRight(int colFirst, int colLast)
     {
         int blankTiles = 0;
-
-        for (int r = 0; r < row; ++r)
+        for (int r = 0; r < row; r++)
         {
-            for (int c = colLast; c >= colFirst; --c)
+            for (int c = colLast; c >= colFirst; c--)
             {
                 if (matrix[r, c] == "")
                 {
@@ -652,7 +643,6 @@ public class BoardDemo : MonoBehaviour
                     }
                 }
             }
-
             blankTiles = 0;
         }
     }

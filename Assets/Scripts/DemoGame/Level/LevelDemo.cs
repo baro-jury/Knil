@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class LevelDemo : MonoBehaviour
 {
     public static LevelDemo instance;
-    public static int level = 6;
+    public static int level = 7;
 
     [SerializeField]
     private InputField lvInput;
@@ -44,7 +44,6 @@ public class LevelDemo : MonoBehaviour
 
     public void _PlayLevel(int lv)
     {
-        //level = lv;
         BoardDemo.levelData = _GetLevelData(lv);
         SceneManager.LoadScene("GamePlayDemo");
     }

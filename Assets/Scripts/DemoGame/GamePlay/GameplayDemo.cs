@@ -14,8 +14,9 @@ public class GameplayDemo : MonoBehaviour
     public static GameplayDemo instance;
 
     public GameObject pause, shop;
-    public AudioClip clickButtonClip, matchTileClip, switchClip;
+    public AudioClip clickButtonClip, matchTileClip, switchClip, passLevelClip;
     public AudioClip timeWizardClip, hintClip, magicWandClip, freezeTimeClip, shuffleClip;
+    public Transform startCoinAnimPos, endCoinAnimPos;
 
     private bool isCoupled = true, isHinted = false;
     private float numberOfRescue = 1;
@@ -123,30 +124,6 @@ public class GameplayDemo : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        //lvComplete.ForceMeshUpdate();
-        //var textInfo = lvComplete.textInfo;
-        //foreach(var item in textInfo.characterInfo)
-        //{
-        //    var charInfo = item;
-        //    if (!charInfo.isVisible) continue;
-        //    var verts = textInfo.meshInfo[charInfo.materialReferenceIndex].vertices;
-        //    for(int i = 0; i < 4; ++i)
-        //    {
-        //        var orig = verts[charInfo.vertexIndex + i];
-        //        verts[charInfo.vertexIndex + i] = orig + new Vector3(0, Mathf.Sin(Time.time * 2f + orig.x * 0.01f) * 10f, 0);
-        //    }
-        //}
-
-        //for (int i = 0; i < textInfo.meshInfo.Length; ++i)
-        //{
-        //    var meshInfo = textInfo.meshInfo[i];
-        //    meshInfo.mesh.vertices = meshInfo.vertices;
-        //    lvComplete.UpdateGeometry(meshInfo.mesh, i);
-        //}
-    }
-
     #region Ingame
     public void _Pause()
     {
@@ -241,6 +218,7 @@ public class GameplayDemo : MonoBehaviour
     public void _TimeOut()
     {
         Time.timeScale = 0;
+        PlayerPrefsDemo.instance.audioSource.Stop();
         //timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.one;
         timeOutPanel.SetActive(true);
         timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .15f).SetEase(Ease.InOutQuad).SetUpdate(true);
@@ -301,6 +279,7 @@ public class GameplayDemo : MonoBehaviour
     {
         Time.timeScale = 0;
         PlayerPrefsDemo.instance.audioSource.Stop();
+        PlayerPrefsDemo.instance.audioSource.PlayOneShot(passLevelClip);
         winPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
         winPanel.SetActive(true);
         winPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
@@ -467,7 +446,7 @@ public class GameplayDemo : MonoBehaviour
     {
         btSpHint.interactable = isEnabled;
         btSpMagicWand.interactable = isEnabled;
-        btSpFreeze.interactable = isEnabled;
+        //btSpFreeze.interactable = isEnabled;
         btSpShuffle.interactable = isEnabled;
     }
 

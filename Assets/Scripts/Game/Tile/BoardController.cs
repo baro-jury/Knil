@@ -95,6 +95,7 @@ public class BoardController : MonoBehaviour
         {
             sideTile = sideMin;
         }
+        if (sideTile % 2 != 0) sideTile -= 1;
         float boardWidth = column * sideTile;
         float boardHeight = row * sideTile;
 
@@ -396,14 +397,7 @@ public class BoardController : MonoBehaviour
 
     public void _DeactivateTile(TileController t)
     {
-        int rTemp = (int)(
-                ((row * t.Size - t.Size) / 2 - t.transform.localPosition.y) / t.Size
-                );
-        int cTemp = (int)(
-            ((column * t.Size - t.Size) / 2 + t.transform.localPosition.x) / t.Size
-            );
-
-        matrix[rTemp, cTemp] = "";
+        matrix[t.Index.Item1, t.Index.Item2] = "";
         buttonList.Remove(t.transform);
         buttonListWithoutBlocker.Remove(t);
     }
@@ -448,10 +442,6 @@ public class BoardController : MonoBehaviour
     {
         matrix[rowAfter, colAfter] = matrix[rowBefore, colBefore];
         matrix[rowBefore, colBefore] = "";
-
-        //Vector3 posBefore = _ConvertMatrixIndexToPosition(rowBefore, colBefore, column * Tile.Size, row * Tile.Size, Tile.Size);
-        //Vector3 posAfter = _ConvertMatrixIndexToPosition(rowAfter, colAfter, column * Tile.Size, row * Tile.Size, Tile.Size);
-
         foreach (var t in buttonListWithoutBlocker)
         {
             if (t.Index == (rowBefore, colBefore))
@@ -555,7 +545,7 @@ public class BoardController : MonoBehaviour
             //    }
             //}
 
-            for (int r = rowLast; r >= rowFirst; --r)
+            for (int r = rowLast; r >= rowFirst; r--)
             {
                 if (matrix[r, c] == "")
                 {
@@ -615,7 +605,7 @@ public class BoardController : MonoBehaviour
             //    }
             //}
 
-            for (int r = rowFirst; r <= rowLast; ++r)
+            for (int r = rowFirst; r <= rowLast; r++)
             {
                 if (matrix[r, c] == "")
                 {
@@ -675,7 +665,7 @@ public class BoardController : MonoBehaviour
             //    }
             //}
 
-            for (int c = colFirst; c <= colLast; ++c)
+            for (int c = colFirst; c <= colLast; c++)
             {
                 if (matrix[r, c] == "")
                 {
@@ -735,7 +725,7 @@ public class BoardController : MonoBehaviour
             //    }
             //}
 
-            for (int c = colLast; c >= colFirst; --c)
+            for (int c = colLast; c >= colFirst; c--)
             {
                 if (matrix[r, c] == "")
                 {
