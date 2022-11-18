@@ -13,16 +13,14 @@ public class GameplayController : MonoBehaviour
     public static GameplayController instance;
 
     public GameObject pause;
+    public AudioClip clickButtonClip, matchTileClip, switchClip;
+    public AudioClip timeWizardClip, hintClip, magicWandClip, freezeTimeClip, shuffleClip;
 
     private bool isCoupled = true, isHinted = false;
     private int numberOfStars;
     private Transform[] points = new Transform[4];
     private Transform tile;
 
-    [SerializeField]
-    private AudioClip clickButtonClip, matchTileClip, switchClip;
-    [SerializeField]
-    private AudioClip timeWizardClip, hintClip, magicWandClip, freezeTimeClip, shuffleClip;
     [SerializeField]
     private GameObject boosterPanel, buySpPanel;
     [SerializeField]
@@ -575,7 +573,6 @@ public class GameplayController : MonoBehaviour
                         {
                             goto check;
                         }
-
                         StopAllCoroutines();
                         StartCoroutine(DestroyTiles(temp[2 * i], temp[2 * i + 1]));
                         numCouple++;

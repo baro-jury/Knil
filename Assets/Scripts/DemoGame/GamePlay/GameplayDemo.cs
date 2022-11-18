@@ -13,7 +13,9 @@ public class GameplayDemo : MonoBehaviour
 {
     public static GameplayDemo instance;
 
-    public GameObject pause;
+    public GameObject pause, shop;
+    public AudioClip clickButtonClip, matchTileClip, switchClip;
+    public AudioClip timeWizardClip, hintClip, magicWandClip, freezeTimeClip, shuffleClip;
 
     private bool isCoupled = true, isHinted = false;
     private float numberOfRescue = 1;
@@ -21,13 +23,11 @@ public class GameplayDemo : MonoBehaviour
     private Transform tile;
 
     [SerializeField]
-    private AudioClip clickButtonClip, matchTileClip, switchClip;
-    [SerializeField]
-    private AudioClip timeWizardClip, hintClip, magicWandClip, freezeTimeClip, shuffleClip;
-    [SerializeField]
     private Text coins, titleLv, titleComplete;
     [SerializeField]
-    private GameObject pausePanel, shop;
+    private TextMeshProUGUI lvComplete;
+    [SerializeField]
+    private GameObject pausePanel;
     [SerializeField]
     private Button settingOnButton, settingOffButton;
     [SerializeField]
@@ -74,7 +74,12 @@ public class GameplayDemo : MonoBehaviour
             TutorialDemo.instance.tutorialPanel.transform.GetChild(1).localPosition = new Vector3
                 (temp.x, btSpHint.transform.parent.parent.parent.localPosition.y + 105 + 185, temp.z);
         }
-        else btSpHint.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfHint() + "";
+        else 
+        {
+            if (PlayerPrefsDemo.instance._GetNumOfHint() == 0) btSpHint.transform.GetChild(0).GetComponent<Text>().text = "+";
+            else btSpHint.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfHint() + ""; 
+        }
+
 
         if (BoardDemo.levelData.Level < 5) btSpMagicWand.transform.parent.GetChild(1).gameObject.SetActive(true);
         else if (BoardDemo.levelData.Level == 5)
@@ -84,7 +89,11 @@ public class GameplayDemo : MonoBehaviour
             TutorialDemo.instance.tutorialPanel.transform.GetChild(2).localPosition = new Vector3
                 (temp.x, btSpMagicWand.transform.parent.parent.parent.localPosition.y + 105 + 185, temp.z);
         }
-        else btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfMagicWand() + "";
+        else
+        {
+            if (PlayerPrefsDemo.instance._GetNumOfMagicWand() == 0) btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = "+";
+            else btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfMagicWand() + "";
+        }
 
         if (BoardDemo.levelData.Level < 7) btSpFreeze.transform.parent.GetChild(1).gameObject.SetActive(true);
         else if (BoardDemo.levelData.Level == 7)
@@ -94,7 +103,11 @@ public class GameplayDemo : MonoBehaviour
             TutorialDemo.instance.tutorialPanel.transform.GetChild(3).localPosition = new Vector3
                 (temp.x, btSpFreeze.transform.parent.parent.parent.localPosition.y + 105 + 185, temp.z);
         }
-        else btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfFreezeTime() + "";
+        else
+        {
+            if (PlayerPrefsDemo.instance._GetNumOfFreezeTime() == 0) btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = "+";
+            else btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfFreezeTime() + "";
+        }
 
         if (BoardDemo.levelData.Level < 9) btSpShuffle.transform.parent.GetChild(1).gameObject.SetActive(true);
         else if (BoardDemo.levelData.Level == 9)
@@ -104,7 +117,34 @@ public class GameplayDemo : MonoBehaviour
             TutorialDemo.instance.tutorialPanel.transform.GetChild(4).localPosition = new Vector3
                 (temp.x, btSpShuffle.transform.parent.parent.parent.localPosition.y + 105 + 185, temp.z);
         }
-        else btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfShuffle() + "";
+        else {
+            if (PlayerPrefsDemo.instance._GetNumOfShuffle() == 0) btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = "+";
+            else btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfShuffle() + "";
+        }
+    }
+
+    void Update()
+    {
+        //lvComplete.ForceMeshUpdate();
+        //var textInfo = lvComplete.textInfo;
+        //foreach(var item in textInfo.characterInfo)
+        //{
+        //    var charInfo = item;
+        //    if (!charInfo.isVisible) continue;
+        //    var verts = textInfo.meshInfo[charInfo.materialReferenceIndex].vertices;
+        //    for(int i = 0; i < 4; ++i)
+        //    {
+        //        var orig = verts[charInfo.vertexIndex + i];
+        //        verts[charInfo.vertexIndex + i] = orig + new Vector3(0, Mathf.Sin(Time.time * 2f + orig.x * 0.01f) * 10f, 0);
+        //    }
+        //}
+
+        //for (int i = 0; i < textInfo.meshInfo.Length; ++i)
+        //{
+        //    var meshInfo = textInfo.meshInfo[i];
+        //    meshInfo.mesh.vertices = meshInfo.vertices;
+        //    lvComplete.UpdateGeometry(meshInfo.mesh, i);
+        //}
     }
 
     #region Ingame
@@ -186,44 +226,16 @@ public class GameplayDemo : MonoBehaviour
         pausePanel.transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
     }
 
-    public void _BuyCoins()
+    public void _OpenShopCoins()
     {
         PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickButtonClip);
-
-        GameObject shopPanel = shop.transform.GetChild(4).gameObject;
-        shopPanel.SetActive(true);
-        for (int i = 1; i <= 6; i++)
-        {
-            Button btBuy = shopPanel.transform.GetChild(0).GetChild(i).GetChild(2).GetComponent<Button>();
-            btBuy.onClick.RemoveAllListeners();
-            btBuy.onClick.AddListener(delegate
-            {
-                PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickButtonClip);
-                switch (btBuy.transform.parent.GetSiblingIndex())
-                {
-                    case 1:
-                        PlayerPrefsDemo.instance._SetCoinsInPossession(100, true);
-                        break;
-                    case 2:
-                        PlayerPrefsDemo.instance._SetCoinsInPossession(500, true);
-                        break;
-                    case 3:
-                        PlayerPrefsDemo.instance._SetCoinsInPossession(1000, true);
-                        break;
-                    case 4:
-                        PlayerPrefsDemo.instance._SetCoinsInPossession(2500, true);
-                        break;
-                    case 5:
-                        PlayerPrefsDemo.instance._SetCoinsInPossession(5000, true);
-                        break;
-                    case 6:
-                        PlayerPrefsDemo.instance._SetCoinsInPossession(10000, true);
-                        break;
-                }
-                shopPanel.SetActive(false);
-                coins.text = PlayerPrefsDemo.instance._GetCoinsInPossession() + "";
-            });
-        }
+        Time.timeScale = 0;
+        shop.transform.GetChild(4).gameObject.SetActive(true);
+        shop.transform.GetChild(4).GetChild(0).GetChild(2).GetComponent<Button>().onClick.AddListener(delegate { Time.timeScale = 1; });
+    }
+    public void _UpdateCoin()
+    {
+        coins.text = PlayerPrefsDemo.instance._GetCoinsInPossession() + "";
     }
 
     public void _TimeOut()
@@ -256,7 +268,7 @@ public class GameplayDemo : MonoBehaviour
         }
         else
         {
-            _BuyCoins();
+            _OpenShopCoins();
         }
 
     }
@@ -264,7 +276,6 @@ public class GameplayDemo : MonoBehaviour
     public void _WatchAds()
     {
         PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickButtonClip);
-
         UnityEvent eReward = new UnityEvent();
         eReward.AddListener(() =>
         {
@@ -296,7 +307,7 @@ public class GameplayDemo : MonoBehaviour
         if (BoardDemo.levelData.Level % 10 == 0)
         {
             PlayerPrefsDemo.instance._SetCoinsInPossession(250, true);
-            winPanel.transform.GetChild(0).GetChild(2).GetChild(0).gameObject.SetActive(true);
+            lvComplete.transform.GetChild(0).gameObject.SetActive(true);
         }
     }
 
@@ -358,10 +369,15 @@ public class GameplayDemo : MonoBehaviour
                 {
                     if (_HasAvailableConnection(tile, currentTile))
                     {
+                        Transform[] temp = new Transform[4];
+                        for(int i = 0; i< points.Length;i++)
+                        {
+                            temp[i] = points[i];
+                        }
                         StopAllCoroutines();
-                        StartCoroutine(MakeConnection(points));
+                        StartCoroutine(MakeConnection(temp));
                         PlayerPrefsDemo.instance.audioSource.PlayOneShot(matchTileClip);
-                        StartCoroutine(DestroyTiles(points));
+                        StartCoroutine(DestroyTiles(temp));
                     }
                     else
                     {
@@ -377,7 +393,6 @@ public class GameplayDemo : MonoBehaviour
                             {
                                 TutorialDemo.instance.connectFailTutorial.transform.GetChild(1).gameObject.SetActive(true);
                             }
-
                         }
                         Debug.Log("Khong the ket noi");
                         foreach (var tile in BoardDemo.buttonList)
@@ -407,8 +422,10 @@ public class GameplayDemo : MonoBehaviour
     #region Supporter
     void _BuySupporter(int order)
     {
+        Time.timeScale = 0;
         GameObject shopPanel = shop.transform.GetChild(order).gameObject;
         shopPanel.SetActive(true);
+        shopPanel.transform.GetChild(0).GetChild(2).GetComponent<Button>().onClick.AddListener(delegate { Time.timeScale = 1; });
         Button btBuy = shopPanel.transform.GetChild(0).GetChild(5).GetComponent<Button>();
         btBuy.onClick.RemoveAllListeners();
         btBuy.onClick.AddListener(delegate
@@ -441,7 +458,7 @@ public class GameplayDemo : MonoBehaviour
             }
             else
             {
-                _BuyCoins();
+                _OpenShopCoins();
             }
         });
     }
@@ -523,7 +540,6 @@ public class GameplayDemo : MonoBehaviour
             }
             PlayerPrefsDemo.instance.audioSource.PlayOneShot(magicWandClip);
             Time.timeScale = 1;
-            //_ResetTileState();
             isCoupled = true;
             foreach (var tile in BoardDemo.buttonList)
             {

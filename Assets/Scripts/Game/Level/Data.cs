@@ -8,7 +8,6 @@ public class LevelData
     private int level;
     private string difficulty;
     private int theme;
-    //private int minID = 1, maxID = SpriteController.spritesDict.Count - 1;
     private float[] time = { 1, 0, 0, 0 };
     private List<ProcessData> process;
 

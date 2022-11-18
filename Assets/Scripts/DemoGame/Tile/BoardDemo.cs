@@ -39,7 +39,7 @@ public class BoardDemo : MonoBehaviour
 
     void Start()
     {
-        //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelDemo.level) as TextAsset).text);
+        levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelDemo.level) as TextAsset).text);
         _GoToProcess(1);
     }
 
@@ -63,7 +63,7 @@ public class BoardDemo : MonoBehaviour
     {
         buttonList.Clear();
         buttonListWithoutBlocker.Clear();
-        for (int i = 0; i < gameObject.transform.childCount - 3; i++)
+        for (int i = 0; i < gameObject.transform.childCount - 3; ++i)
         {
             Destroy(gameObject.transform.GetChild(i).gameObject);
         }
@@ -103,9 +103,9 @@ public class BoardDemo : MonoBehaviour
         FirstAnchor.GetComponent<TileController>().Size = (int)sideTile;
         LastAnchor.GetComponent<TileController>().Size = (int)sideTile;
 
-        for (int r = 0; r < row; r++)
+        for (int r = 0; r < row; ++r)
         {
-            for (int c = 0; c < column; c++)
+            for (int c = 0; c < column; ++c)
             {
                 if (matrix[r, c] != "")
                 {
@@ -174,7 +174,7 @@ public class BoardDemo : MonoBehaviour
             _MakeConnectableCouple(source, trsfTiles, posTiles, indexTiles, 0);
             source = Shuffle(source.Count);
         }
-        for (int i = 0; i < source.Count; i++)
+        for (int i = 0; i < source.Count; ++i)
         {
             trsfTiles[i].GetComponent<TileController>().Index = indexTiles[source[i]];
             trsfTiles[i].name = trsfTiles[i].GetComponent<TileController>().Id
@@ -263,14 +263,15 @@ public class BoardDemo : MonoBehaviour
         {
             canConnect = true;
         }
-        for (int index = 1; index < dict.Count; index++)
+        for (int index = 1; index < dict.Count; ++index)
         {
+            //List<Transform> temp = _SearchSameTiles(dict.ElementAt(index).Value);
             List<Transform> temp = _SearchSameTiles(dict.ElementAt(index).Value);
             if (temp.Count != 0)
             {
-                for (int i = 0; i < (temp.Count - 1); i++)
+                for (int i = 0; i < (temp.Count - 1); ++i)
                 {
-                    for (int j = (i + 1); j < temp.Count; j++)
+                    for (int j = (i + 1); j < temp.Count; ++j)
                     {
                         if (GameplayDemo.instance._HasAvailableConnection(temp[i], temp[j]))
                         {
@@ -307,7 +308,7 @@ public class BoardDemo : MonoBehaviour
         }
         _MakeConnectableCouple(source, trsfTiles, posTiles, indexTiles, 0.4f);
         source = Shuffle(source.Count);
-        for (int i = 0; i < source.Count; i++)
+        for (int i = 0; i < source.Count; ++i)
         {
             trsfTiles[i].GetComponent<TileController>().Index = indexTiles[source[i]];
             trsfTiles[i].name = trsfTiles[i].GetComponent<TileController>().Id
@@ -329,7 +330,7 @@ public class BoardDemo : MonoBehaviour
     {
         List<int> temp = new();
         temp.Add(0);
-        for (int i = 1; i < length; i++)
+        for (int i = 1; i < length; ++i)
         {
             temp.Insert(UnityEngine.Random.Range(0, i), i);
         }
@@ -348,9 +349,9 @@ public class BoardDemo : MonoBehaviour
         Vector3 tilePos1 = new(), tilePos2 = new();
         (int, int) index1 = new(), index2 = new();
 
-        for (int i = 0; i < (buttonListWithoutBlocker.Count - 1); i++)
+        for (int i = 0; i < (buttonListWithoutBlocker.Count - 1); ++i)
         {
-            for (int j = (i + 1); j < buttonListWithoutBlocker.Count; j++)
+            for (int j = (i + 1); j < buttonListWithoutBlocker.Count; ++j)
             {
                 if (GameplayDemo.instance._HasAvailableConnection(buttonListWithoutBlocker[i].transform, buttonListWithoutBlocker[j].transform))
                 {
@@ -419,12 +420,20 @@ public class BoardDemo : MonoBehaviour
             {
                 if (levelData.Level < Resources.LoadAll("Levels").Length && levelData.Level == PlayerPrefsDemo.instance._GetMarkedLevel())
                 {
-                    //LevelDemo.level = levelData.Level + 1;
                     PlayerPrefsDemo.instance._SetMarkedLevel(levelData.Level + 1);
                 }
                 GameplayDemo.instance._CompleteLevel();
             }
         }
+    }
+
+    public Transform _FindTileInList(Transform t)
+    {
+        foreach(var item in buttonListWithoutBlocker)
+        {
+            if (item.transform == t) return item.transform;
+        }
+        return null;
     }
 
     public List<Transform> _SearchSameTiles(Sprite sprite)
@@ -448,8 +457,6 @@ public class BoardDemo : MonoBehaviour
         matrix[rowAfter, colAfter] = matrix[rowBefore, colBefore];
         matrix[rowBefore, colBefore] = "";
         Debug.LogFormat("From ({0}, {1}) to ({2}, {3})", rowBefore, colBefore, rowAfter, colAfter);
-        //Vector3 posBefore = _ConvertMatrixIndexToPosition(rowBefore, colBefore, column * Tile.Size, row * Tile.Size, Tile.Size);
-        //Vector3 posAfter = _ConvertMatrixIndexToPosition(rowAfter, colAfter, column * Tile.Size, row * Tile.Size, Tile.Size);
 
         foreach (var t in buttonListWithoutBlocker)
         {
@@ -523,18 +530,12 @@ public class BoardDemo : MonoBehaviour
 
     void _PullTilesToBottom(int rowFirst, int rowLast)
     {
-        var tempArr = new string[rowLast - rowFirst + 1];
         int blankTiles = 0;
-        for (int c = 0; c < column; c++)
+        for (int c = 0; c < column; ++c)
         {
-            for (int r = rowFirst; r <= rowLast; r++)
+            for (int r = rowLast; r >= rowFirst; --r)
             {
-                tempArr[r - rowFirst] = matrix[r, c];
-            }
-
-            for (int i = tempArr.Length - 1; i >= 0; i--)
-            {
-                if (tempArr[i] == "")
+                if (matrix[r, c] == "")
                 {
                     blankTiles++;
                 }
@@ -542,37 +543,31 @@ public class BoardDemo : MonoBehaviour
                 {
                     if (blankTiles != 0)
                     {
-                        if (tempArr[i] == "0")
+                        if (matrix[r, c] == "0")
                         {
                             blankTiles = 0;
                         }
                         else
                         {
                             Debug.Log("CHECKKKKKKKKKKKK" + c);
-                            _SearchAndPullTile(rowFirst + i, c, rowFirst + i + blankTiles, c);
+                            _SearchAndPullTile(r, c, r + blankTiles, c);
                         }
                     }
                 }
             }
+
             blankTiles = 0;
         }
     }
 
     void _PullTilesToTop(int rowFirst, int rowLast)
     {
-        var tempArr = new string[rowLast - rowFirst + 1];
         int blankTiles = 0;
-
-        for (int c = 0; c < column; c++)
+        for (int c = 0; c < column; ++c)
         {
-            for (int r = rowFirst; r <= rowLast; r++)
+            for (int r = rowFirst; r <= rowLast; ++r)
             {
-                tempArr[r - rowFirst] = matrix[r, c];
-            }
-
-            for (int i = 0; i < tempArr.Length; i++)
-            {
-                if (tempArr[i] == "")
+                if (matrix[r, c] == "")
                 {
                     blankTiles++;
                 }
@@ -580,37 +575,31 @@ public class BoardDemo : MonoBehaviour
                 {
                     if (blankTiles != 0)
                     {
-                        if (tempArr[i] == "0")
+                        if (matrix[r, c] == "0")
                         {
                             blankTiles = 0;
                         }
                         else
                         {
-                            //Debug.Log("CHECKKKKKKKKKKKK"+c);
-                            _SearchAndPullTile(rowFirst + i, c, rowFirst + i - blankTiles, c);
+                            Debug.Log("CHECKKKKKKKKKKKK" + c);
+                            _SearchAndPullTile(r, c, r - blankTiles, c);
                         }
                     }
                 }
             }
+
             blankTiles = 0;
         }
     }
 
     void _PullTilesToLeft(int colFirst, int colLast)
     {
-        var tempArr = new string[colLast - colFirst + 1];
         int blankTiles = 0;
-
-        for (int r = 0; r < row; r++)
+        for (int r = 0; r < row; ++r)
         {
-            for (int c = colFirst; c <= colLast; c++)
+            for (int c = colFirst; c <= colLast; ++c)
             {
-                tempArr[c - colFirst] = matrix[r, c];
-            }
-
-            for (int i = 0; i < tempArr.Length; i++)
-            {
-                if (tempArr[i] == "")
+                if (matrix[r, c] == "")
                 {
                     blankTiles++;
                 }
@@ -618,37 +607,32 @@ public class BoardDemo : MonoBehaviour
                 {
                     if (blankTiles != 0)
                     {
-                        if (tempArr[i] == "0")
+                        if (matrix[r, c] == "0")
                         {
                             blankTiles = 0;
                         }
                         else
                         {
                             Debug.Log("CHECKKKKKKKKKKKK" + r);
-                            _SearchAndPullTile(r, colFirst + i, r, colFirst + i - blankTiles);
+                            _SearchAndPullTile(r, c, r, c - blankTiles);
                         }
                     }
                 }
             }
+
             blankTiles = 0;
         }
     }
 
     void _PullTilesToRight(int colFirst, int colLast)
     {
-        var tempArr = new string[colLast - colFirst + 1];
         int blankTiles = 0;
 
-        for (int r = 0; r < row; r++)
+        for (int r = 0; r < row; ++r)
         {
-            for (int c = colFirst; c <= colLast; c++)
+            for (int c = colLast; c >= colFirst; --c)
             {
-                tempArr[c - colFirst] = matrix[r, c];
-            }
-
-            for (int i = tempArr.Length - 1; i >= 0; i--)
-            {
-                if (tempArr[i] == "")
+                if (matrix[r, c] == "")
                 {
                     blankTiles++;
                 }
@@ -656,18 +640,19 @@ public class BoardDemo : MonoBehaviour
                 {
                     if (blankTiles != 0)
                     {
-                        if (tempArr[i] == "0")
+                        if (matrix[r, c] == "0")
                         {
                             blankTiles = 0;
                         }
                         else
                         {
                             Debug.Log("CHECKKKKKKKKKKKK" + r);
-                            _SearchAndPullTile(r, colFirst + i, r, colFirst + i + blankTiles);
+                            _SearchAndPullTile(r, c, r, c + blankTiles);
                         }
                     }
                 }
             }
+
             blankTiles = 0;
         }
     }

@@ -186,6 +186,7 @@ namespace ACEPlay.Bridge
         }
         public void PurchaseProduct(string productSku, UnityStringEvent onDonePurchaseEvent)
         {
+            Debug.Log("=====Purchase success!=====" + productSku);
             if (onDonePurchaseEvent != null) onDonePurchaseEvent.Invoke(productSku);
         }
 

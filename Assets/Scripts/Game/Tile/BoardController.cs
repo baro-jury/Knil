@@ -265,6 +265,7 @@ public class BoardController : MonoBehaviour
         }
         for (int index = 1; index < dict.Count; index++)
         {
+            //List<Transform> temp = _SearchSameTiles(dict.ElementAt(index).Value);
             List<Transform> temp = _SearchSameTiles(dict.ElementAt(index).Value);
             if (temp.Count != 0)
             {
@@ -523,18 +524,40 @@ public class BoardController : MonoBehaviour
 
     void _PullTilesToBottom(int rowFirst, int rowLast)
     {
-        var tempArr = new string[rowLast - rowFirst + 1];
+        //var tempArr = new string[rowLast - rowFirst + 1];
         int blankTiles = 0;
         for (int c = 0; c < column; c++)
         {
-            for (int r = rowFirst; r <= rowLast; r++)
-            {
-                tempArr[r - rowFirst] = matrix[r, c];
-            }
+            //for (int r = rowFirst; r <= rowLast; r++)
+            //{
+            //    tempArr[r - rowFirst] = matrix[r, c];
+            //}
 
-            for (int i = tempArr.Length - 1; i >= 0; i--)
+            //for (int i = tempArr.Length - 1; i >= 0; i--)
+            //{
+            //    if (tempArr[i] == "")
+            //    {
+            //        blankTiles++;
+            //    }
+            //    else
+            //    {
+            //        if (blankTiles != 0)
+            //        {
+            //            if (tempArr[i] == "0")
+            //            {
+            //                blankTiles = 0;
+            //            }
+            //            else
+            //            {
+            //                _SearchAndPullTile(rowFirst + i, c, rowFirst + i + blankTiles, c);
+            //            }
+            //        }
+            //    }
+            //}
+
+            for (int r = rowLast; r >= rowFirst; --r)
             {
-                if (tempArr[i] == "")
+                if (matrix[r, c] == "")
                 {
                     blankTiles++;
                 }
@@ -542,36 +565,59 @@ public class BoardController : MonoBehaviour
                 {
                     if (blankTiles != 0)
                     {
-                        if (tempArr[i] == "0")
+                        if (matrix[r, c] == "0")
                         {
                             blankTiles = 0;
                         }
                         else
                         {
-                            _SearchAndPullTile(rowFirst + i, c, rowFirst + i + blankTiles, c);
+                            _SearchAndPullTile(r, c, r + blankTiles, c);
                         }
                     }
                 }
             }
+
             blankTiles = 0;
         }
     }
 
     void _PullTilesToTop(int rowFirst, int rowLast)
     {
-        var tempArr = new string[rowLast - rowFirst + 1];
+        //var tempArr = new string[rowLast - rowFirst + 1];
         int blankTiles = 0;
 
         for (int c = 0; c < column; c++)
         {
-            for (int r = rowFirst; r <= rowLast; r++)
-            {
-                tempArr[r - rowFirst] = matrix[r, c];
-            }
+            //for (int r = rowFirst; r <= rowLast; r++)
+            //{
+            //    tempArr[r - rowFirst] = matrix[r, c];
+            //}
 
-            for (int i = 0; i < tempArr.Length; i++)
+            //for (int i = 0; i < tempArr.Length; i++)
+            //{
+            //    if (tempArr[i] == "")
+            //    {
+            //        blankTiles++;
+            //    }
+            //    else
+            //    {
+            //        if (blankTiles != 0)
+            //        {
+            //            if (tempArr[i] == "0")
+            //            {
+            //                blankTiles = 0;
+            //            }
+            //            else
+            //            {
+            //                _SearchAndPullTile(rowFirst + i, c, rowFirst + i - blankTiles, c);
+            //            }
+            //        }
+            //    }
+            //}
+
+            for (int r = rowFirst; r <= rowLast; ++r)
             {
-                if (tempArr[i] == "")
+                if (matrix[r, c] == "")
                 {
                     blankTiles++;
                 }
@@ -579,36 +625,59 @@ public class BoardController : MonoBehaviour
                 {
                     if (blankTiles != 0)
                     {
-                        if (tempArr[i] == "0")
+                        if (matrix[r, c] == "0")
                         {
                             blankTiles = 0;
                         }
                         else
                         {
-                            _SearchAndPullTile(rowFirst + i, c, rowFirst + i - blankTiles, c);
+                            _SearchAndPullTile(r, c, r - blankTiles, c);
                         }
                     }
                 }
             }
+
             blankTiles = 0;
         }
     }
 
     void _PullTilesToLeft(int colFirst, int colLast)
     {
-        var tempArr = new string[colLast - colFirst + 1];
+        //var tempArr = new string[colLast - colFirst + 1];
         int blankTiles = 0;
 
         for (int r = 0; r < row; r++)
         {
-            for (int c = colFirst; c <= colLast; c++)
-            {
-                tempArr[c - colFirst] = matrix[r, c];
-            }
+            //for (int c = colFirst; c <= colLast; c++)
+            //{
+            //    tempArr[c - colFirst] = matrix[r, c];
+            //}
 
-            for (int i = 0; i < tempArr.Length; i++)
+            //for (int i = 0; i < tempArr.Length; i++)
+            //{
+            //    if (tempArr[i] == "")
+            //    {
+            //        blankTiles++;
+            //    }
+            //    else
+            //    {
+            //        if (blankTiles != 0)
+            //        {
+            //            if (tempArr[i] == "0")
+            //            {
+            //                blankTiles = 0;
+            //            }
+            //            else
+            //            {
+            //                _SearchAndPullTile(r, colFirst + i, r, colFirst + i - blankTiles);
+            //            }
+            //        }
+            //    }
+            //}
+
+            for (int c = colFirst; c <= colLast; ++c)
             {
-                if (tempArr[i] == "")
+                if (matrix[r, c] == "")
                 {
                     blankTiles++;
                 }
@@ -616,36 +685,59 @@ public class BoardController : MonoBehaviour
                 {
                     if (blankTiles != 0)
                     {
-                        if (tempArr[i] == "0")
+                        if (matrix[r, c] == "0")
                         {
                             blankTiles = 0;
                         }
                         else
                         {
-                            _SearchAndPullTile(r, colFirst + i, r, colFirst + i - blankTiles);
+                            _SearchAndPullTile(r, c, r, c - blankTiles);
                         }
                     }
                 }
             }
+
             blankTiles = 0;
         }
     }
 
     void _PullTilesToRight(int colFirst, int colLast)
     {
-        var tempArr = new string[colLast - colFirst + 1];
+        //var tempArr = new string[colLast - colFirst + 1];
         int blankTiles = 0;
 
         for (int r = 0; r < row; r++)
         {
-            for (int c = colFirst; c <= colLast; c++)
-            {
-                tempArr[c - colFirst] = matrix[r, c];
-            }
+            //for (int c = colFirst; c <= colLast; c++)
+            //{
+            //    tempArr[c - colFirst] = matrix[r, c];
+            //}
 
-            for (int i = tempArr.Length - 1; i >= 0; i--)
+            //for (int i = tempArr.Length - 1; i >= 0; i--)
+            //{
+            //    if (tempArr[i] == "")
+            //    {
+            //        blankTiles++;
+            //    }
+            //    else
+            //    {
+            //        if (blankTiles != 0)
+            //        {
+            //            if (tempArr[i] == "0")
+            //            {
+            //                blankTiles = 0;
+            //            }
+            //            else
+            //            {
+            //                _SearchAndPullTile(r, colFirst + i, r, colFirst + i + blankTiles);
+            //            }
+            //        }
+            //    }
+            //}
+
+            for (int c = colLast; c >= colFirst; --c)
             {
-                if (tempArr[i] == "")
+                if (matrix[r, c] == "")
                 {
                     blankTiles++;
                 }
@@ -653,17 +745,18 @@ public class BoardController : MonoBehaviour
                 {
                     if (blankTiles != 0)
                     {
-                        if (tempArr[i] == "0")
+                        if (matrix[r, c] == "0")
                         {
                             blankTiles = 0;
                         }
                         else
                         {
-                            _SearchAndPullTile(r, colFirst + i, r, colFirst + i + blankTiles);
+                            _SearchAndPullTile(r, c, r, c + blankTiles);
                         }
                     }
                 }
             }
+
             blankTiles = 0;
         }
     }
