@@ -7,11 +7,9 @@ using DG.Tweening;
 public class TimeController : MonoBehaviour
 {
     public static TimeController instance;
-    public static bool isSaved;
-
-    [SerializeField]
-    private AudioClip timeWarning;
+    public static bool isSaved, muchTimeLeft;
     public Transform iconClock;
+
     [SerializeField]
     private Slider slider;
     [SerializeField]
@@ -22,7 +20,7 @@ public class TimeController : MonoBehaviour
     private float timestampFor1Star;
     private float timestampFor2Star;
     private float timestampFor3Star;
-    private bool isFreezed, muchTimeLeft;
+    private bool isFreezed;
 
     void _MakeInstance()
     {
@@ -94,11 +92,8 @@ public class TimeController : MonoBehaviour
                 if (muchTimeLeft && time <= 15)
                 {
                     muchTimeLeft = false;
-                    PlayerPrefsController.instance.audioSource.PlayOneShot(timeWarning);
-
-                    iconClock.DOScale(new Vector3(1.2f, 1.2f, 1), 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
-                    iconClock.DORotate(new Vector3(0, 0, -20), 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
-                    iconClock.GetComponent<Image>().DOColor(Color.red, 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
+                    PlayerPrefsController.instance.timeWarningSource.Play();
+                    _TweenTimeWarn();
                 }
             }
             else
@@ -126,7 +121,6 @@ public class TimeController : MonoBehaviour
 
     void _DisplayTime(float timeToDisplay)
     {
-        //timeToDisplay += 1;
         float minutes = Mathf.FloorToInt(timeToDisplay / 60);
         float seconds = Mathf.FloorToInt(timeToDisplay % 60);
         timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
@@ -160,5 +154,21 @@ public class TimeController : MonoBehaviour
             }
         }
         return count;
+    }
+
+    public void _TweenTimeWarn()
+    {
+        iconClock.DOScale(new Vector3(1.2f, 1.2f, 1), 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
+        iconClock.DORotate(new Vector3(0, 0, -20), 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
+        iconClock.GetComponent<Image>().DOColor(Color.red, 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
+    }
+
+    public void _ResetIconState()
+    {
+        DOTween.Kill(iconClock);
+        DOTween.Kill(iconClock.GetComponent<Image>());
+        iconClock.localScale = Vector3.one;
+        iconClock.localEulerAngles = Vector3.zero;
+        iconClock.GetComponent<Image>().color = Color.white;
     }
 }

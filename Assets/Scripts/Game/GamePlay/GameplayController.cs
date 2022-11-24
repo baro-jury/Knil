@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -32,7 +33,7 @@ public class GameplayController : MonoBehaviour
     [SerializeField]
     private Button btSpHint, btSpMagicWand, btSpFreeze, btSpShuffle;
     [SerializeField]
-    private GameObject lastChancePanel, rejectChancePanel, gameOverPanel, winPanel, starsAchieved;
+    private GameObject timeOutPanel, rejectChancePanel, gameOverPanel, winPanel, starsAchieved;
     [SerializeField]
     private Transform tempAlignWithLeft, tempAlignWithRight, tempAlignWithTop, tempAlignWithBottom, tempAlignWithStart, tempAlignWithEnd;
 
@@ -250,21 +251,23 @@ public class GameplayController : MonoBehaviour
     public void _TakeTheLastChance()
     {
         Time.timeScale = 0;
-        //lastChancePanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
-        lastChancePanel.SetActive(true);
-        //lastChancePanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .15f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        //timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
+        timeOutPanel.SetActive(true);
+        //timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .15f).SetEase(Ease.InOutQuad).SetUpdate(true);
     }
 
     public void _GetMoreTime()
     {
+        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         if (PlayerPrefsController.instance._GetCoinsInPossession() >= 100)
         {
             PlayerPrefsController.instance._SetCoinsInPossession(100, false);
+            TimeController.instance._ResetIconState();
             TimeController.time += 60;
-            lastChancePanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
+            timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
             {
-                lastChancePanel.SetActive(false);
+                timeOutPanel.SetActive(false);
             });
             TimeController.isSaved = true;
         }
@@ -273,17 +276,22 @@ public class GameplayController : MonoBehaviour
 
     public void _WatchAds()
     {
-        //code xem quang cao
-
         PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
-        TimeController.time += 15;
-        lastChancePanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
-        .OnComplete(() =>
+        UnityEvent eReward = new UnityEvent();
+        eReward.AddListener(() =>
         {
-            lastChancePanel.SetActive(false);
+            // luồng game sau khi tắt quảng cáo ( tặng thưởng cho user )
+            TimeController.instance._ResetIconState();
+            TimeController.time += 15;
+            timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
+            .OnComplete(() =>
+            {
+                timeOutPanel.SetActive(false);
+            });
+            TimeController.isSaved = true;
+            Time.timeScale = 1;
         });
-        TimeController.isSaved = true;
-        Time.timeScale = 1;
+        ACEPlay.Bridge.BridgeController.instance.ShowRewardedAd(eReward, null);
     }
 
     public void _RejectChance()
@@ -387,10 +395,15 @@ public class GameplayController : MonoBehaviour
                 {
                     if (_HasAvailableConnection(tile, currentTile))
                     {
+                        Transform[] temp = new Transform[4];
+                        for (int i = 0; i < points.Length; i++)
+                        {
+                            temp[i] = points[i];
+                        }
                         StopAllCoroutines();
-                        StartCoroutine(MakeConnection(points));
+                        StartCoroutine(MakeConnection(temp));
                         PlayerPrefsController.instance.audioSource.PlayOneShot(matchTileClip);
-                        StartCoroutine(DestroyTiles(points));
+                        StartCoroutine(DestroyTiles(temp));
                     }
                     else
                     {
@@ -451,24 +464,22 @@ public class GameplayController : MonoBehaviour
                     case 0:
                         PlayerPrefsController.instance._SetNumOfHint(3, true);
                         btSpHint.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfHint() + "";
-                        btBuy.transform.parent.parent.gameObject.SetActive(false);
                         break;
                     case 1:
                         PlayerPrefsController.instance._SetNumOfMagicWand(3, true);
                         btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfMagicWand() + "";
-                        btBuy.transform.parent.parent.gameObject.SetActive(false);
                         break;
                     case 2:
                         PlayerPrefsController.instance._SetNumOfFreezeTime(3, true);
                         btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfFreezeTime() + "";
-                        btBuy.transform.parent.parent.gameObject.SetActive(false);
+                        PlayerPrefsController.instance.timeWarningSource.UnPause();
                         break;
                     case 3:
                         PlayerPrefsController.instance._SetNumOfShuffle(3, true);
                         btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsController.instance._GetNumOfShuffle() + "";
-                        btBuy.transform.parent.parent.gameObject.SetActive(false);
                         break;
                 }
+                sp.SetActive(false);
             }
         });
     }
@@ -477,7 +488,7 @@ public class GameplayController : MonoBehaviour
     {
         btSpHint.interactable = isEnabled;
         btSpMagicWand.interactable = isEnabled;
-        btSpFreeze.interactable = isEnabled;
+        //btSpFreeze.interactable = isEnabled;
         btSpShuffle.interactable = isEnabled;
     }
 
@@ -589,6 +600,7 @@ public class GameplayController : MonoBehaviour
 
     public void _SupporterFreezeTime() //Snow: Đóng băng thời gian 10 giây
     {
+        PlayerPrefsController.instance.timeWarningSource.Pause();
         if (PlayerPrefsController.instance._GetNumOfFreezeTime() > 0)
         {
             if (BoardController.levelData.Level != 7)
@@ -602,6 +614,8 @@ public class GameplayController : MonoBehaviour
             Color ice = new Color32(0, 221, 255, 255);
             TimeController.instance._FreezeTime(true);
             btSpFreeze.interactable = false;
+            DOTween.Kill(TimeController.instance.iconClock);
+            DOTween.Kill(TimeController.instance.iconClock.GetComponent<Image>());
             TimeController.instance.iconClock.DOScale(new Vector3(1.2f, 1.2f, 1), 1).SetEase(Ease.InOutQuad);
             TimeController.instance.iconClock.DORotate(new Vector3(0, 0, -20), 1).SetEase(Ease.InOutQuad);
             TimeController.instance.iconClock.GetComponent<Image>().DOColor(ice, 1).SetEase(Ease.InOutQuad).OnComplete(delegate
@@ -612,6 +626,8 @@ public class GameplayController : MonoBehaviour
                 .OnComplete(delegate
                 {
                     TimeController.instance._FreezeTime(false);
+                    if (!TimeController.muchTimeLeft) TimeController.instance._TweenTimeWarn();
+                    PlayerPrefsController.instance.timeWarningSource.UnPause();
                     btSpFreeze.interactable = true;
                 });
             });

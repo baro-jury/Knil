@@ -43,7 +43,7 @@ public class TutorialController : MonoBehaviour
 
     public GameObject fingerPoint, tutorialPanel, connectFailTutorial;
     [SerializeField]
-    private GameObject booster, timer, supporter, pause;
+    private GameObject booster, timer;
 
     void _MakeInstance()
     {
@@ -133,7 +133,7 @@ public class TutorialController : MonoBehaviour
         if (order == 5)
         {
             tutorialPanel.SetActive(false);
-            pause.transform.SetAsLastSibling();
+            GameplayController.instance.pause.transform.SetAsLastSibling();
             tutorialPanel.transform.SetAsLastSibling();
             connectFailTutorial.transform.SetAsLastSibling();
             connectFailTutorial.transform.GetChild(2).DOScale(Vector3.one, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);

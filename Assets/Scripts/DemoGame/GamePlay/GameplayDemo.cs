@@ -217,7 +217,7 @@ public class GameplayDemo : MonoBehaviour
 
     public void _TimeOut()
     {
-        Time.timeScale = 0;
+        //Time.timeScale = 0;
         PlayerPrefsDemo.instance.audioSource.Stop();
         //timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.one;
         timeOutPanel.SetActive(true);
@@ -230,9 +230,9 @@ public class GameplayDemo : MonoBehaviour
         if (PlayerPrefsDemo.instance._GetCoinsInPossession() >= numberOfRescue * 100)
         {
             PlayerPrefsDemo.instance._SetCoinsInPossession((int)(numberOfRescue * 100), false);
-            DOTween.Kill(TimeDemo.instance.iconClock);
-            DOTween.Kill(TimeDemo.instance.iconClock.GetComponent<Image>());
-            TimeDemo.time += 60;
+            TimeDemo.instance._ResetIconState();
+            //TimeDemo.time += 60;
+            TimeDemo.instance.AddTime(60);
             coins.text = PlayerPrefsDemo.instance._GetCoinsInPossession() + "";
             timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
@@ -258,7 +258,9 @@ public class GameplayDemo : MonoBehaviour
         eReward.AddListener(() =>
         {
             // luồng game sau khi tắt quảng cáo ( tặng thưởng cho user )
-            TimeDemo.time += 15;
+            TimeDemo.instance._ResetIconState();
+            //TimeDemo.time += 15;
+            TimeDemo.instance.AddTime(15);
             timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
             {
@@ -305,7 +307,6 @@ public class GameplayDemo : MonoBehaviour
     #region Click Tiles
     public void _ClickTile(Transform currentTile)
     {
-        //Color color = new Color(0, 0.9f, 0.08f, 1); //green
         Color color = new Color32(0, 220, 255, 255); //blue
         currentTile.DOComplete();
         currentTile.DOKill();
@@ -325,7 +326,7 @@ public class GameplayDemo : MonoBehaviour
         {
             if (tile.GetComponent<TileController>().Index == currentTile.GetComponent<TileController>().Index)
             {
-                Debug.Log("Click cung 1 tile");
+                //Debug.Log("Click cung 1 tile");
                 foreach (var tile in BoardDemo.buttonList)
                 {
                     if (tile != currentTile) tile.GetChild(0).GetComponent<Image>().color = Color.white;
@@ -336,7 +337,7 @@ public class GameplayDemo : MonoBehaviour
             {
                 if (tile.GetComponent<TileController>().Id != currentTile.GetComponent<TileController>().Id)
                 {
-                    Debug.Log("Click khac tile khac ID");
+                    //Debug.Log("Click khac tile khac ID");
                     foreach (var tile in BoardDemo.buttonList)
                     {
                         if (tile != currentTile) tile.GetChild(0).GetComponent<Image>().color = Color.white;
@@ -373,7 +374,7 @@ public class GameplayDemo : MonoBehaviour
                                 TutorialDemo.instance.connectFailTutorial.transform.GetChild(1).gameObject.SetActive(true);
                             }
                         }
-                        Debug.Log("Khong the ket noi");
+                        //Debug.Log("Khong the ket noi");
                         foreach (var tile in BoardDemo.buttonList)
                         {
                             if (tile != currentTile) tile.GetChild(0).GetComponent<Image>().color = Color.white;
@@ -426,6 +427,7 @@ public class GameplayDemo : MonoBehaviour
                     case 2:
                         PlayerPrefsDemo.instance._SetNumOfFreezeTime(3, true);
                         btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfFreezeTime() + "";
+                        PlayerPrefsDemo.instance.timeWarningSource.UnPause();
                         break;
                     case 3:
                         PlayerPrefsDemo.instance._SetNumOfShuffle(3, true);
@@ -558,6 +560,7 @@ public class GameplayDemo : MonoBehaviour
 
     public void _SupporterFreezeTime() //Snow: Đóng băng thời gian 10 giây
     {
+        PlayerPrefsDemo.instance.timeWarningSource.Pause();
         if (PlayerPrefsDemo.instance._GetNumOfFreezeTime() > 0)
         {
             if (BoardDemo.levelData.Level != 7)
@@ -571,6 +574,8 @@ public class GameplayDemo : MonoBehaviour
             Color ice = new Color32(0, 221, 255, 255);
             TimeDemo.instance._FreezeTime(true);
             btSpFreeze.interactable = false;
+            DOTween.Kill(TimeDemo.instance.iconClock);
+            DOTween.Kill(TimeDemo.instance.iconClock.GetComponent<Image>());
             TimeDemo.instance.iconClock.DOScale(new Vector3(1.2f, 1.2f, 1), 1).SetEase(Ease.InOutQuad);
             TimeDemo.instance.iconClock.DORotate(new Vector3(0, 0, -20), 1).SetEase(Ease.InOutQuad);
             TimeDemo.instance.iconClock.GetComponent<Image>().DOColor(ice, 1).SetEase(Ease.InOutQuad).OnComplete(delegate
@@ -581,6 +586,8 @@ public class GameplayDemo : MonoBehaviour
                 .OnComplete(delegate
                 {
                     TimeDemo.instance._FreezeTime(false);
+                    if (!TimeDemo.instance.muchTimeLeft) TimeDemo.instance._TweenTimeWarn();
+                    PlayerPrefsDemo.instance.timeWarningSource.UnPause();
                     btSpFreeze.interactable = true;
                 });
             });

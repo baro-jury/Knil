@@ -39,7 +39,7 @@ public class BoardDemo : MonoBehaviour
 
     void Start()
     {
-        //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelDemo.level) as TextAsset).text);
+        levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelDemo.level) as TextAsset).text);
         _GoToProcess(1);
     }
 
@@ -63,7 +63,7 @@ public class BoardDemo : MonoBehaviour
     {
         buttonList.Clear();
         buttonListWithoutBlocker.Clear();
-        for (int i = 0; i < gameObject.transform.childCount - 3; ++i)
+        for (int i = 0; i < gameObject.transform.childCount - 3; i++)
         {
             Destroy(gameObject.transform.GetChild(i).gameObject);
         }
@@ -175,7 +175,7 @@ public class BoardDemo : MonoBehaviour
             _MakeConnectableCouple(source, trsfTiles, posTiles, indexTiles, 0);
             source = Shuffle(source.Count);
         }
-        for (int i = 0; i < source.Count; ++i)
+        for (int i = 0; i < source.Count; i++)
         {
             trsfTiles[i].GetComponent<TileController>().Index = indexTiles[source[i]];
             trsfTiles[i].name = trsfTiles[i].GetComponent<TileController>().Id
@@ -263,24 +263,27 @@ public class BoardDemo : MonoBehaviour
         if (buttonListWithoutBlocker.Count == 0)
         {
             canConnect = true;
+            goto shuffle;
         }
-        for (int index = 1; index < dict.Count; ++index)
+        for (int index = 1; index < dict.Count; index++)
         {
             List<Transform> temp = _SearchSameTiles(dict.ElementAt(index).Value);
             if (temp.Count != 0)
             {
-                for (int i = 0; i < (temp.Count - 1); ++i)
+                for (int i = 0; i < (temp.Count - 1); i++)
                 {
-                    for (int j = (i + 1); j < temp.Count; ++j)
+                    for (int j = (i + 1); j < temp.Count; j++)
                     {
                         if (GameplayDemo.instance._HasAvailableConnection(temp[i], temp[j]))
                         {
                             canConnect = true;
+                            goto shuffle;
                         }
                     }
                 }
             }
         }
+    shuffle:
         if (!canConnect)
         {
             _RearrangeTiles();
@@ -308,7 +311,7 @@ public class BoardDemo : MonoBehaviour
         }
         _MakeConnectableCouple(source, trsfTiles, posTiles, indexTiles, 0.4f);
         source = Shuffle(source.Count);
-        for (int i = 0; i < source.Count; ++i)
+        for (int i = 0; i < source.Count; i++)
         {
             trsfTiles[i].GetComponent<TileController>().Index = indexTiles[source[i]];
             trsfTiles[i].name = trsfTiles[i].GetComponent<TileController>().Id
@@ -330,7 +333,7 @@ public class BoardDemo : MonoBehaviour
     {
         List<int> temp = new();
         temp.Add(0);
-        for (int i = 1; i < length; ++i)
+        for (int i = 1; i < length; i++)
         {
             temp.Insert(UnityEngine.Random.Range(0, i), i);
         }
@@ -349,9 +352,9 @@ public class BoardDemo : MonoBehaviour
         Vector3 tilePos1 = new(), tilePos2 = new();
         (int, int) index1 = new(), index2 = new();
 
-        for (int i = 0; i < (buttonListWithoutBlocker.Count - 1); ++i)
+        for (int i = 0; i < (buttonListWithoutBlocker.Count - 1); i++)
         {
-            for (int j = (i + 1); j < buttonListWithoutBlocker.Count; ++j)
+            for (int j = (i + 1); j < buttonListWithoutBlocker.Count; j++)
             {
                 if (GameplayDemo.instance._HasAvailableConnection(buttonListWithoutBlocker[i].transform, buttonListWithoutBlocker[j].transform))
                 {
@@ -422,7 +425,7 @@ public class BoardDemo : MonoBehaviour
 
     public Transform _FindTileInList(Transform t)
     {
-        foreach(var item in buttonListWithoutBlocker)
+        foreach (var item in buttonListWithoutBlocker)
         {
             if (item.transform == t) return item.transform;
         }
@@ -449,13 +452,12 @@ public class BoardDemo : MonoBehaviour
     {
         matrix[rowAfter, colAfter] = matrix[rowBefore, colBefore];
         matrix[rowBefore, colBefore] = "";
-        Debug.LogFormat("From ({0}, {1}) to ({2}, {3})", rowBefore, colBefore, rowAfter, colAfter);
+        //Debug.LogFormat("From ({0}, {1}) to ({2}, {3})", rowBefore, colBefore, rowAfter, colAfter);
 
         foreach (var t in buttonListWithoutBlocker)
         {
             if (t.Index == (rowBefore, colBefore))
             {
-                Debug.Log("_SearchAndPullTile "+rowBefore+" "+colBefore+"; "+rowAfter+" "+colAfter+"; "+t.name);
                 t.Index = (rowAfter, colAfter);
                 t.transform.DOLocalMove(_ConvertMatrixIndexToLocalPos(rowAfter, colAfter, column * Tile.Size, row * Tile.Size, Tile.Size), 0.2f)
                     .SetEase(Ease.InOutQuad).SetUpdate(true);
@@ -543,7 +545,6 @@ public class BoardDemo : MonoBehaviour
                         }
                         else
                         {
-                            Debug.Log("CHECKKKKKKKKKKKK" + c);
                             _SearchAndPullTile(r, c, r + blankTiles, c);
                         }
                     }
@@ -562,7 +563,6 @@ public class BoardDemo : MonoBehaviour
             {
                 if (matrix[r, c] == "")
                 {
-                    Debug.Log("_PullTilesToTop: " + r + " _ " + c);
                     blankTiles++;
                 }
                 else
@@ -575,7 +575,6 @@ public class BoardDemo : MonoBehaviour
                         }
                         else
                         {
-                            Debug.Log("CHECKKKKKKKKKKKK" + c);
                             _SearchAndPullTile(r, c, r - blankTiles, c);
                         }
                     }
@@ -606,7 +605,6 @@ public class BoardDemo : MonoBehaviour
                         }
                         else
                         {
-                            Debug.Log("CHECKKKKKKKKKKKK" + r);
                             _SearchAndPullTile(r, c, r, c - blankTiles);
                         }
                     }
@@ -637,7 +635,6 @@ public class BoardDemo : MonoBehaviour
                         }
                         else
                         {
-                            Debug.Log("CHECKKKKKKKKKKKK" + r);
                             _SearchAndPullTile(r, c, r, c + blankTiles);
                         }
                     }
@@ -648,5 +645,17 @@ public class BoardDemo : MonoBehaviour
     }
 
     #endregion
+
+    private void Update()
+    {
+        if (Input.touchCount == 2)
+        {
+            gameObject.SetActive(false);
+        }
+        if (Input.touchCount == 3)
+        {
+            gameObject.SetActive(true);
+        }
+    }
 }
 

@@ -8,30 +8,6 @@ public class TutorialDemo : MonoBehaviour
 {
     public static TutorialDemo instance;
     public static int order = 0;
-    public static Vector3[] point =
-    {
-        new Vector3(-180, 270, 0), new Vector3(-180, 90, 0),
-        new Vector3(-360, 270, 0), new Vector3(0, 90, 0),
-        new Vector3(-360, 90, 0), new Vector3(-360, -270, 0),
-        new Vector3(180, 90, 0), new Vector3(360, 270, 0),
-        new Vector3(-360, -90, 0), new Vector3(180, -90, 0)
-    };
-    public static (Vector3, Vector3)[] couplePoint =
-    {
-        (new Vector3(-180, 270, 0), new Vector3(-180, 90, 0)),
-        (new Vector3(-360, 270, 0), new Vector3(0, 90, 0)),
-        (new Vector3(-360, 90, 0), new Vector3(-360, -270, 0)),
-        (new Vector3(180, 90, 0), new Vector3(360, 270, 0)),
-        (new Vector3(-360, -90, 0), new Vector3(180, -90, 0)),
-    };
-    public static (int, int)[] index =
-    {
-        (0, 1), (1, 1),
-        (0, 0), (1, 2),
-        (1, 0), (3, 0),
-        (1, 3), (0, 4),
-        (2, 0), (2, 3)
-    };
     public static ((int, int), (int, int))[] coupleIndex =
     {
         ((0, 1), (1, 1)),
@@ -43,7 +19,7 @@ public class TutorialDemo : MonoBehaviour
 
     public GameObject tutorialPanel, connectFailTutorial;
     [SerializeField]
-    private GameObject timer, supporter, pause;
+    private GameObject timer;
 
     void _MakeInstance()
     {
@@ -131,7 +107,7 @@ public class TutorialDemo : MonoBehaviour
         if (order == 5)
         {
             tutorialPanel.SetActive(false);
-            pause.transform.SetAsLastSibling();
+            GameplayDemo.instance.pause.transform.SetAsLastSibling();
             tutorialPanel.transform.SetAsLastSibling();
             connectFailTutorial.transform.SetAsLastSibling();
             connectFailTutorial.transform.GetChild(2).DOScale(Vector3.one, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);

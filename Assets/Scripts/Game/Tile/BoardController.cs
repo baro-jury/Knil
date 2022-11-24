@@ -263,10 +263,10 @@ public class BoardController : MonoBehaviour
         if (buttonListWithoutBlocker.Count == 0)
         {
             canConnect = true;
+            goto shuffle;
         }
         for (int index = 1; index < dict.Count; index++)
         {
-            //List<Transform> temp = _SearchSameTiles(dict.ElementAt(index).Value);
             List<Transform> temp = _SearchSameTiles(dict.ElementAt(index).Value);
             if (temp.Count != 0)
             {
@@ -277,11 +277,13 @@ public class BoardController : MonoBehaviour
                         if (GameplayController.instance._HasAvailableConnection(temp[i], temp[j]))
                         {
                             canConnect = true;
+                            goto shuffle;
                         }
                     }
                 }
             }
         }
+    shuffle:
         if (!canConnect)
         {
             _RearrangeTiles();

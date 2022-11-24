@@ -7,19 +7,13 @@ using DG.Tweening;
 public class TimeDemo : MonoBehaviour
 {
     public static TimeDemo instance;
-
-    [SerializeField]
-    private AudioClip timeWarning;
+    public float time;
+    public bool muchTimeLeft;
     public Transform iconClock;
+
+    private bool isFreezed;
     [SerializeField]
     private Text timeText, timeTextComplete;
-
-    public static float time;
-    //private float timeBurn = 1f;
-    private float timestampFor1Star;
-    private float timestampFor2Star;
-    private float timestampFor3Star;
-    private bool isFreezed, muchTimeLeft;
 
     void _MakeInstance()
     {
@@ -37,11 +31,8 @@ public class TimeDemo : MonoBehaviour
     void Start()
     {
         muchTimeLeft = true;
-
-        time = BoardDemo.levelData.Time[0];
-        timestampFor1Star = BoardDemo.levelData.Time[1];
-        timestampFor2Star = BoardDemo.levelData.Time[2];
-        timestampFor3Star = BoardDemo.levelData.Time[3];
+        //time = BoardDemo.levelData.Time[0];
+        SetTime(BoardDemo.levelData.Time[0]);
     }
 
     void Update()
@@ -55,11 +46,8 @@ public class TimeDemo : MonoBehaviour
                 if (muchTimeLeft && time <= 15)
                 {
                     muchTimeLeft = false;
-                    PlayerPrefsDemo.instance.audioSource.PlayOneShot(timeWarning);
-
-                    iconClock.DOScale(new Vector3(1.2f, 1.2f, 1), 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
-                    iconClock.DORotate(new Vector3(0, 0, -20), 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
-                    iconClock.GetComponent<Image>().DOColor(Color.red, 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
+                    PlayerPrefsDemo.instance.timeWarningSource.Play();
+                    _TweenTimeWarn();
                 }
             }
             else
@@ -77,17 +65,47 @@ public class TimeDemo : MonoBehaviour
             _DisplayTime(time);
         }
     }
-
+    private float oldTime;
+    public void SetTime(float t)
+    {
+        time = t;
+        oldTime = t;
+    }
+    public void AddTime(float t)
+    {
+        time += t;
+        oldTime += t;
+    }
     void _DisplayTime(float timeToDisplay)
     {
-        float minutes = Mathf.FloorToInt(timeToDisplay / 60);
-        float seconds = Mathf.FloorToInt(timeToDisplay % 60);
-        timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
-        timeTextComplete.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        if (oldTime > timeToDisplay + 1)
+        {
+            oldTime = timeToDisplay;
+            float minutes = Mathf.FloorToInt(timeToDisplay / 60);
+            float seconds = Mathf.FloorToInt(timeToDisplay % 60);
+            timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+            timeTextComplete.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        }
     }
 
     public void _FreezeTime(bool freeze)
     {
         isFreezed = freeze;
+    }
+
+    public void _TweenTimeWarn()
+    {
+        iconClock.DOScale(new Vector3(1.2f, 1.2f, 1), 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
+        iconClock.DORotate(new Vector3(0, 0, -20), 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
+        iconClock.GetComponent<Image>().DOColor(Color.red, 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
+    }
+
+    public void _ResetIconState()
+    {
+        DOTween.Kill(iconClock);
+        DOTween.Kill(iconClock.GetComponent<Image>());
+        iconClock.localScale = Vector3.one;
+        iconClock.localEulerAngles = Vector3.zero; 
+        iconClock.GetComponent<Image>().color = Color.white;
     }
 }

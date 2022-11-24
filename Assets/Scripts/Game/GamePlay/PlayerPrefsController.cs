@@ -9,6 +9,7 @@ public class PlayerPrefsController : MonoBehaviour
     public static PlayerPrefsController instance;
     public AudioSource audioSource;
     public AudioSource musicSource;
+    public AudioSource timeWarningSource;
 
     private const string PROGRESS = "Progress";
     private const string STARS = "Stars", COINS = "Coins";

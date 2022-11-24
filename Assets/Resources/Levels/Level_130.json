@@ -24,7 +24,7 @@
         },
         {
             "MinID": 1,
-            "MaxID": 12,
+            "MaxID": 30,
             "TotalTile": 108,
             "Shuffle": false,
             "Row": 12,

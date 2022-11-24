@@ -76,13 +76,11 @@ public class ShopController : MonoBehaviour
     void _BuySuccessfully()
     {
         GameplayDemo.instance.shop.transform.GetChild(4).gameObject.SetActive(false);
-        //var item = Instantiate(coinAnim, new Vector3(-120, 0, 0) / 96, Quaternion.identity, GameplayDemo.instance.shop.transform);
         var item = Instantiate(coinAnim, GameplayDemo.instance.startCoinAnimPos.position, Quaternion.identity, GameplayDemo.instance.shop.transform);
         item.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = coin + "";
         item.transform.GetChild(0).GetComponent<Image>().DOFade(.5f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(delegate
             {
-                //item.transform.GetComponent<Transform>().DOMove(new Vector3(-68, 844, 0) / 96, 1f).SetEase(Ease.InOutQuad).SetUpdate(true).SetDelay(.5f);
                 item.transform.GetComponent<Transform>().DOMove(GameplayDemo.instance.endCoinAnimPos.position, 1f).SetEase(Ease.InOutQuad).SetUpdate(true).SetDelay(.5f);
                 item.transform.GetChild(0).GetComponent<Image>().DOFade(0f, 1f).SetEase(Ease.InOutQuad).SetUpdate(true).SetDelay(.5f)
                 .OnComplete(delegate 
