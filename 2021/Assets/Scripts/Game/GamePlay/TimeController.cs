@@ -8,6 +8,7 @@ public class TimeController : MonoBehaviour
 {
     public static TimeController instance;
     public static bool isSaved, muchTimeLeft;
+    public float time;
     public Transform iconClock;
 
     [SerializeField]
@@ -15,11 +16,8 @@ public class TimeController : MonoBehaviour
     [SerializeField]
     private Text timeText, timeTextComplete;
 
-    public static float time;
     //private float timeBurn = 1f;
-    private float timestampFor1Star;
-    private float timestampFor2Star;
-    private float timestampFor3Star;
+    private float timestampFor1Star, timestampFor2Star, timestampFor3Star;
     private bool isFreezed;
 
     void _MakeInstance()
@@ -40,7 +38,7 @@ public class TimeController : MonoBehaviour
         isSaved = false;
         muchTimeLeft = true;
 
-        time = BoardController.levelData.Time[0];
+        _SetTime(BoardController.levelData.Time[0], 0);
         timestampFor1Star = BoardController.levelData.Time[1];
         timestampFor2Star = BoardController.levelData.Time[2];
         timestampFor3Star = BoardController.levelData.Time[3];
@@ -67,7 +65,7 @@ public class TimeController : MonoBehaviour
                 time -= Time.deltaTime;
                 slider.value = time;
 
-                if(timestampFor3Star <= time)
+                if (timestampFor3Star <= time)
                 {
                     slider.transform.GetChild(3).GetChild(0).gameObject.SetActive(true);
                     slider.transform.GetChild(4).GetChild(0).gameObject.SetActive(true);
@@ -99,13 +97,14 @@ public class TimeController : MonoBehaviour
             else
             {
                 muchTimeLeft = true;
+                PlayerPrefsController.instance.timeWarningSource.Stop();
                 foreach (var tile in BoardController.buttonList)
                 {
                     DOTween.Kill(tile);
                     tile.localScale = Vector3.one;
                 }
                 LineController.instance._EraseLine();
-                time = 0;
+                _SetTime(0, 0);
                 if (isSaved)
                 {
                     GameplayController.instance._GameOver();
@@ -119,6 +118,21 @@ public class TimeController : MonoBehaviour
         }
     }
 
+    public void _SetTime(float t, int plus)
+    {
+        if (plus == 1)
+        {
+            time += t;
+        }
+        else if (plus == 0)
+        {
+            time = t;
+        }
+        else if (plus == -1)
+        {
+            time -= t;
+        }
+    }
     void _DisplayTime(float timeToDisplay)
     {
         float minutes = Mathf.FloorToInt(timeToDisplay / 60);

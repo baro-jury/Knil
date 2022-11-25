@@ -15,6 +15,7 @@ public class BoardController : MonoBehaviour
     public static Dictionary<string, Sprite> dict = new Dictionary<string, Sprite>();
     public static int row, column;
     public int sideMin = 112, sideMax = 180;
+    public Sprite blank;
     private int minId, maxId, process, orderOfPullingDirection;
     private bool shuffle, pullDown, pullUp, pullLeft, pullRight;
     private string[,] matrix;
@@ -22,7 +23,7 @@ public class BoardController : MonoBehaviour
     [SerializeField]
     private TileController Tile;
     [SerializeField]
-    private GameObject FirstAnchor, LastAnchor;
+    private GameObject FirstAnchor, LastAnchor, TheRock;
 
     void _MakeInstance()
     {
@@ -123,8 +124,28 @@ public class BoardController : MonoBehaviour
                     else if (matrix[r, c] == "0")
                     {
                         objBtn.Id = 0;
-                        objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = dict["0"];
-                        objBtn.GetComponent<Button>().interactable = false;
+                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = dict["0"];
+                        objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = blank;
+                        if (levelData.Level != 10)
+                        {
+                            objBtn.GetComponent<Button>().interactable = false;
+                        }
+                        else
+                        {
+                            TheRock.GetComponent<Button>().onClick.AddListener(delegate 
+                            {
+                                objBtn.transform.SetAsFirstSibling();
+                                TheRock.SetActive(false);
+                            });
+                            objBtn.GetComponent<Button>().onClick.AddListener(delegate
+                            {
+                                objBtn.transform.SetAsLastSibling();
+                                TheRock.SetActive(true);
+                                TheRock.GetComponent<Image>().DOFade(0.5f, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                                TheRock.transform.GetChild(0).DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                                objBtn.GetComponent<Button>().interactable = false;
+                            });
+                        }
                     }
                     else
                     {

@@ -650,16 +650,5 @@ public class BoardDemo : MonoBehaviour
 
     #endregion
 
-    private void Update()
-    {
-        if (Input.touchCount == 2)
-        {
-            gameObject.SetActive(false);
-        }
-        if (Input.touchCount == 3)
-        {
-            gameObject.SetActive(true);
-        }
-    }
 }
 

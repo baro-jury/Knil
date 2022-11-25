@@ -23,7 +23,7 @@ public class BoardDemo : MonoBehaviour
     [SerializeField]
     private TileController Tile;
     [SerializeField]
-    private GameObject FirstAnchor, LastAnchor;
+    private GameObject FirstAnchor, LastAnchor, TheRock;
 
     void _MakeInstance()
     {
@@ -124,11 +124,28 @@ public class BoardDemo : MonoBehaviour
                     else if (matrix[r, c] == "0")
                     {
                         objBtn.Id = 0;
-                        //objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = dict["0"];
-                        objBtn.transform.GetComponent<Image>().sprite = dict["0"];
-                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = blank;
+                        objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = dict["0"];
                         objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = blank;
-                        objBtn.GetComponent<Button>().interactable = false;
+                        if (levelData.Level != 10)
+                        {
+                            objBtn.GetComponent<Button>().interactable = false;
+                        }
+                        else
+                        {
+                            TheRock.GetComponent<Button>().onClick.AddListener(delegate
+                            {
+                                objBtn.transform.SetAsFirstSibling();
+                                TheRock.SetActive(false);
+                            });
+                            objBtn.GetComponent<Button>().onClick.AddListener(delegate
+                            {
+                                objBtn.transform.SetAsLastSibling();
+                                TheRock.SetActive(true);
+                                TheRock.GetComponent<Image>().DOFade(0.5f, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                                TheRock.transform.GetChild(0).DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                                objBtn.GetComponent<Button>().interactable = false;
+                            });
+                        }
                     }
                     else
                     {
@@ -650,16 +667,5 @@ public class BoardDemo : MonoBehaviour
 
     #endregion
 
-    private void Update()
-    {
-        if (Input.touchCount == 2)
-        {
-            gameObject.SetActive(false);
-        }
-        if (Input.touchCount == 3)
-        {
-            gameObject.SetActive(true);
-        }
-    }
 }
 

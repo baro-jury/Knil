@@ -11,6 +11,7 @@ public class TimeDemo : MonoBehaviour
     public bool muchTimeLeft;
     public Transform iconClock;
 
+    private float oldTime;
     private bool isFreezed;
     [SerializeField]
     private Text timeText, timeTextComplete;
@@ -31,8 +32,7 @@ public class TimeDemo : MonoBehaviour
     void Start()
     {
         muchTimeLeft = true;
-        //time = BoardDemo.levelData.Time[0];
-        SetTime(BoardDemo.levelData.Time[0]);
+        _SetTime(BoardDemo.levelData.Time[0], 0);
     }
 
     void Update()
@@ -65,17 +65,26 @@ public class TimeDemo : MonoBehaviour
             _DisplayTime(time);
         }
     }
-    private float oldTime;
-    public void SetTime(float t)
+
+    public void _SetTime(float t, int plus)
     {
-        time = t;
-        oldTime = t;
+        if (plus == 1)
+        {
+            time += t;
+            oldTime += t;
+        }
+        else if (plus == 0)
+        {
+            time = t;
+            oldTime = t;
+        }
+        else if (plus == -1)
+        {
+            time -= t;
+            oldTime -= t;
+        }
     }
-    public void AddTime(float t)
-    {
-        time += t;
-        oldTime += t;
-    }
+    
     void _DisplayTime(float timeToDisplay)
     {
         if (oldTime > timeToDisplay + 1)
@@ -105,7 +114,7 @@ public class TimeDemo : MonoBehaviour
         DOTween.Kill(iconClock);
         DOTween.Kill(iconClock.GetComponent<Image>());
         iconClock.localScale = Vector3.one;
-        iconClock.localEulerAngles = Vector3.zero; 
+        iconClock.localEulerAngles = Vector3.zero;
         iconClock.GetComponent<Image>().color = Color.white;
     }
 }

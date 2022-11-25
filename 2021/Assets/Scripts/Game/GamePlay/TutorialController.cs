@@ -8,30 +8,30 @@ public class TutorialController : MonoBehaviour
 {
     public static TutorialController instance;
     public static int order = 0;
-    public static Vector3[] point =
-    {
-        new Vector3(-180, 270, 0), new Vector3(-180, 90, 0),
-        new Vector3(-360, 270, 0), new Vector3(0, 90, 0),
-        new Vector3(-360, 90, 0), new Vector3(-360, -270, 0),
-        new Vector3(180, 90, 0), new Vector3(360, 270, 0),
-        new Vector3(-360, -90, 0), new Vector3(180, -90, 0)
-    };
-    public static (Vector3, Vector3)[] couplePoint =
-    {
-        (new Vector3(-180, 270, 0), new Vector3(-180, 90, 0)),
-        (new Vector3(-360, 270, 0), new Vector3(0, 90, 0)),
-        (new Vector3(-360, 90, 0), new Vector3(-360, -270, 0)),
-        (new Vector3(180, 90, 0), new Vector3(360, 270, 0)),
-        (new Vector3(-360, -90, 0), new Vector3(180, -90, 0)),
-    };
-    public static (int, int)[] index =
-    {
-        (0, 1), (1, 1),
-        (0, 0), (1, 2),
-        (1, 0), (3, 0),
-        (1, 3), (0, 4),
-        (2, 0), (2, 3)
-    };
+    //public static Vector3[] point =
+    //{
+    //    new Vector3(-180, 270, 0), new Vector3(-180, 90, 0),
+    //    new Vector3(-360, 270, 0), new Vector3(0, 90, 0),
+    //    new Vector3(-360, 90, 0), new Vector3(-360, -270, 0),
+    //    new Vector3(180, 90, 0), new Vector3(360, 270, 0),
+    //    new Vector3(-360, -90, 0), new Vector3(180, -90, 0)
+    //};
+    //public static (Vector3, Vector3)[] couplePoint =
+    //{
+    //    (new Vector3(-180, 270, 0), new Vector3(-180, 90, 0)),
+    //    (new Vector3(-360, 270, 0), new Vector3(0, 90, 0)),
+    //    (new Vector3(-360, 90, 0), new Vector3(-360, -270, 0)),
+    //    (new Vector3(180, 90, 0), new Vector3(360, 270, 0)),
+    //    (new Vector3(-360, -90, 0), new Vector3(180, -90, 0)),
+    //};
+    //public static (int, int)[] index =
+    //{
+    //    (0, 1), (1, 1),
+    //    (0, 0), (1, 2),
+    //    (1, 0), (3, 0),
+    //    (1, 3), (0, 4),
+    //    (2, 0), (2, 3)
+    //};
     public static ((int, int), (int, int))[] coupleIndex =
     {
         ((0, 1), (1, 1)),
@@ -41,7 +41,7 @@ public class TutorialController : MonoBehaviour
         ((2, 0), (2, 3))
     };
 
-    public GameObject fingerPoint, tutorialPanel, connectFailTutorial;
+    public GameObject tutorialPanel, connectFailTutorial;
     [SerializeField]
     private GameObject booster, timer;
 

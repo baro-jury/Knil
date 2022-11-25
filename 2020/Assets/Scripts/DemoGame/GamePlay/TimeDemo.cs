@@ -11,6 +11,7 @@ public class TimeDemo : MonoBehaviour
     public bool muchTimeLeft;
     public Transform iconClock;
 
+    private float oldTime;
     private bool isFreezed;
     [SerializeField]
     private Text timeText, timeTextComplete;
@@ -31,8 +32,8 @@ public class TimeDemo : MonoBehaviour
     void Start()
     {
         muchTimeLeft = true;
-        //time = BoardDemo.levelData.Time[0];
-        SetTime(BoardDemo.levelData.Time[0]);
+        _SetTime(BoardDemo.levelData.Time[0], 0);
+        _ChangeTime(oldTime);
     }
 
     void Update()
@@ -53,39 +54,54 @@ public class TimeDemo : MonoBehaviour
             else
             {
                 muchTimeLeft = true;
+                PlayerPrefsDemo.instance.timeWarningSource.Stop();
                 foreach (var tile in BoardDemo.buttonList)
                 {
                     DOTween.Kill(tile);
                     tile.localScale = Vector3.one;
                 }
                 LineDemo.instance._EraseLine();
-                time = 0;
+                _SetTime(0, 0);
                 GameplayDemo.instance._TimeOut();
             }
             _DisplayTime(time);
         }
     }
-    private float oldTime;
-    public void SetTime(float t)
+
+    public void _SetTime(float t, int plus)
     {
-        time = t;
-        oldTime = t;
-    }
-    public void AddTime(float t)
-    {
-        time += t;
-        oldTime += t;
-    }
-    void _DisplayTime(float timeToDisplay)
-    {
-        if (oldTime > timeToDisplay + 1)
+        if (plus == 1)
         {
-            oldTime = timeToDisplay;
-            float minutes = Mathf.FloorToInt(timeToDisplay / 60);
-            float seconds = Mathf.FloorToInt(timeToDisplay % 60);
-            timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
-            timeTextComplete.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+            time += t;
+            oldTime += t;
         }
+        else if (plus == 0)
+        {
+            time = t;
+            oldTime = t;
+        }
+        else if (plus == -1)
+        {
+            time -= t;
+            oldTime -= t;
+        }
+    }
+    
+    void _DisplayTime(float realTime)
+    {
+        if (oldTime >= realTime)
+        {
+            oldTime = realTime;
+            _ChangeTime(oldTime);
+        }
+    }
+
+    void _ChangeTime(float timeToDisplay)
+    {
+        float minutes = Mathf.FloorToInt(timeToDisplay / 60);
+        float seconds = Mathf.FloorToInt(timeToDisplay % 60);
+        timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        timeTextComplete.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
     public void _FreezeTime(bool freeze)
@@ -105,7 +121,7 @@ public class TimeDemo : MonoBehaviour
         DOTween.Kill(iconClock);
         DOTween.Kill(iconClock.GetComponent<Image>());
         iconClock.localScale = Vector3.one;
-        iconClock.localEulerAngles = Vector3.zero; 
+        iconClock.localEulerAngles = Vector3.zero;
         iconClock.GetComponent<Image>().color = Color.white;
     }
 }

@@ -231,8 +231,7 @@ public class GameplayDemo : MonoBehaviour
         {
             PlayerPrefsDemo.instance._SetCoinsInPossession((int)(numberOfRescue * 100), false);
             TimeDemo.instance._ResetIconState();
-            //TimeDemo.time += 60;
-            TimeDemo.instance.AddTime(60);
+            TimeDemo.instance._SetTime(60, 1);
             coins.text = PlayerPrefsDemo.instance._GetCoinsInPossession() + "";
             timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
@@ -259,8 +258,7 @@ public class GameplayDemo : MonoBehaviour
         {
             // luồng game sau khi tắt quảng cáo ( tặng thưởng cho user )
             TimeDemo.instance._ResetIconState();
-            //TimeDemo.time += 15;
-            TimeDemo.instance.AddTime(15);
+            TimeDemo.instance._SetTime(15, 1);
             timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
             {
@@ -435,6 +433,7 @@ public class GameplayDemo : MonoBehaviour
                         break;
                 }
                 shopPanel.SetActive(false);
+                Time.timeScale = 1;
                 coins.text = PlayerPrefsDemo.instance._GetCoinsInPossession() + "";
             }
             else

@@ -128,6 +128,8 @@ public class GameplayDemo : MonoBehaviour
     public void _Pause()
     {
         PlayerPrefsDemo.instance.audioSource.Pause();
+        PlayerPrefsDemo.instance.timeWarningSource.Pause();
+        PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickButtonClip);
         settingOnButton.interactable = false;
         pausePanel.SetActive(true);
         pausePanel.GetComponent<Button>().interactable = false;
@@ -155,6 +157,8 @@ public class GameplayDemo : MonoBehaviour
     public void _Resume()
     {
         PlayerPrefsDemo.instance.audioSource.UnPause();
+        PlayerPrefsDemo.instance.timeWarningSource.UnPause();
+        PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickButtonClip);
         settingOffButton.interactable = false;
         pausePanel.GetComponent<Button>().interactable = false;
         pausePanel.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
@@ -178,6 +182,7 @@ public class GameplayDemo : MonoBehaviour
     public void _TurnOffSound()
     {
         PlayerPrefsDemo.instance.audioSource.mute = true;
+        PlayerPrefsDemo.instance.timeWarningSource.mute = true;
         pausePanel.transform.GetChild(0).GetChild(0).gameObject.SetActive(true);
         pausePanel.transform.GetChild(0).GetChild(1).gameObject.SetActive(false);
     }
@@ -185,12 +190,15 @@ public class GameplayDemo : MonoBehaviour
     public void _TurnOnSound()
     {
         PlayerPrefsDemo.instance.audioSource.mute = false;
+        PlayerPrefsDemo.instance.timeWarningSource.mute = false;
+        PlayerPrefsDemo.instance.audioSource.PlayOneShot(switchClip);
         pausePanel.transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
         pausePanel.transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
     }
 
     public void _TurnOffMusic()
     {
+        PlayerPrefsDemo.instance.audioSource.PlayOneShot(switchClip);
         PlayerPrefsDemo.instance.musicSource.mute = true;
         pausePanel.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
         pausePanel.transform.GetChild(1).GetChild(1).gameObject.SetActive(false);
@@ -198,6 +206,7 @@ public class GameplayDemo : MonoBehaviour
 
     public void _TurnOnMusic()
     {
+        PlayerPrefsDemo.instance.audioSource.PlayOneShot(switchClip);
         PlayerPrefsDemo.instance.musicSource.mute = false;
         pausePanel.transform.GetChild(1).GetChild(0).gameObject.SetActive(false);
         pausePanel.transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
@@ -231,8 +240,7 @@ public class GameplayDemo : MonoBehaviour
         {
             PlayerPrefsDemo.instance._SetCoinsInPossession((int)(numberOfRescue * 100), false);
             TimeDemo.instance._ResetIconState();
-            //TimeDemo.time += 60;
-            TimeDemo.instance.AddTime(60);
+            TimeDemo.instance._SetTime(60, 1);
             coins.text = PlayerPrefsDemo.instance._GetCoinsInPossession() + "";
             timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
@@ -259,8 +267,7 @@ public class GameplayDemo : MonoBehaviour
         {
             // luồng game sau khi tắt quảng cáo ( tặng thưởng cho user )
             TimeDemo.instance._ResetIconState();
-            //TimeDemo.time += 15;
-            TimeDemo.instance.AddTime(15);
+            TimeDemo.instance._SetTime(15, 1);
             timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
             {
@@ -310,12 +317,15 @@ public class GameplayDemo : MonoBehaviour
         Color color = new Color32(0, 220, 255, 255); //blue
         currentTile.DOComplete();
         currentTile.DOKill();
-        currentTile.GetComponent<RectTransform>().DOScale(new Vector3(.8f, .8f, 1), .1f).SetEase(Ease.InOutQuad).SetUpdate(true)
+        if (currentTile.GetComponent<TileController>().Id != 0)
+        {
+            currentTile.GetComponent<RectTransform>().DOScale(new Vector3(.8f, .8f, 1), .1f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
             {
                 currentTile.GetComponent<RectTransform>().DOScale(Vector3.one, .1f).SetEase(Ease.InOutQuad).SetUpdate(true);
                 currentTile.GetChild(0).GetComponent<Image>().DOColor(color, .1f).SetEase(Ease.InOutQuad).SetUpdate(true);
             });
+        }
         Time.timeScale = 1;
         isCoupled = !isCoupled;
         if (!isCoupled)
@@ -435,6 +445,7 @@ public class GameplayDemo : MonoBehaviour
                         break;
                 }
                 shopPanel.SetActive(false);
+                Time.timeScale = 1;
                 coins.text = PlayerPrefsDemo.instance._GetCoinsInPossession() + "";
             }
             else
