@@ -315,6 +315,7 @@ public class BoardDemo : MonoBehaviour
     public void _RearrangeTiles()
     {
         GameplayDemo.instance._EnableSupporter(false);
+        _EnableTile(false);
         List<int> source = new List<int>();
         List<Transform> trsfTiles = new List<Transform>();
         List<Vector3> posTiles = new List<Vector3>();
@@ -346,7 +347,7 @@ public class BoardDemo : MonoBehaviour
             else
             {
                 trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.4f)
-                    .OnComplete(() => { GameplayDemo.instance._EnableSupporter(true); });
+                    .OnComplete(delegate { GameplayDemo.instance._EnableSupporter(true); _EnableTile(true); });
             }
         }
     }
@@ -407,6 +408,14 @@ public class BoardDemo : MonoBehaviour
     #endregion
 
     #region Xử lý ingame
+    public void _EnableTile(bool canPress)
+    {
+        foreach (var item in buttonListWithoutBlocker)
+        {
+            item.transform.GetComponent<Button>().interactable = canPress;
+        }
+    }
+
     public bool _HasButtonInLocation(float x, float y)
     {
         foreach (var trans in buttonList)

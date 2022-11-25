@@ -50,16 +50,7 @@ public class TutorialDemo : MonoBehaviour
             tutorialPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
         }
         tutorialPanel.transform.GetComponent<Image>().DOFade(0.5f, .4f).SetEase(Ease.InOutQuad).SetUpdate(true)
-            .OnComplete(delegate { _EnableTile(true); });
-
-    }
-
-    void _EnableTile(bool canPress)
-    {
-        foreach (var item in BoardDemo.buttonListWithoutBlocker)
-        {
-            item.transform.GetComponent<Button>().interactable = canPress;
-        }
+            .OnComplete(delegate { BoardDemo.instance._EnableTile(true); });
     }
 
     #region Tutorial Gameplay
@@ -80,7 +71,7 @@ public class TutorialDemo : MonoBehaviour
         }
         else
         {
-            _EnableTile(false);
+            BoardDemo.instance._EnableTile(false);
             tutorialPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
             tutorialPanel.transform.GetComponent<Image>().DOFade(0, .4f).SetEase(Ease.InOutQuad).SetUpdate(true)
                 .OnComplete(delegate
