@@ -41,6 +41,7 @@ public class BoardDemo : MonoBehaviour
     void Start()
     {
         //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelDemo.level) as TextAsset).text);
+        //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("demo") as TextAsset).text);
         _GoToProcess(1);
     }
 
@@ -480,7 +481,7 @@ public class BoardDemo : MonoBehaviour
             if (t.Index == (rowBefore, colBefore))
             {
                 t.Index = (rowAfter, colAfter);
-                t.transform.DOLocalMove(_ConvertMatrixIndexToLocalPos(rowAfter, colAfter, column * Tile.Size, row * Tile.Size, Tile.Size), 0.2f)
+                t.transform.DOLocalMove(_ConvertMatrixIndexToLocalPos(rowAfter, colAfter, column * Tile.Size, row * Tile.Size, Tile.Size), 0.15f)
                     .SetEase(Ease.InOutQuad).SetUpdate(true);
                 t.name = t.Id.ToString() + " - " + t.Index.ToString();
 

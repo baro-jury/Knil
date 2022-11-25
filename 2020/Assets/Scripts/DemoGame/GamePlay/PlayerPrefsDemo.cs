@@ -45,7 +45,7 @@ public class PlayerPrefsDemo : MonoBehaviour
     {
         _MakeSingleInstance();
         _CheckFirstTimePlayGame();
-        //_SetMarkedLevel(415);
+        //_SetMarkedLevel(40);
         BoardDemo.levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + _GetMarkedLevel()) as TextAsset).text);
         //_SetCoinsInPossession(6900, true);
         //_SetNumOfHint(100, false);
