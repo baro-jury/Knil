@@ -228,9 +228,9 @@ public class GameplayDemo : MonoBehaviour
     {
         //Time.timeScale = 0;
         PlayerPrefsDemo.instance.audioSource.Stop();
-        //timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.one;
+        timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.one;
         timeOutPanel.SetActive(true);
-        timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .15f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        //timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .15f).SetEase(Ease.InOutQuad).SetUpdate(true);
     }
 
     public void _BuyMoreTime()

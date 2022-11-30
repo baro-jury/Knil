@@ -40,8 +40,9 @@ public class BoardDemo : MonoBehaviour
 
     void Start()
     {
-        //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelDemo.level) as TextAsset).text);
+        levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelDemo.level) as TextAsset).text);
         //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("demo") as TextAsset).text);
+        TimeDemo.instance._SetTime(levelData.Time[0], 0);
         _GoToProcess(1);
     }
 
@@ -135,11 +136,19 @@ public class BoardDemo : MonoBehaviour
                         {
                             TheRock.GetComponent<Button>().onClick.AddListener(delegate
                             {
+                                
                                 objBtn.transform.SetAsFirstSibling();
-                                TheRock.SetActive(false);
+                                TheRock.transform.GetChild(0).DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                                TheRock.GetComponent<Image>().DOFade(0, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
+                                .OnComplete(delegate
+                                {
+                                    Time.timeScale = 1;
+                                    TheRock.SetActive(false);
+                                });
                             });
                             objBtn.GetComponent<Button>().onClick.AddListener(delegate
                             {
+                                Time.timeScale = 0;
                                 objBtn.transform.SetAsLastSibling();
                                 TheRock.SetActive(true);
                                 TheRock.GetComponent<Image>().DOFade(0.5f, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
