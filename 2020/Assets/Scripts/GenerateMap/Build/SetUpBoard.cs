@@ -89,19 +89,20 @@ public class SetUpBoard : MonoBehaviour
                 objBtn.transform.localPosition = tilePos * 40;
                 if (matrix[r, c] == null || matrix[r, c] == "")
                 {
-                    objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = setup.btNone.transform.GetChild(1).GetComponent<Image>().sprite;
+                    objBtn.transform.GetChild(1).GetComponent<Image>().sprite = SpriteController.instance.blank;
                 }
                 else if (matrix[r, c] == "?")
                 {
-                    objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = setup.btRandom.transform.GetChild(1).GetComponent<Image>().sprite;
+                    objBtn.transform.GetChild(1).GetComponent<Image>().sprite = setup.btRandom.transform.GetChild(1).GetComponent<Image>().sprite;
                 }
                 else if (matrix[r, c] == "0")
                 {
-                    objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = setup.btBlock.transform.GetChild(1).GetComponent<Image>().sprite;
+                    objBtn.transform.GetChild(0).GetComponent<Image>().sprite = SpriteController.instance.blocker;
+                    objBtn.transform.GetChild(1).GetComponent<Image>().sprite = SpriteController.instance.blank;
                 }
                 else
                 {
-                    objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = SpriteController.spritesDict[matrix[r, c]];
+                    objBtn.transform.GetChild(1).GetComponent<Image>().sprite = SpriteController.spritesDict[matrix[r, c]];
                 }
             }
         }

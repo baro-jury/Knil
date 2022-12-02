@@ -261,6 +261,7 @@ public class SetUpMap : MonoBehaviour
             pullUp.value = dataMap.PullUp == true ? 1 : 0;
             pullLeft.value = dataMap.PullLeft == true ? 1 : 0;
             pullRight.value = dataMap.PullRight == true ? 1 : 0;
+            _CreateDataTile(dataMap.MinID, dataMap.MaxID);
 
             string path = Application.dataPath + "/Resources/Shapes/" + dataMap.TotalTile + "/" + dataMap.Row + "x" + dataMap.Column + ".json";
             StreamReader reader = new StreamReader(path);
@@ -439,20 +440,22 @@ public class SetUpMap : MonoBehaviour
     void _NoneTile(Transform currentTile)
     {
         totalTile.text = dataMap.TotalTile + "";
-        currentTile.GetChild(1).GetComponent<Image>().sprite = btNone.transform.GetChild(1).GetComponent<Image>().sprite;
+        currentTile.GetChild(0).GetComponent<Image>().sprite = SpriteController.instance.pedestal;
         optionPanel.SetActive(false);
     }
 
     void _BlockTile(Transform currentTile)
     {
         totalTile.text = dataMap.TotalTile + "";
-        currentTile.GetChild(1).GetComponent<Image>().sprite = btBlock.transform.GetChild(1).GetComponent<Image>().sprite;
+        currentTile.GetChild(0).GetComponent<Image>().sprite = SpriteController.instance.blocker;
+        currentTile.GetChild(1).GetComponent<Image>().sprite = SpriteController.instance.blank;
         optionPanel.SetActive(false);
     }
 
     void _RandomTile(Transform currentTile)
     {
         totalTile.text = dataMap.TotalTile + "";
+        currentTile.GetChild(0).GetComponent<Image>().sprite = SpriteController.instance.pedestal;
         currentTile.GetChild(1).GetComponent<Image>().sprite = btRandom.transform.GetChild(1).GetComponent<Image>().sprite;
         optionPanel.SetActive(false);
     }
@@ -460,6 +463,7 @@ public class SetUpMap : MonoBehaviour
     void _ChooseTile(Transform currentTile)
     {
         totalTile.text = dataMap.TotalTile + "";
+        currentTile.GetChild(0).GetComponent<Image>().sprite = SpriteController.instance.pedestal;
         currentTile.GetChild(1).GetComponent<Image>().sprite = ddImage.options[ddImage.value].image;
         optionPanel.SetActive(false);
     }

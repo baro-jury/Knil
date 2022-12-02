@@ -314,6 +314,11 @@ public class GameplayDemo : MonoBehaviour
     #region Click Tiles
     public void _ClickTile(Transform currentTile)
     {
+        if (BoardDemo.levelData.Level == 1)
+        {
+            TutorialDemo.instance.finger.SetActive(false);
+            DOTween.Kill(TutorialDemo.instance.finger);
+        }
         Color color = new Color32(0, 220, 255, 255); //blue
         currentTile.DOComplete();
         currentTile.DOKill();
@@ -339,7 +344,11 @@ public class GameplayDemo : MonoBehaviour
                 //Debug.Log("Click cung 1 tile");
                 foreach (var tile in BoardDemo.buttonList)
                 {
-                    if (tile != currentTile) tile.GetChild(0).GetComponent<Image>().color = Color.white;
+                    if (tile != currentTile)
+                    {
+                        tile.GetChild(0).GetComponent<Image>().DOKill();
+                        tile.GetChild(0).GetComponent<Image>().color = Color.white;
+                    }
                 }
                 isCoupled = !isCoupled;
             }
@@ -350,7 +359,11 @@ public class GameplayDemo : MonoBehaviour
                     //Debug.Log("Click khac tile khac ID");
                     foreach (var tile in BoardDemo.buttonList)
                     {
-                        if (tile != currentTile) tile.GetChild(0).GetComponent<Image>().color = Color.white;
+                        if (tile != currentTile) 
+                        {
+                            tile.GetChild(0).GetComponent<Image>().DOKill();
+                            tile.GetChild(0).GetComponent<Image>().color = Color.white;
+                        }
                     }
                     tile = currentTile;
                     isCoupled = !isCoupled;
@@ -374,20 +387,30 @@ public class GameplayDemo : MonoBehaviour
                         if (BoardDemo.levelData.Level == 1)
                         {
                             Handheld.Vibrate();
+                            //foreach(Transform item in BoardDemo.buttonList)
+                            //{
+                            //    item.DOShakePosition(0.1f);
+                            //}
                             TutorialDemo.order++;
                             if (TutorialDemo.order == 4)
                             {
                                 TutorialDemo.instance.connectFailTutorial.transform.GetChild(0).gameObject.SetActive(true);
+                                StartCoroutine(SwitchConnectFailTut(TutorialDemo.instance.connectFailTutorial.transform.GetChild(0).gameObject));
                             }
                             else if (TutorialDemo.order == 5)
                             {
                                 TutorialDemo.instance.connectFailTutorial.transform.GetChild(1).gameObject.SetActive(true);
+                                StartCoroutine(SwitchConnectFailTut(TutorialDemo.instance.connectFailTutorial.transform.GetChild(1).gameObject));
                             }
                         }
                         //Debug.Log("Khong the ket noi");
                         foreach (var tile in BoardDemo.buttonList)
                         {
-                            if (tile != currentTile) tile.GetChild(0).GetComponent<Image>().color = Color.white;
+                            if (tile != currentTile) 
+                            {
+                                tile.GetChild(0).GetComponent<Image>().DOKill();
+                                tile.GetChild(0).GetComponent<Image>().color = Color.white;
+                            }
                         }
                         tile = currentTile;
                         isCoupled = !isCoupled;
@@ -695,6 +718,11 @@ public class GameplayDemo : MonoBehaviour
         BoardDemo.instance._CheckProcess();
     }
 
+    IEnumerator SwitchConnectFailTut(GameObject connectFailPanel)
+    {
+        yield return new WaitForSeconds(2);
+        TutorialDemo.instance._SwitchTut(connectFailPanel);
+    }
     #endregion
 
     #region Algorithm

@@ -8,11 +8,11 @@ public class SpriteController : MonoBehaviour
     public static SpriteController instance;
     public static Dictionary<string, Sprite> spritesDict = new Dictionary<string, Sprite>();
 
+    public List<Sprite> test;
     public List<Sprite> Icon;
+    public Sprite blank, blocker, pedestal;
 
     private int idElement = 1;
-    [SerializeField]
-    private Sprite blocker;
 
     void _MakeInstance()
     {

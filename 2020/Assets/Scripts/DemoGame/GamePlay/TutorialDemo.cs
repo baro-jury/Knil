@@ -17,9 +17,9 @@ public class TutorialDemo : MonoBehaviour
         ((2, 0), (2, 3))
     };
 
-    public GameObject tutorialPanel, connectFailTutorial;
+    public GameObject finger, tutorialPanel, connectFailTutorial;
     [SerializeField]
-    private GameObject timer;
+    private GameObject timer, bottom;
 
     void _MakeInstance()
     {
@@ -36,11 +36,13 @@ public class TutorialDemo : MonoBehaviour
 
     public void _ChangeObjectState()
     {
-        _TweeningObject();
         timer.SetActive(false);
+        finger.SetActive(true);
+        _TutTweening();
+        _TweenFinger();
     }
 
-    void _TweeningObject()
+    void _TutTweening()
     {
         tutorialPanel.transform.GetComponent<Image>().color = new Color(0, 0, 0, 0);
         tutorialPanel.SetActive(true);
@@ -51,6 +53,37 @@ public class TutorialDemo : MonoBehaviour
         }
         tutorialPanel.transform.GetComponent<Image>().DOFade(0.5f, .4f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(delegate { BoardDemo.instance._EnableTile(true); });
+    }
+
+    void _TweenFinger()
+    {
+        finger.transform.localPosition = new Vector3(0, -(0 - bottom.transform.localPosition.y) * 15 / 28, 0);
+        Vector3 temp = finger.transform.position;
+
+        Sequence mySequence = DOTween.Sequence();
+        //mySequence.Append(finger.transform.DOScale(Vector3.one, 0.5f).SetUpdate(true));
+        //mySequence.Append(finger.transform.DOMove(_FindTransform(BoardDemo.buttonListWithoutBlocker, (0, 1)).position, 0.5f).SetUpdate(true));
+        //mySequence.Append(finger.transform.DOScale(new Vector3(0.6f, 0.6f, 1), 0.5f).SetUpdate(true));
+        //mySequence.Append(finger.transform.DOScale(Vector3.one, 0.5f).SetUpdate(true));
+        //mySequence.Append(finger.transform.DOMove(_FindTransform(BoardDemo.buttonListWithoutBlocker, (1, 1)).position, 0.5f).SetUpdate(true));
+        //mySequence.Append(finger.transform.DOScale(new Vector3(0.6f, 0.6f, 1), 0.5f).SetUpdate(true));
+        //mySequence.Append(finger.transform.DOScale(Vector3.one, 0.5f).SetUpdate(true));
+        //mySequence.Append(finger.transform.DOMove(temp, 0.5f).SetUpdate(true).OnComplete(delegate { finger.transform.localScale = Vector3.zero; }));
+        //mySequence.AppendInterval(0.5f);
+        //mySequence.SetUpdate(true).SetLoops(-1);
+        //=====================================
+        mySequence.Append(finger.transform.DOScale(Vector3.one, 0.4f).SetUpdate(true));
+        mySequence.Append(finger.transform.DOMove(_FindTransform(BoardDemo.buttonListWithoutBlocker, (0, 1)).position, 0.4f).SetUpdate(true));
+        mySequence.Append(finger.transform.DOScale(new Vector3(0.6f, 0.6f, 1), 0.4f).SetUpdate(true));
+        mySequence.Append(finger.transform.DOScale(Vector3.one, 0.4f).SetUpdate(true));
+        mySequence.Append(finger.transform.DOMove(_FindTransform(BoardDemo.buttonListWithoutBlocker, (1, 1)).position, 0.4f).SetUpdate(true));
+        mySequence.Append(finger.transform.DOScale(new Vector3(0.6f, 0.6f, 1), 0.4f).SetUpdate(true));
+        mySequence.Append(finger.transform.DOScale(Vector3.one, 0.4f).SetUpdate(true));
+        mySequence.Append(finger.transform.DOMove(temp, 0.4f).SetUpdate(true));
+        mySequence.Append(finger.transform.DOScale(Vector3.zero, 0.4f).SetUpdate(true));
+        mySequence.AppendInterval(0.4f);
+        mySequence.SetUpdate(true).SetLoops(-1);
+
     }
 
     #region Tutorial Gameplay
@@ -76,7 +109,7 @@ public class TutorialDemo : MonoBehaviour
             tutorialPanel.transform.GetComponent<Image>().DOFade(0, .4f).SetEase(Ease.InOutQuad).SetUpdate(true)
                 .OnComplete(delegate
                 {
-                    _TweeningObject();
+                    _TutTweening();
                     GameplayDemo.instance.pause.transform.SetAsLastSibling();
                     tutorialPanel.transform.SetAsLastSibling();
                     t1.SetAsLastSibling();

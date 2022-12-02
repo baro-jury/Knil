@@ -40,7 +40,7 @@ public class BoardDemo : MonoBehaviour
 
     void Start()
     {
-        levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelDemo.level) as TextAsset).text);
+        //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelDemo.level) as TextAsset).text);
         //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("demo") as TextAsset).text);
         TimeDemo.instance._SetTime(levelData.Time[0], 0);
         _GoToProcess(1);
@@ -85,7 +85,7 @@ public class BoardDemo : MonoBehaviour
     void _GenerateTiles()
     {
         int repeat = 0, index = minId;
-        SpriteController.instance._ShuffleImage(dict);
+        if (levelData.Level > 10) SpriteController.instance._ShuffleImage(dict);
 
         float sideTile = gameObject.GetComponent<RectTransform>().rect.width / column;
         float temp = gameObject.GetComponent<RectTransform>().rect.height / row;

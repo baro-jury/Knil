@@ -77,10 +77,12 @@ public class ShopController : MonoBehaviour
     {
         GameplayDemo.instance.shop.transform.GetChild(4).gameObject.SetActive(false);
         var item = Instantiate(coinAnim, GameplayDemo.instance.startCoinAnimPos.position, Quaternion.identity, GameplayDemo.instance.shop.transform);
+        Animator anim = item.transform.GetComponent<Animator>();
         item.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = coin + "";
         item.transform.GetChild(0).GetComponent<Image>().DOFade(.5f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(delegate
             {
+                anim.Play("Base Layer.1", 0, 0);
                 item.transform.GetComponent<Transform>().DOMove(GameplayDemo.instance.endCoinAnimPos.position, 1f).SetEase(Ease.InOutQuad).SetUpdate(true).SetDelay(.5f);
                 item.transform.GetChild(0).GetComponent<Image>().DOFade(0f, 1f).SetEase(Ease.InOutQuad).SetUpdate(true).SetDelay(.5f)
                 .OnComplete(delegate 
@@ -90,5 +92,7 @@ public class ShopController : MonoBehaviour
                     GameplayDemo.instance._UpdateCoin();
                 });
             });
+        
+        
     }
 }
