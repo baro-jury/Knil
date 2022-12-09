@@ -18,6 +18,9 @@ EditorBuildSettings:
     path: Assets/Scenes/BuildMap/PlayTrial.unity
     guid: 190441bcde1d695488dfd5145a430687
   - enabled: 1
+    path: Assets/Scenes/Play/Loading.unity
+    guid: 2c5014d89742b8543876a334636d8a44
+  - enabled: 1
     path: Assets/Scenes/Play/GamePlayDemo.unity
     guid: e61e5aea1ac62714a85f6e061568765a
   m_configObjects: {}

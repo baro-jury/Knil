@@ -16,8 +16,9 @@ public class TutorialDemo : MonoBehaviour
         ((1, 3), (0, 4)),
         ((2, 0), (2, 3))
     };
+    public static Sequence fingerSequence;
 
-    public GameObject finger, tutorialPanel, connectFailTutorial;
+    public GameObject finger, tutorialPanel, notePanel;
     [SerializeField]
     private GameObject timer, bottom;
 
@@ -34,12 +35,21 @@ public class TutorialDemo : MonoBehaviour
         _MakeInstance();
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            Debug.Log(finger.transform.position);
+            
+        }
+    }
+
     public void _ChangeObjectState()
     {
         timer.SetActive(false);
         finger.SetActive(true);
         _TutTweening();
-        _TweenFinger();
+        _FingerTut();
     }
 
     void _TutTweening()
@@ -55,35 +65,36 @@ public class TutorialDemo : MonoBehaviour
             .OnComplete(delegate { BoardDemo.instance._EnableTile(true); });
     }
 
-    void _TweenFinger()
+    void _FingerTut()
     {
         finger.transform.localPosition = new Vector3(0, -(0 - bottom.transform.localPosition.y) * 15 / 28, 0);
         Vector3 temp = finger.transform.position;
 
-        Sequence mySequence = DOTween.Sequence();
-        //mySequence.Append(finger.transform.DOScale(Vector3.one, 0.5f).SetUpdate(true));
-        //mySequence.Append(finger.transform.DOMove(_FindTransform(BoardDemo.buttonListWithoutBlocker, (0, 1)).position, 0.5f).SetUpdate(true));
-        //mySequence.Append(finger.transform.DOScale(new Vector3(0.6f, 0.6f, 1), 0.5f).SetUpdate(true));
-        //mySequence.Append(finger.transform.DOScale(Vector3.one, 0.5f).SetUpdate(true));
-        //mySequence.Append(finger.transform.DOMove(_FindTransform(BoardDemo.buttonListWithoutBlocker, (1, 1)).position, 0.5f).SetUpdate(true));
-        //mySequence.Append(finger.transform.DOScale(new Vector3(0.6f, 0.6f, 1), 0.5f).SetUpdate(true));
-        //mySequence.Append(finger.transform.DOScale(Vector3.one, 0.5f).SetUpdate(true));
-        //mySequence.Append(finger.transform.DOMove(temp, 0.5f).SetUpdate(true).OnComplete(delegate { finger.transform.localScale = Vector3.zero; }));
-        //mySequence.AppendInterval(0.5f);
-        //mySequence.SetUpdate(true).SetLoops(-1);
-        //=====================================
-        mySequence.Append(finger.transform.DOScale(Vector3.one, 0.4f).SetUpdate(true));
-        mySequence.Append(finger.transform.DOMove(_FindTransform(BoardDemo.buttonListWithoutBlocker, (0, 1)).position, 0.4f).SetUpdate(true));
-        mySequence.Append(finger.transform.DOScale(new Vector3(0.6f, 0.6f, 1), 0.4f).SetUpdate(true));
-        mySequence.Append(finger.transform.DOScale(Vector3.one, 0.4f).SetUpdate(true));
-        mySequence.Append(finger.transform.DOMove(_FindTransform(BoardDemo.buttonListWithoutBlocker, (1, 1)).position, 0.4f).SetUpdate(true));
-        mySequence.Append(finger.transform.DOScale(new Vector3(0.6f, 0.6f, 1), 0.4f).SetUpdate(true));
-        mySequence.Append(finger.transform.DOScale(Vector3.one, 0.4f).SetUpdate(true));
-        mySequence.Append(finger.transform.DOMove(temp, 0.4f).SetUpdate(true));
-        mySequence.Append(finger.transform.DOScale(Vector3.zero, 0.4f).SetUpdate(true));
-        mySequence.AppendInterval(0.4f);
-        mySequence.SetUpdate(true).SetLoops(-1);
+        fingerSequence = DOTween.Sequence();
+        fingerSequence.Append(finger.transform.DOScale(Vector3.one, 0.4f).SetUpdate(true));
+        fingerSequence.Append(finger.transform.DOMove(_FindTransform(BoardDemo.buttonListWithoutBlocker, (0, 1)).position, 0.4f).SetUpdate(true));
+        fingerSequence.Append(finger.transform.DOScale(new Vector3(0.6f, 0.6f, 1), 0.4f).SetUpdate(true));
+        fingerSequence.Append(finger.transform.DOScale(Vector3.one, 0.4f).SetUpdate(true));
+        fingerSequence.Append(finger.transform.DOMove(_FindTransform(BoardDemo.buttonListWithoutBlocker, (1, 1)).position, 0.4f).SetUpdate(true));
+        fingerSequence.Append(finger.transform.DOScale(new Vector3(0.6f, 0.6f, 1), 0.4f).SetUpdate(true));
+        fingerSequence.Append(finger.transform.DOScale(Vector3.one, 0.4f).SetUpdate(true));
+        fingerSequence.Append(finger.transform.DOMove(temp, 0.4f).SetUpdate(true).OnComplete(delegate { finger.transform.localScale = Vector3.zero; }));
+        //fingerSequence.Append(finger.transform.DOScale(Vector3.zero, 0.4f).SetUpdate(true));
+        fingerSequence.AppendInterval(0.4f);
+        fingerSequence.SetUpdate(true).SetLoops(-1);
+    }
 
+    public void _FingerSupporter(Transform supporter)
+    {
+        Debug.Log(supporter.position);
+        finger.transform.position = new Vector3(supporter.position.x, supporter.position.y - 0.45f, supporter.position.z);
+        finger.transform.localScale = new Vector3(0.8f, 0.8f, 1);
+        finger.SetActive(true);
+
+        fingerSequence = DOTween.Sequence();
+        fingerSequence.Append(finger.transform.DOScale(new Vector3(0.5f, 0.5f, 1), 0.5f).SetUpdate(true));
+        fingerSequence.Append(finger.transform.DOScale(new Vector3(0.8f, 0.8f, 1), 0.5f).SetUpdate(true));
+        fingerSequence.SetUpdate(true).SetLoops(-1);
     }
 
     #region Tutorial Gameplay
@@ -100,7 +111,7 @@ public class TutorialDemo : MonoBehaviour
             tutorialPanel.transform.SetAsLastSibling();
             t1.SetAsLastSibling();
             t2.SetAsLastSibling();
-            connectFailTutorial.transform.SetAsLastSibling();
+            notePanel.transform.SetAsLastSibling();
         }
         else
         {
@@ -114,10 +125,9 @@ public class TutorialDemo : MonoBehaviour
                     tutorialPanel.transform.SetAsLastSibling();
                     t1.SetAsLastSibling();
                     t2.SetAsLastSibling();
-                    connectFailTutorial.transform.SetAsLastSibling();
+                    notePanel.transform.SetAsLastSibling();
                 });
         }
-
     }
 
     public void _SwitchTut(GameObject connectFailPanel)
@@ -133,8 +143,8 @@ public class TutorialDemo : MonoBehaviour
             tutorialPanel.SetActive(false);
             GameplayDemo.instance.pause.transform.SetAsLastSibling();
             tutorialPanel.transform.SetAsLastSibling();
-            connectFailTutorial.transform.SetAsLastSibling();
-            connectFailTutorial.transform.GetChild(2).DOScale(Vector3.one, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
+            notePanel.transform.SetAsLastSibling();
+            notePanel.transform.GetChild(2).DOScale(Vector3.one, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
         }
     }
     #endregion

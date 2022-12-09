@@ -15,8 +15,8 @@ public class BoardDemo : MonoBehaviour
     public static Dictionary<string, Sprite> dict = new Dictionary<string, Sprite>();
     public static int row, column;
     public int sideMin = 112, sideMax = 180;
-    public Sprite blank;
-    private int minId, maxId, process, orderOfPullingDirection;
+    private bool isConnectable;
+    private int minId, maxId, orderOfPullingDirection, process = 1;
     private bool shuffle, pullDown, pullUp, pullLeft, pullRight;
     private string[,] matrix;
 
@@ -24,6 +24,8 @@ public class BoardDemo : MonoBehaviour
     private TileController Tile;
     [SerializeField]
     private GameObject FirstAnchor, LastAnchor, TheRock;
+    [SerializeField]
+    private Image oneProgress, twoProgresses, NoteRearrange;
 
     void _MakeInstance()
     {
@@ -42,8 +44,34 @@ public class BoardDemo : MonoBehaviour
     {
         //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelDemo.level) as TextAsset).text);
         //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("demo") as TextAsset).text);
+
         TimeDemo.instance._SetTime(levelData.Time[0], 0);
-        _GoToProcess(1);
+        isConnectable = true;
+        if (levelData.Process.Count == 2) twoProgresses.transform.parent.gameObject.SetActive(true);
+        twoProgresses.type = Image.Type.Filled;
+        NoteRearrange.type = Image.Type.Filled;
+
+        _GoToProcess(process);
+    }
+
+    private void Update()
+    {
+        if (process > 1 && twoProgresses.fillAmount < 1) twoProgresses.fillAmount += 2 * Time.deltaTime;
+        if (!isConnectable && NoteRearrange.fillAmount < 1)
+        {
+            NoteRearrange.gameObject.SetActive(true);
+            NoteRearrange.fillOrigin = (int)Image.OriginHorizontal.Left;
+            NoteRearrange.fillAmount += 2 * Time.deltaTime;
+        }
+        else if (isConnectable && NoteRearrange.fillAmount > 0)
+        {
+            NoteRearrange.fillOrigin = (int)Image.OriginHorizontal.Right;
+            NoteRearrange.fillAmount -= 2 * Time.deltaTime;
+        }
+        else if (isConnectable && NoteRearrange.fillAmount == 0)
+        {
+            NoteRearrange.gameObject.SetActive(false);
+        }
     }
 
     #region Khởi tạo level
@@ -77,7 +105,7 @@ public class BoardDemo : MonoBehaviour
         _SpreadTiles();
         GameplayDemo.instance.pause.transform.SetAsLastSibling();
         TutorialDemo.instance.tutorialPanel.transform.SetAsLastSibling();
-        TutorialDemo.instance.connectFailTutorial.transform.SetAsLastSibling();
+        TutorialDemo.instance.notePanel.transform.SetAsLastSibling();
     }
     #endregion
 
@@ -127,25 +155,13 @@ public class BoardDemo : MonoBehaviour
                     {
                         objBtn.Id = 0;
                         objBtn.gameObject.transform.GetChild(0).GetComponent<Image>().sprite = dict["0"];
-                        objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = blank;
+                        objBtn.gameObject.transform.GetChild(1).GetComponent<Image>().sprite = SpriteController.instance.blank;
                         if (levelData.Level != 10)
                         {
                             objBtn.GetComponent<Button>().interactable = false;
                         }
                         else
                         {
-                            TheRock.GetComponent<Button>().onClick.AddListener(delegate
-                            {
-                                
-                                objBtn.transform.SetAsFirstSibling();
-                                TheRock.transform.GetChild(0).DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
-                                TheRock.GetComponent<Image>().DOFade(0, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
-                                .OnComplete(delegate
-                                {
-                                    Time.timeScale = 1;
-                                    TheRock.SetActive(false);
-                                });
-                            });
                             objBtn.GetComponent<Button>().onClick.AddListener(delegate
                             {
                                 Time.timeScale = 0;
@@ -154,6 +170,17 @@ public class BoardDemo : MonoBehaviour
                                 TheRock.GetComponent<Image>().DOFade(0.5f, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
                                 TheRock.transform.GetChild(0).DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
                                 objBtn.GetComponent<Button>().interactable = false;
+                            });
+                            TheRock.GetComponent<Button>().onClick.AddListener(delegate
+                            {
+                                objBtn.transform.SetAsFirstSibling();
+                                TheRock.transform.GetChild(0).DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                                TheRock.GetComponent<Image>().DOFade(0, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
+                                .OnComplete(delegate
+                                {
+                                    Time.timeScale = 1;
+                                    TheRock.SetActive(false);
+                                });
                             });
                         }
                     }
@@ -199,7 +226,7 @@ public class BoardDemo : MonoBehaviour
         }
         foreach (var item in trsfTiles)
         {
-            item.DOLocalMove(Vector3.zero, 0f).SetEase(Ease.InBack).SetUpdate(true);
+            item.DOLocalMove(Vector3.zero, 0).SetEase(Ease.InBack).SetUpdate(true);
         }
         if (shuffle)
         {
@@ -214,11 +241,11 @@ public class BoardDemo : MonoBehaviour
             matrix[indexTiles[source[i]].Item1, indexTiles[source[i]].Item2] = trsfTiles[i].GetComponent<TileController>().Id + "";
             if (i < source.Count - 1)
             {
-                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.4f).SetEase(Ease.OutBack).SetUpdate(true);
+                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.45f).SetEase(Ease.OutBack).SetUpdate(true);
             }
             else
             {
-                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.4f).SetEase(Ease.OutBack).SetUpdate(true)
+                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.45f).SetEase(Ease.OutBack).SetUpdate(true)
                     .OnComplete(() =>
                     {
                         GameplayDemo.instance._EnableSupporter(true);
@@ -232,38 +259,50 @@ public class BoardDemo : MonoBehaviour
                                 break;
                             case 3:
                                 TutorialDemo.instance.tutorialPanel.SetActive(true);
+                                TutorialDemo.instance._FingerSupporter(GameplayDemo.instance.btSpHint.transform.parent);
                                 TutorialDemo.instance.tutorialPanel.transform.GetChild(1).gameObject.SetActive(true);
                                 TutorialDemo.instance.tutorialPanel.transform.GetChild(1).GetChild(1).GetComponent<Button>().onClick.AddListener(delegate
                                 {
                                     TutorialDemo.instance.tutorialPanel.SetActive(false);
-                                    TutorialDemo.instance.tutorialPanel.transform.GetChild(1).gameObject.SetActive(false);
+                                    //TutorialDemo.instance.tutorialPanel.transform.GetChild(1).gameObject.SetActive(false);
+                                    TutorialDemo.instance.finger.SetActive(false);
+                                    TutorialDemo.fingerSequence.Kill();
                                 });
                                 break;
                             case 5:
                                 TutorialDemo.instance.tutorialPanel.SetActive(true);
+                                TutorialDemo.instance._FingerSupporter(GameplayDemo.instance.btSpMagicWand.transform.parent);
                                 TutorialDemo.instance.tutorialPanel.transform.GetChild(2).gameObject.SetActive(true);
                                 TutorialDemo.instance.tutorialPanel.transform.GetChild(2).GetChild(1).GetComponent<Button>().onClick.AddListener(delegate
                                 {
                                     TutorialDemo.instance.tutorialPanel.SetActive(false);
-                                    TutorialDemo.instance.tutorialPanel.transform.GetChild(2).gameObject.SetActive(false);
+                                    //TutorialDemo.instance.tutorialPanel.transform.GetChild(2).gameObject.SetActive(false);
+                                    TutorialDemo.instance.finger.SetActive(false);
+                                    TutorialDemo.fingerSequence.Kill();
                                 });
                                 break;
                             case 7:
                                 TutorialDemo.instance.tutorialPanel.SetActive(true);
+                                TutorialDemo.instance._FingerSupporter(GameplayDemo.instance.btSpFreeze.transform.parent);
                                 TutorialDemo.instance.tutorialPanel.transform.GetChild(3).gameObject.SetActive(true);
                                 TutorialDemo.instance.tutorialPanel.transform.GetChild(3).GetChild(1).GetComponent<Button>().onClick.AddListener(delegate
                                 {
                                     TutorialDemo.instance.tutorialPanel.SetActive(false);
-                                    TutorialDemo.instance.tutorialPanel.transform.GetChild(3).gameObject.SetActive(false);
+                                    //TutorialDemo.instance.tutorialPanel.transform.GetChild(3).gameObject.SetActive(false);
+                                    TutorialDemo.instance.finger.SetActive(false);
+                                    TutorialDemo.fingerSequence.Kill();
                                 });
                                 break;
                             case 9:
                                 TutorialDemo.instance.tutorialPanel.SetActive(true);
+                                TutorialDemo.instance._FingerSupporter(GameplayDemo.instance.btSpShuffle.transform.parent);
                                 TutorialDemo.instance.tutorialPanel.transform.GetChild(4).gameObject.SetActive(true);
                                 TutorialDemo.instance.tutorialPanel.transform.GetChild(4).GetChild(1).GetComponent<Button>().onClick.AddListener(delegate
                                 {
                                     TutorialDemo.instance.tutorialPanel.SetActive(false);
-                                    TutorialDemo.instance.tutorialPanel.transform.GetChild(4).gameObject.SetActive(false);
+                                    //TutorialDemo.instance.tutorialPanel.transform.GetChild(4).gameObject.SetActive(false);
+                                    TutorialDemo.instance.finger.SetActive(false);
+                                    TutorialDemo.fingerSequence.Kill();
                                 });
                                 break;
                         }
@@ -288,6 +327,98 @@ public class BoardDemo : MonoBehaviour
     #endregion
 
     #region Sắp xếp Tiles
+    public void _RearrangeTiles()
+    {
+        PlayerPrefsDemo.instance.audioSource.PlayOneShot(GameplayDemo.instance.shuffleClip);
+        GameplayDemo.instance._EnableSupporter(false);
+        _EnableTile(false);
+        List<int> source = new List<int>();
+        List<Transform> trsfTiles = new List<Transform>();
+        List<Vector3> posTiles = new List<Vector3>();
+        List<(int, int)> indexTiles = new List<(int, int)>();
+
+        foreach (var item in buttonListWithoutBlocker)
+        {
+            source.Add(buttonListWithoutBlocker.FindIndex(x => x == item));
+            trsfTiles.Add(item.transform);
+            posTiles.Add(item.transform.localPosition);
+            indexTiles.Add(item.Index);
+        }
+        foreach (var item in trsfTiles)
+        {
+            item.DOLocalMove(Vector3.zero, 0.45f).SetEase(Ease.InBack).SetUpdate(true);
+        }
+        _MakeConnectableCouple(source, trsfTiles, posTiles, indexTiles, 0.45f);
+        source = Shuffle(source.Count);
+        for (int i = 0; i < source.Count; i++)
+        {
+            trsfTiles[i].GetComponent<TileController>().Index = indexTiles[source[i]];
+            trsfTiles[i].name = trsfTiles[i].GetComponent<TileController>().Id
+                + " - " + trsfTiles[i].GetComponent<TileController>().Index;
+            matrix[indexTiles[source[i]].Item1, indexTiles[source[i]].Item2] = trsfTiles[i].GetComponent<TileController>().Id + "";
+            if (i < source.Count - 1)
+            {
+                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.45f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.45f);
+            }
+            else
+            {
+                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.45f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.45f)
+                    .OnComplete(delegate { GameplayDemo.instance._EnableSupporter(true); _EnableTile(true); });
+            }
+        }
+    }
+    List<int> Shuffle(int length)
+    {
+        List<int> temp = new List<int>();
+        temp.Add(0);
+        for (int i = 1; i < length; i++)
+        {
+            temp.Insert(UnityEngine.Random.Range(0, i), i);
+        }
+        return temp;
+    }
+    void _MakeConnectableCouple(List<int> source, List<Transform> trsfTiles, List<Vector3> posTiles, List<(int, int)> indexTiles, float delay)
+    {
+        Transform tile1 = trsfTiles[0];
+        source.Remove(source.Count - 1);
+        trsfTiles.Remove(tile1);
+        Transform tile2 = trsfTiles.First(x => x.GetComponent<TileController>().Id == tile1.GetComponent<TileController>().Id);
+        source.Remove(source.Count - 1);
+        trsfTiles.Remove(tile2);
+
+        Vector3 tilePos1 = new Vector3(), tilePos2 = new Vector3();
+        (int, int) index1 = (0, 0), index2 = (0, 0);
+
+        for (int i = 0; i < (buttonListWithoutBlocker.Count - 1); i++)
+        {
+            for (int j = (i + 1); j < buttonListWithoutBlocker.Count; j++)
+            {
+                if (GameplayDemo.instance._HasAvailableConnection(buttonListWithoutBlocker[i].transform, buttonListWithoutBlocker[j].transform))
+                {
+                    tilePos1 = buttonListWithoutBlocker[i].transform.localPosition;
+                    tilePos2 = buttonListWithoutBlocker[j].transform.localPosition;
+                    index1 = buttonListWithoutBlocker[i].Index;
+                    index2 = buttonListWithoutBlocker[j].Index;
+                    goto arrange;
+                }
+            }
+        }
+    arrange:
+        tile1.DOLocalMove(tilePos1, 0.45f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(delay);
+        posTiles.Remove(tilePos1);
+        tile2.DOLocalMove(tilePos2, 0.45f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(delay);
+        posTiles.Remove(tilePos2);
+
+        tile1.GetComponent<TileController>().Index = index1;
+        tile1.name = tile1.GetComponent<TileController>().Id + " - " + tile1.GetComponent<TileController>().Index;
+        matrix[index1.Item1, index1.Item2] = tile1.GetComponent<TileController>().Id + "";
+        indexTiles.Remove(index1);
+        tile2.GetComponent<TileController>().Index = index2;
+        tile2.name = tile2.GetComponent<TileController>().Id + " - " + tile2.GetComponent<TileController>().Index;
+        matrix[index2.Item1, index2.Item2] = tile2.GetComponent<TileController>().Id + "";
+        indexTiles.Remove(index2);
+    }
+
     public void _CheckPossibleConnection()
     {
         bool canConnect = false;
@@ -317,103 +448,19 @@ public class BoardDemo : MonoBehaviour
     shuffle:
         if (!canConnect)
         {
-            _RearrangeTiles();
+            StartCoroutine(Rearrange());
         }
     }
 
-    public void _RearrangeTiles()
+    IEnumerator Rearrange()
     {
-        GameplayDemo.instance._EnableSupporter(false);
+        isConnectable = false;
         _EnableTile(false);
-        List<int> source = new List<int>();
-        List<Transform> trsfTiles = new List<Transform>();
-        List<Vector3> posTiles = new List<Vector3>();
-        List<(int, int)> indexTiles = new List<(int, int)>();
-
-        foreach (var item in buttonListWithoutBlocker)
-        {
-            source.Add(buttonListWithoutBlocker.FindIndex(x => x == item));
-            trsfTiles.Add(item.transform);
-            posTiles.Add(item.transform.localPosition);
-            indexTiles.Add(item.Index);
-        }
-        foreach (var item in trsfTiles)
-        {
-            item.DOLocalMove(Vector3.zero, 0.4f).SetEase(Ease.InBack).SetUpdate(true);
-        }
-        _MakeConnectableCouple(source, trsfTiles, posTiles, indexTiles, 0.4f);
-        source = Shuffle(source.Count);
-        for (int i = 0; i < source.Count; i++)
-        {
-            trsfTiles[i].GetComponent<TileController>().Index = indexTiles[source[i]];
-            trsfTiles[i].name = trsfTiles[i].GetComponent<TileController>().Id
-                + " - " + trsfTiles[i].GetComponent<TileController>().Index;
-            matrix[indexTiles[source[i]].Item1, indexTiles[source[i]].Item2] = trsfTiles[i].GetComponent<TileController>().Id + "";
-            if (i < source.Count - 1)
-            {
-                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.4f);
-            }
-            else
-            {
-                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.4f)
-                    .OnComplete(delegate { GameplayDemo.instance._EnableSupporter(true); _EnableTile(true); });
-            }
-        }
+        yield return new WaitForSeconds(1.5f);
+        _RearrangeTiles();
+        yield return new WaitForSeconds(0.5f);
+        isConnectable = true;
     }
-
-    List<int> Shuffle(int length)
-    {
-        List<int> temp = new List<int>();
-        temp.Add(0);
-        for (int i = 1; i < length; i++)
-        {
-            temp.Insert(UnityEngine.Random.Range(0, i), i);
-        }
-        return temp;
-    }
-
-    void _MakeConnectableCouple(List<int> source, List<Transform> trsfTiles, List<Vector3> posTiles, List<(int, int)> indexTiles, float delay)
-    {
-        Transform tile1 = trsfTiles[0];
-        source.Remove(source.Count - 1);
-        trsfTiles.Remove(tile1);
-        Transform tile2 = trsfTiles.First(x => x.GetComponent<TileController>().Id == tile1.GetComponent<TileController>().Id);
-        source.Remove(source.Count - 1);
-        trsfTiles.Remove(tile2);
-
-        Vector3 tilePos1 = new Vector3(), tilePos2 = new Vector3();
-        (int, int) index1 = (0, 0), index2 = (0, 0);
-
-        for (int i = 0; i < (buttonListWithoutBlocker.Count - 1); i++)
-        {
-            for (int j = (i + 1); j < buttonListWithoutBlocker.Count; j++)
-            {
-                if (GameplayDemo.instance._HasAvailableConnection(buttonListWithoutBlocker[i].transform, buttonListWithoutBlocker[j].transform))
-                {
-                    tilePos1 = buttonListWithoutBlocker[i].transform.localPosition;
-                    tilePos2 = buttonListWithoutBlocker[j].transform.localPosition;
-                    index1 = buttonListWithoutBlocker[i].Index;
-                    index2 = buttonListWithoutBlocker[j].Index;
-                    goto arrange;
-                }
-            }
-        }
-    arrange:
-        tile1.DOLocalMove(tilePos1, 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(delay);
-        posTiles.Remove(tilePos1);
-        tile2.DOLocalMove(tilePos2, 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(delay);
-        posTiles.Remove(tilePos2);
-
-        tile1.GetComponent<TileController>().Index = index1;
-        tile1.name = tile1.GetComponent<TileController>().Id + " - " + tile1.GetComponent<TileController>().Index;
-        matrix[index1.Item1, index1.Item2] = tile1.GetComponent<TileController>().Id + "";
-        indexTiles.Remove(index1);
-        tile2.GetComponent<TileController>().Index = index2;
-        tile2.name = tile2.GetComponent<TileController>().Id + " - " + tile2.GetComponent<TileController>().Index;
-        matrix[index2.Item1, index2.Item2] = tile2.GetComponent<TileController>().Id + "";
-        indexTiles.Remove(index2);
-    }
-
     #endregion
 
     #region Xử lý ingame

@@ -17,6 +17,7 @@ public class GameplayDemo : MonoBehaviour
     public AudioClip clickButtonClip, matchTileClip, switchClip, passLevelClip;
     public AudioClip timeWizardClip, hintClip, magicWandClip, freezeTimeClip, shuffleClip;
     public Transform startCoinAnimPos, endCoinAnimPos;
+    public Button btSpHint, btSpMagicWand, btSpFreeze, btSpShuffle;
 
     private bool isCoupled = true, isHinted = false;
     private float numberOfRescue = 1;
@@ -31,8 +32,6 @@ public class GameplayDemo : MonoBehaviour
     private GameObject pausePanel;
     [SerializeField]
     private Button settingOnButton, settingOffButton;
-    [SerializeField]
-    private Button btSpHint, btSpMagicWand, btSpFreeze, btSpShuffle;
     [SerializeField]
     private GameObject timeOutPanel, winPanel;
     [SerializeField]
@@ -81,7 +80,6 @@ public class GameplayDemo : MonoBehaviour
             else btSpHint.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfHint() + ""; 
         }
 
-
         if (BoardDemo.levelData.Level < 5) btSpMagicWand.transform.parent.GetChild(1).gameObject.SetActive(true);
         else if (BoardDemo.levelData.Level == 5)
         {
@@ -118,7 +116,8 @@ public class GameplayDemo : MonoBehaviour
             TutorialDemo.instance.tutorialPanel.transform.GetChild(4).localPosition = new Vector3
                 (temp.x, btSpShuffle.transform.parent.parent.parent.localPosition.y + 105 + 185, temp.z);
         }
-        else {
+        else 
+        {
             if (PlayerPrefsDemo.instance._GetNumOfShuffle() == 0) btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = "+";
             else btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfShuffle() + "";
         }
@@ -281,7 +280,13 @@ public class GameplayDemo : MonoBehaviour
     public void _Replay()
     {
         PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickButtonClip);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        ACEPlay.Bridge.BridgeController.instance.levelCountShowAdsCurrent++;
+        UnityEvent e = new UnityEvent();
+        e.AddListener(() =>
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        });
+        ACEPlay.Bridge.BridgeController.instance.ShowIntersitialAd(e);
     }
 
     public void _CompleteLevel()
@@ -302,11 +307,17 @@ public class GameplayDemo : MonoBehaviour
     public void _GoToNextLevel()
     {
         PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickButtonClip);
-        if (BoardDemo.levelData.Level != Resources.LoadAll("Levels").Length)
-        {
-            BoardDemo.levelData.Level++;
-            LevelDemo.instance._PlayLevel(BoardDemo.levelData.Level);
-        }
+        ACEPlay.Bridge.BridgeController.instance.levelCountShowAdsCurrent++;
+        UnityEvent e = new UnityEvent();
+        e.AddListener(() =>
+        { 
+            if (BoardDemo.levelData.Level < Resources.LoadAll("Levels").Length)
+            {
+                BoardDemo.levelData.Level++;
+                LevelDemo.instance._PlayLevel(BoardDemo.levelData.Level);
+            }
+        });
+        ACEPlay.Bridge.BridgeController.instance.ShowIntersitialAd(e);
     }
 
     #endregion
@@ -317,7 +328,7 @@ public class GameplayDemo : MonoBehaviour
         if (BoardDemo.levelData.Level == 1)
         {
             TutorialDemo.instance.finger.SetActive(false);
-            DOTween.Kill(TutorialDemo.instance.finger);
+            TutorialDemo.fingerSequence.Kill();
         }
         Color color = new Color32(0, 220, 255, 255); //blue
         currentTile.DOComplete();
@@ -394,13 +405,13 @@ public class GameplayDemo : MonoBehaviour
                             TutorialDemo.order++;
                             if (TutorialDemo.order == 4)
                             {
-                                TutorialDemo.instance.connectFailTutorial.transform.GetChild(0).gameObject.SetActive(true);
-                                StartCoroutine(SwitchConnectFailTut(TutorialDemo.instance.connectFailTutorial.transform.GetChild(0).gameObject));
+                                TutorialDemo.instance.notePanel.transform.GetChild(0).gameObject.SetActive(true);
+                                StartCoroutine(SwitchConnectFailTut(TutorialDemo.instance.notePanel.transform.GetChild(0).gameObject));
                             }
                             else if (TutorialDemo.order == 5)
                             {
-                                TutorialDemo.instance.connectFailTutorial.transform.GetChild(1).gameObject.SetActive(true);
-                                StartCoroutine(SwitchConnectFailTut(TutorialDemo.instance.connectFailTutorial.transform.GetChild(1).gameObject));
+                                TutorialDemo.instance.notePanel.transform.GetChild(1).gameObject.SetActive(true);
+                                StartCoroutine(SwitchConnectFailTut(TutorialDemo.instance.notePanel.transform.GetChild(1).gameObject));
                             }
                         }
                         //Debug.Log("Khong the ket noi");
@@ -540,7 +551,6 @@ public class GameplayDemo : MonoBehaviour
             PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickButtonClip);
             _BuySupporter(0);
         }
-
     }
 
     public void _SupporterMagicWand() //Đũa thần: 2 kết quả hoàn thành
@@ -643,7 +653,6 @@ public class GameplayDemo : MonoBehaviour
                 if (PlayerPrefsDemo.instance._GetNumOfShuffle() == 0) btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = "+";
                 else btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfShuffle() + "";
             }
-            PlayerPrefsDemo.instance.audioSource.PlayOneShot(shuffleClip);
             _ResetTileState();
             isCoupled = true;
             foreach (var tile in BoardDemo.buttonList)
@@ -704,7 +713,7 @@ public class GameplayDemo : MonoBehaviour
             }
             else
             {
-                TutorialDemo.instance.connectFailTutorial.transform.GetChild(2).gameObject.SetActive(false);
+                TutorialDemo.instance.notePanel.transform.GetChild(2).gameObject.SetActive(false);
             }
         }
         yield return new WaitForSeconds(0.4f);
@@ -721,6 +730,10 @@ public class GameplayDemo : MonoBehaviour
     IEnumerator SwitchConnectFailTut(GameObject connectFailPanel)
     {
         yield return new WaitForSeconds(2);
+        foreach (var tile in BoardDemo.buttonList)
+        {
+            tile.GetChild(0).GetComponent<Image>().color = Color.white;
+        }
         TutorialDemo.instance._SwitchTut(connectFailPanel);
     }
     #endregion

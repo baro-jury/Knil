@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.Events;
 
 public class TimeDemo : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class TimeDemo : MonoBehaviour
     public Transform iconClock;
 
     private float oldTime;
-    private bool isFreezed;
+    private bool isFreezed = false;
     [SerializeField]
     private Text timeText, timeTextComplete;
 
@@ -39,37 +40,32 @@ public class TimeDemo : MonoBehaviour
     {
         if (!isFreezed)
         {
-            _Timer();
-        }
-    }
-
-    void _Timer()
-    {
-        if (time > 0)
-        {
-            time -= Time.deltaTime;
-            oldTime = time;
-            if (muchTimeLeft && time <= 15)
+            if (time > 0)
             {
-                muchTimeLeft = false;
-                PlayerPrefsDemo.instance.timeWarningSource.Play();
-                _TweenTimeWarn();
+                time -= Time.deltaTime;
+                oldTime = time;
+                if (muchTimeLeft && time <= 15)
+                {
+                    muchTimeLeft = false;
+                    PlayerPrefsDemo.instance.timeWarningSource.Play();
+                    _TweenTimeWarn();
+                }
             }
-        }
-        else
-        {
-            _SetTime(0, 0);
-            muchTimeLeft = true;
-            PlayerPrefsDemo.instance.timeWarningSource.Stop();
-            foreach (var tile in BoardDemo.buttonList)
+            else
             {
-                DOTween.Kill(tile);
-                tile.localScale = Vector3.one;
+                _SetTime(0, 0);
+                muchTimeLeft = true;
+                PlayerPrefsDemo.instance.timeWarningSource.Stop();
+                foreach (var tile in BoardDemo.buttonList)
+                {
+                    DOTween.Kill(tile);
+                    tile.localScale = Vector3.one;
+                }
+                LineDemo.instance._EraseLine();
+                GameplayDemo.instance._TimeOut();
             }
-            LineDemo.instance._EraseLine();
-            GameplayDemo.instance._TimeOut();
+            _DisplayTime(oldTime);
         }
-        _DisplayTime(oldTime);
     }
 
     public void _SetTime(float t, int plus)
