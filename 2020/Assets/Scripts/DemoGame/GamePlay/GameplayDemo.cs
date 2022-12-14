@@ -15,7 +15,7 @@ public class GameplayDemo : MonoBehaviour
 
     public GameObject pause, shop;
     public AudioClip clickButtonClip, matchTileClip, switchClip, passLevelClip;
-    public AudioClip timeWizardClip, hintClip, magicWandClip, freezeTimeClip, shuffleClip;
+    public AudioClip extraTimeClip, hintClip, magicWandClip, freezeTimeClip, shuffleClip;
     public Transform startCoinAnimPos, endCoinAnimPos;
     public Button btSpHint, btSpMagicWand, btSpFreeze, btSpShuffle;
 
@@ -123,11 +123,24 @@ public class GameplayDemo : MonoBehaviour
         }
     }
 
-    #region Ingame
-    public void _Pause()
+    void _PauseTime()
     {
         PlayerPrefsDemo.instance.audioSource.Pause();
         PlayerPrefsDemo.instance.timeWarningSource.Pause();
+        Time.timeScale = 0;
+    }
+
+    void _UnpauseTime()
+    {
+        PlayerPrefsDemo.instance.audioSource.UnPause();
+        PlayerPrefsDemo.instance.timeWarningSource.UnPause();
+        Time.timeScale = 1;
+    }
+
+    #region Ingame
+    public void _Pause()
+    {
+        _PauseTime();
         PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickButtonClip);
         settingOnButton.interactable = false;
         pausePanel.SetActive(true);
@@ -149,14 +162,11 @@ public class GameplayDemo : MonoBehaviour
                 pausePanel.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
                 settingOffButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
             });
-
-        Time.timeScale = 0;
     }
 
     public void _Resume()
     {
-        PlayerPrefsDemo.instance.audioSource.UnPause();
-        PlayerPrefsDemo.instance.timeWarningSource.UnPause();
+        _UnpauseTime();
         PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickButtonClip);
         settingOffButton.interactable = false;
         pausePanel.GetComponent<Button>().interactable = false;
@@ -174,8 +184,6 @@ public class GameplayDemo : MonoBehaviour
                 pausePanel.SetActive(false);
                 settingOnButton.interactable = true;
             });
-
-        Time.timeScale = 1;
     }
 
     public void _TurnOffSound()
@@ -214,9 +222,9 @@ public class GameplayDemo : MonoBehaviour
     public void _OpenShopCoins()
     {
         PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickButtonClip);
-        Time.timeScale = 0;
+        _PauseTime();
         shop.transform.GetChild(4).gameObject.SetActive(true);
-        shop.transform.GetChild(4).GetChild(0).GetChild(2).GetComponent<Button>().onClick.AddListener(delegate { Time.timeScale = 1; });
+        shop.transform.GetChild(4).GetChild(0).GetChild(2).GetComponent<Button>().onClick.AddListener(delegate { _UnpauseTime(); });
     }
     public void _UpdateCoin()
     {
@@ -225,7 +233,7 @@ public class GameplayDemo : MonoBehaviour
 
     public void _TimeOut()
     {
-        //Time.timeScale = 0;
+        Time.timeScale = 0;
         PlayerPrefsDemo.instance.audioSource.Stop();
         timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.one;
         timeOutPanel.SetActive(true);
@@ -238,12 +246,14 @@ public class GameplayDemo : MonoBehaviour
         if (PlayerPrefsDemo.instance._GetCoinsInPossession() >= numberOfRescue * 100)
         {
             PlayerPrefsDemo.instance._SetCoinsInPossession((int)(numberOfRescue * 100), false);
-            TimeDemo.instance._ResetIconState();
+            TimeDemo.instance._ResetClockState();
             TimeDemo.instance._SetTime(60, 1);
             coins.text = PlayerPrefsDemo.instance._GetCoinsInPossession() + "";
             timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
             {
+                PlayerPrefsDemo.instance.audioSource.PlayOneShot(extraTimeClip);
+                TimeDemo.instance._TweenExtraTime();
                 timeOutPanel.SetActive(false);
                 numberOfRescue += 0.5f;
                 if (numberOfRescue > 2) numberOfRescue = 2;
@@ -258,18 +268,19 @@ public class GameplayDemo : MonoBehaviour
 
     }
 
-    public void _WatchAds()
+    public void _WatchAdsToGetTime()
     {
         PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickButtonClip);
         UnityEvent eReward = new UnityEvent();
         eReward.AddListener(() =>
         {
             // luồng game sau khi tắt quảng cáo ( tặng thưởng cho user )
-            TimeDemo.instance._ResetIconState();
+            TimeDemo.instance._ResetClockState();
             TimeDemo.instance._SetTime(15, 1);
             timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(() =>
             {
+                PlayerPrefsDemo.instance.audioSource.PlayOneShot(extraTimeClip);
                 timeOutPanel.SetActive(false);
             });
             Time.timeScale = 1;
@@ -431,7 +442,7 @@ public class GameplayDemo : MonoBehaviour
         }
     }
 
-    void _ResetTileState()
+    public void _ResetTileState()
     {
         foreach (var tile in BoardDemo.buttonList)
         {
@@ -630,7 +641,7 @@ public class GameplayDemo : MonoBehaviour
                 .OnComplete(delegate
                 {
                     TimeDemo.instance._FreezeTime(false);
-                    if (!TimeDemo.instance.muchTimeLeft) TimeDemo.instance._TweenTimeWarn();
+                    if (!TimeDemo.muchTimeLeft) TimeDemo.instance._TweenTimeWarn();
                     PlayerPrefsDemo.instance.timeWarningSource.UnPause();
                     btSpFreeze.interactable = true;
                 });

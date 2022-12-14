@@ -25,7 +25,7 @@ public class BoardDemo : MonoBehaviour
     [SerializeField]
     private GameObject FirstAnchor, LastAnchor, TheRock;
     [SerializeField]
-    private Image oneProgress, twoProgresses, NoteRearrange;
+    private Image twoProgresses, NoteRearrange;
 
     void _MakeInstance()
     {

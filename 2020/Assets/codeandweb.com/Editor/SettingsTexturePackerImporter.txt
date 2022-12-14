@@ -1,17 +1,8 @@
 version: 2
 tpsheetFileNames:
 - Assets/codeandweb.com/Example/SpriteSheet/sprites.tpsheet
-- Assets/TexturePacker/icons.tpsheet
-- Assets/TexturePacker/icons_1.tpsheet
-- Assets/TexturePacker/icons_2.tpsheet
 textureFileNames:
 - Assets/codeandweb.com/Example/SpriteSheet/sprites.png
-- Assets/TexturePacker/icons.png
-- Assets/TexturePacker/icons_1.png
-- Assets/TexturePacker/icons_2.png
 normalmapFileNames:
 - Assets/codeandweb.com/Example/SpriteSheet/sprites_n.png
-- 
-- 
-- 
 enableDebugOutput: 0

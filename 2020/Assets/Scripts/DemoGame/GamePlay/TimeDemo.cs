@@ -8,8 +8,8 @@ using UnityEngine.Events;
 public class TimeDemo : MonoBehaviour
 {
     public static TimeDemo instance;
+    public static bool muchTimeLeft;
     public float time;
-    public bool muchTimeLeft;
     public Transform iconClock;
 
     private float oldTime;
@@ -56,11 +56,8 @@ public class TimeDemo : MonoBehaviour
                 _SetTime(0, 0);
                 muchTimeLeft = true;
                 PlayerPrefsDemo.instance.timeWarningSource.Stop();
-                foreach (var tile in BoardDemo.buttonList)
-                {
-                    DOTween.Kill(tile);
-                    tile.localScale = Vector3.one;
-                }
+                GameplayDemo.instance._ResetTileState();
+                _ResetClockState();
                 LineDemo.instance._EraseLine();
                 GameplayDemo.instance._TimeOut();
             }
@@ -112,6 +109,17 @@ public class TimeDemo : MonoBehaviour
         isFreezed = freeze;
     }
 
+    public void _TweenExtraTime()
+    {
+        iconClock.GetComponent<Image>().DOColor(Color.yellow, 0.5f).SetEase(Ease.InOutQuad);
+        iconClock.DOScale(new Vector3(1.2f, 1.2f, 1), 0.75f).SetEase(Ease.OutBounce)
+            .OnComplete(delegate
+            {
+                iconClock.DOScale(Vector3.one, 0.5f).SetEase(Ease.InOutQuad).SetDelay(0.75f);
+                iconClock.GetComponent<Image>().DOColor(Color.white, 0.5f).SetEase(Ease.InOutQuad).SetDelay(0.75f);
+            });
+    }
+
     public void _TweenTimeWarn()
     {
         iconClock.DOScale(new Vector3(1.2f, 1.2f, 1), 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
@@ -119,7 +127,7 @@ public class TimeDemo : MonoBehaviour
         iconClock.GetComponent<Image>().DOColor(Color.red, 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
     }
 
-    public void _ResetIconState()
+    public void _ResetClockState()
     {
         DOTween.Kill(iconClock);
         DOTween.Kill(iconClock.GetComponent<Image>());

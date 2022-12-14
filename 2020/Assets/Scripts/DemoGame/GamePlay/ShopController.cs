@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class ShopController : MonoBehaviour
 {
+    public AudioClip buyCoinsClip;
+
     [SerializeField]
     private int id, coin;
     [SerializeField]
@@ -75,6 +77,7 @@ public class ShopController : MonoBehaviour
     
     void _BuySuccessfully()
     {
+        PlayerPrefsDemo.instance.audioSource.PlayOneShot(buyCoinsClip);
         GameplayDemo.instance.shop.transform.GetChild(4).gameObject.SetActive(false);
         var item = Instantiate(coinAnim, GameplayDemo.instance.startCoinAnimPos.position, Quaternion.identity, GameplayDemo.instance.shop.transform);
         Animator anim = item.transform.GetComponent<Animator>();
