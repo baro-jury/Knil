@@ -82,12 +82,16 @@ public class ShopController : MonoBehaviour
         var item = Instantiate(coinAnim, GameplayDemo.instance.startCoinAnimPos.position, Quaternion.identity, GameplayDemo.instance.shop.transform);
         Animator anim = item.transform.GetComponent<Animator>();
         item.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = coin + "";
+        item.transform.DOScale(new Vector3(19.2f, 19.2f, 96) * 1.5f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        item.transform.GetChild(1).DOScale(new Vector3(0.1f, 0.1f, 1) / 1.5f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
         item.transform.GetChild(0).GetComponent<Image>().DOFade(.5f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
             .OnComplete(delegate
             {
                 anim.Play("Base Layer.1", 0, 0);
-                item.transform.GetComponent<Transform>().DOMove(GameplayDemo.instance.endCoinAnimPos.position, 1f).SetEase(Ease.InOutQuad).SetUpdate(true).SetDelay(.5f);
-                item.transform.GetChild(0).GetComponent<Image>().DOFade(0f, 1f).SetEase(Ease.InOutQuad).SetUpdate(true).SetDelay(.5f)
+                item.transform.DOScale(new Vector3(19.2f, 19.2f, 96), .5f).SetEase(Ease.OutBounce).SetUpdate(true);
+                item.transform.GetChild(1).DOScale(new Vector3(0.1f, 0.1f, 1), .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                item.transform.GetComponent<Transform>().DOMove(GameplayDemo.instance.endCoinAnimPos.position, .75f).SetEase(Ease.InOutQuad).SetUpdate(true).SetDelay(.5f);
+                item.transform.GetChild(0).GetComponent<Image>().DOFade(0f, .75f).SetEase(Ease.InOutQuad).SetUpdate(true).SetDelay(.5f)
                 .OnComplete(delegate 
                 {
                     Destroy(item);
@@ -95,7 +99,5 @@ public class ShopController : MonoBehaviour
                     GameplayDemo.instance._UpdateCoin();
                 });
             });
-        
-        
     }
 }

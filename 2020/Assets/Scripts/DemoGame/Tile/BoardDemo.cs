@@ -56,7 +56,7 @@ public class BoardDemo : MonoBehaviour
 
     private void Update()
     {
-        if (process > 1 && twoProgresses.fillAmount < 1) twoProgresses.fillAmount += 2 * Time.deltaTime;
+        if (process > 1 && twoProgresses.fillAmount < 1) twoProgresses.fillAmount += 2.1f * Time.deltaTime;
         if (!isConnectable && NoteRearrange.fillAmount < 1)
         {
             NoteRearrange.gameObject.SetActive(true);

@@ -235,9 +235,9 @@ public class GameplayDemo : MonoBehaviour
     {
         Time.timeScale = 0;
         PlayerPrefsDemo.instance.audioSource.Stop();
-        timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.one;
+        PlayerPrefsDemo.instance.timeWarningSource.Stop();
         timeOutPanel.SetActive(true);
-        //timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .15f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        timeOutPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .2f).SetEase(Ease.InOutQuad).SetUpdate(true);
     }
 
     public void _BuyMoreTime()
@@ -304,10 +304,11 @@ public class GameplayDemo : MonoBehaviour
     {
         Time.timeScale = 0;
         PlayerPrefsDemo.instance.audioSource.Stop();
+        PlayerPrefsDemo.instance.timeWarningSource.Stop();
         PlayerPrefsDemo.instance.audioSource.PlayOneShot(passLevelClip);
-        winPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
+        //winPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
         winPanel.SetActive(true);
-        winPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .25f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        winPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .2f).SetEase(Ease.InOutQuad).SetUpdate(true);
         if (BoardDemo.levelData.Level % 10 == 0)
         {
             PlayerPrefsDemo.instance._SetCoinsInPossession(250, true);

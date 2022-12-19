@@ -51,13 +51,12 @@ public class TimeDemo : MonoBehaviour
                     _TweenTimeWarn();
                 }
             }
-            else
+            else if (!muchTimeLeft && time <= 0)
             {
                 _SetTime(0, 0);
                 muchTimeLeft = true;
-                PlayerPrefsDemo.instance.timeWarningSource.Stop();
                 GameplayDemo.instance._ResetTileState();
-                _ResetClockState();
+                //_ResetClockState();
                 LineDemo.instance._EraseLine();
                 GameplayDemo.instance._TimeOut();
             }
@@ -83,7 +82,7 @@ public class TimeDemo : MonoBehaviour
             oldTime -= t;
         }
     }
-    
+
     void _DisplayTime(float realTime)
     {
         if (oldTime >= realTime)
@@ -97,7 +96,7 @@ public class TimeDemo : MonoBehaviour
     {
         float minutes = Mathf.FloorToInt(timeToDisplay / 60);
         float seconds = Mathf.FloorToInt(timeToDisplay % 60);
-        if(minutes >= 0 && seconds >= 0)
+        if (minutes >= 0 && seconds >= 0)
         {
             timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
             timeTextComplete.text = string.Format("{0:00}:{1:00}", minutes, seconds);
@@ -111,20 +110,20 @@ public class TimeDemo : MonoBehaviour
 
     public void _TweenExtraTime()
     {
-        iconClock.GetComponent<Image>().DOColor(Color.yellow, 0.5f).SetEase(Ease.InOutQuad);
-        iconClock.DOScale(new Vector3(1.2f, 1.2f, 1), 0.75f).SetEase(Ease.OutBounce)
+        iconClock.GetComponent<Image>().DOColor(Color.yellow, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        iconClock.DOScale(new Vector3(1.2f, 1.2f, 1), 0.75f).SetEase(Ease.OutBounce).SetUpdate(true)
             .OnComplete(delegate
             {
-                iconClock.DOScale(Vector3.one, 0.5f).SetEase(Ease.InOutQuad).SetDelay(0.75f);
-                iconClock.GetComponent<Image>().DOColor(Color.white, 0.5f).SetEase(Ease.InOutQuad).SetDelay(0.75f);
+                iconClock.DOScale(Vector3.one, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true).SetDelay(0.75f);
+                iconClock.GetComponent<Image>().DOColor(Color.white, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true).SetDelay(0.75f);
             });
     }
 
     public void _TweenTimeWarn()
     {
-        iconClock.DOScale(new Vector3(1.2f, 1.2f, 1), 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
-        iconClock.DORotate(new Vector3(0, 0, -20), 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
-        iconClock.GetComponent<Image>().DOColor(Color.red, 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
+        iconClock.DOScale(new Vector3(1.2f, 1.2f, 1), 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true).SetLoops(-1, LoopType.Yoyo);
+        iconClock.DORotate(new Vector3(0, 0, -20), 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true).SetLoops(-1, LoopType.Yoyo);
+        iconClock.GetComponent<Image>().DOColor(Color.red, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true).SetLoops(-1, LoopType.Yoyo);
     }
 
     public void _ResetClockState()
