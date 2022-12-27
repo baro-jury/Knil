@@ -237,8 +237,8 @@ public class SetUpMap : MonoBehaviour
         indexShape = 0;
         if (editCreatedLv.isOn)
         {
-            var temp = Resources.Load("Levels/Level_" + createdLv.text) as TextAsset;
-            //var temp = Resources.Load("demo") as TextAsset;
+            //var temp = Resources.Load("Levels/Level_" + createdLv.text) as TextAsset;
+            var temp = Resources.Load("demo") as TextAsset;
             levelData = JsonConvert.DeserializeObject<LevelData>(temp.text);
             time.text = levelData.Time[0] + "";
             timestampFor2Star.text = levelData.Time[2] + "";
@@ -568,7 +568,6 @@ public class SetUpMap : MonoBehaviour
             }
         }
 
-
         _EnableSwitchShape();
     }
 
@@ -603,30 +602,45 @@ public class SetUpMap : MonoBehaviour
     {
         int oldRow = matrix.GetLength(0);
         int oldCol = matrix.GetLength(1);
-        string[,] temp = new string[oldCol, oldRow];
-        if (rotateRight)
+        string[,] temp;
+        if (oldRow > 9)
         {
-            for (int c = 0; c < oldCol; c++)
+            temp = new string[oldRow, oldCol];
+            for (int r = 0; r < oldRow; r++)
             {
-                for (int r = 0; r < oldRow; r++)
+                for (int c = 0; c < oldCol; c++)
                 {
-                    temp[c, r] = matrix[oldRow - 1 - r, c];
+                    temp[r, c] = matrix[oldRow - 1 - r, oldCol - 1 - c];
                 }
             }
         }
         else
         {
-            for (int c = 0; c < oldCol; c++)
+            temp = new string[oldCol, oldRow];
+            if (rotateRight)
             {
-                for (int r = 0; r < oldRow; r++)
+                for (int c = 0; c < oldCol; c++)
                 {
-                    temp[c, r] = matrix[r, oldCol - 1 - c];
+                    for (int r = 0; r < oldRow; r++)
+                    {
+                        temp[c, r] = matrix[oldRow - 1 - r, c];
+                    }
                 }
             }
+            else
+            {
+                for (int c = 0; c < oldCol; c++)
+                {
+                    for (int r = 0; r < oldRow; r++)
+                    {
+                        temp[c, r] = matrix[r, oldCol - 1 - c];
+                    }
+                }
+            }
+            row.text = oldCol + "";
+            column.text = oldRow + "";
         }
         matrix = temp;
-        row.text = oldCol + "";
-        column.text = oldRow + "";
         _EditDataMap();
         _GenerateMap(dataMap);
     }
@@ -645,7 +659,6 @@ public class SetUpMap : MonoBehaviour
 
     void _StoreShapes(ProcessData data)
     {
-        //string[,] shape = data.Matrix;
         string[,] shape = new string[data.Row, data.Column];
         for (int r = 0; r < data.Row; r++)
         {
@@ -750,7 +763,6 @@ public class SetUpMap : MonoBehaviour
         {
             Debug.Log("Chỉnh tổng ô về số chẵn đi đã !!!");
         }
-
     }
 
     void _GoToPreviousProcess()
@@ -800,8 +812,8 @@ public class SetUpMap : MonoBehaviour
                 Debug.Log("Level " + levelData.Level + " - " + "Map " + (map.IndexOf(item) + 1) + " - " + item.TotalTile + " tiles");
             }
             string json = JsonConvert.SerializeObject(levelData);
-            File.WriteAllText(Application.dataPath + "/Resources/Levels/Level_" + levelData.Level + ".json", json);
-            //File.WriteAllText(Application.dataPath + "/Resources/demo.json", json);
+            //File.WriteAllText(Application.dataPath + "/Resources/Levels/Level_" + levelData.Level + ".json", json);
+            File.WriteAllText(Application.dataPath + "/Resources/demo.json", json);
 
             Debug.Log("Done");
         }

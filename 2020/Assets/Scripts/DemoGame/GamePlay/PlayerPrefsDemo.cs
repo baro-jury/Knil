@@ -9,6 +9,7 @@ public class PlayerPrefsDemo : MonoBehaviour
     public static PlayerPrefsDemo instance;
     public AudioSource audioSource;
     public AudioSource musicSource;
+    public AudioSource supporterSource;
     public AudioSource timeWarningSource;
 
     private const string PROGRESS = "Progress";

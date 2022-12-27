@@ -329,14 +329,14 @@ public class BoardDemo : MonoBehaviour
     #region Sắp xếp Tiles
     public void _RearrangeTiles()
     {
-        PlayerPrefsDemo.instance.audioSource.PlayOneShot(GameplayDemo.instance.shuffleClip);
+        PlayerPrefsDemo.instance.supporterSource.PlayOneShot(GameplayDemo.instance.shuffleClip);
         GameplayDemo.instance._EnableSupporter(false);
         _EnableTile(false);
         List<int> source = new List<int>();
         List<Transform> trsfTiles = new List<Transform>();
         List<Vector3> posTiles = new List<Vector3>();
         List<(int, int)> indexTiles = new List<(int, int)>();
-
+        //===========================================
         foreach (var item in buttonListWithoutBlocker)
         {
             source.Add(buttonListWithoutBlocker.FindIndex(x => x == item));
@@ -346,7 +346,7 @@ public class BoardDemo : MonoBehaviour
         }
         foreach (var item in trsfTiles)
         {
-            item.DOLocalMove(Vector3.zero, 0.45f).SetEase(Ease.InBack).SetUpdate(true);
+            item.DOLocalMove(Vector3.zero, 0.45f).SetEase(Ease.InBack);
         }
         _MakeConnectableCouple(source, trsfTiles, posTiles, indexTiles, 0.45f);
         source = Shuffle(source.Count);
@@ -358,11 +358,11 @@ public class BoardDemo : MonoBehaviour
             matrix[indexTiles[source[i]].Item1, indexTiles[source[i]].Item2] = trsfTiles[i].GetComponent<TileController>().Id + "";
             if (i < source.Count - 1)
             {
-                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.45f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.45f);
+                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.45f).SetEase(Ease.OutBack).SetDelay(0.45f);
             }
             else
             {
-                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.45f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.45f)
+                trsfTiles[i].DOLocalMove(posTiles[source[i]], 0.45f).SetEase(Ease.OutBack).SetDelay(0.45f)
                     .OnComplete(delegate { GameplayDemo.instance._EnableSupporter(true); _EnableTile(true); });
             }
         }
@@ -404,9 +404,9 @@ public class BoardDemo : MonoBehaviour
             }
         }
     arrange:
-        tile1.DOLocalMove(tilePos1, 0.45f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(delay);
+        tile1.DOLocalMove(tilePos1, 0.45f).SetEase(Ease.OutBack).SetDelay(delay);
         posTiles.Remove(tilePos1);
-        tile2.DOLocalMove(tilePos2, 0.45f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(delay);
+        tile2.DOLocalMove(tilePos2, 0.45f).SetEase(Ease.OutBack).SetDelay(delay);
         posTiles.Remove(tilePos2);
 
         tile1.GetComponent<TileController>().Index = index1;

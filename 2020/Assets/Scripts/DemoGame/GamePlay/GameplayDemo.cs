@@ -125,14 +125,14 @@ public class GameplayDemo : MonoBehaviour
 
     void _PauseTime()
     {
-        PlayerPrefsDemo.instance.audioSource.Pause();
+        PlayerPrefsDemo.instance.supporterSource.Pause();
         PlayerPrefsDemo.instance.timeWarningSource.Pause();
         Time.timeScale = 0;
     }
 
     void _UnpauseTime()
     {
-        PlayerPrefsDemo.instance.audioSource.UnPause();
+        PlayerPrefsDemo.instance.supporterSource.UnPause();
         PlayerPrefsDemo.instance.timeWarningSource.UnPause();
         Time.timeScale = 1;
     }
@@ -519,7 +519,7 @@ public class GameplayDemo : MonoBehaviour
                 if (PlayerPrefsDemo.instance._GetNumOfHint() == 0) btSpHint.transform.GetChild(0).GetComponent<Text>().text = "+";
                 else btSpHint.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfHint() + "";
             }
-            PlayerPrefsDemo.instance.audioSource.PlayOneShot(hintClip);
+            PlayerPrefsDemo.instance.supporterSource.PlayOneShot(hintClip);
             _ResetTileState();
 
             while (!isHinted)
@@ -554,7 +554,7 @@ public class GameplayDemo : MonoBehaviour
             {
                 if (i == 0 || i == n - 1)
                 {
-                    points[i].DOScale(new Vector3(.8f, .8f, .8f), .5f).SetEase(Ease.InOutQuad).SetUpdate(true).SetLoops(-1, LoopType.Yoyo);
+                    points[i].DOScale(new Vector3(.8f, .8f, .8f), .5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
                 }
             }
         }
@@ -575,7 +575,7 @@ public class GameplayDemo : MonoBehaviour
                 if (PlayerPrefsDemo.instance._GetNumOfMagicWand() == 0) btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = "+";
                 else btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfMagicWand() + "";
             }
-            PlayerPrefsDemo.instance.audioSource.PlayOneShot(magicWandClip);
+            PlayerPrefsDemo.instance.supporterSource.PlayOneShot(magicWandClip);
             Time.timeScale = 1;
             isCoupled = true;
             foreach (var tile in BoardDemo.buttonList)
@@ -625,7 +625,7 @@ public class GameplayDemo : MonoBehaviour
                 if (PlayerPrefsDemo.instance._GetNumOfFreezeTime() == 0) btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = "+";
                 else btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfFreezeTime() + "";
             }
-            PlayerPrefsDemo.instance.audioSource.PlayOneShot(freezeTimeClip);
+            PlayerPrefsDemo.instance.supporterSource.PlayOneShot(freezeTimeClip);
             Time.timeScale = 1;
             Color ice = new Color32(0, 221, 255, 255);
             TimeDemo.instance._FreezeTime(true);

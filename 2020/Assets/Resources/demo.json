@@ -7,7 +7,7 @@
         {
             "MinID": 1,
             "MaxID": 12,
-            "TotalTile": 48,
+            "TotalTile": 20,
             "Shuffle": false,
             "Row": 5,
             "Column": 4,
