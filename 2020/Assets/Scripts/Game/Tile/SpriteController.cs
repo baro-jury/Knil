@@ -10,21 +10,15 @@ public class SpriteController : MonoBehaviour
     public static Dictionary<int, List<Sprite>> spriteListsDict = new Dictionary<int, List<Sprite>>();
 
     public List<Sprite> Icon;
-    public List<Sprite> Alphabet;
-    public List<Sprite> Arts;
-    public List<Sprite> Cakes;
-    public List<Sprite> Cooking;
     public List<Sprite> Desserts;
     public List<Sprite> Dolls;
     public List<Sprite> Food_Drink;
+    public List<Sprite> Hobbies;
     public List<Sprite> Home;
-    public List<Sprite> Jewels;
-    public List<Sprite> Outdoor_Activities;
-    public List<Sprite> School_Supplies;
+    public List<Sprite> Mishmashes;
+    public List<Sprite> Signs;
     public List<Sprite> Toys;
-    public List<Sprite> Traffic;
     public List<Sprite> Traveller;
-    public List<Sprite> Vegetables;
     public Sprite blank, blocker, pedestal;
 
     private int idElement = 1;
@@ -46,21 +40,15 @@ public class SpriteController : MonoBehaviour
 
     void _AddListSpr()
     {
-        spriteListsDict.Add(spriteListsDict.Count, Alphabet);
-        spriteListsDict.Add(spriteListsDict.Count, Arts);
-        spriteListsDict.Add(spriteListsDict.Count, Cakes);
-        spriteListsDict.Add(spriteListsDict.Count, Cooking);
         spriteListsDict.Add(spriteListsDict.Count, Desserts);
         spriteListsDict.Add(spriteListsDict.Count, Dolls);
         spriteListsDict.Add(spriteListsDict.Count, Food_Drink);
+        spriteListsDict.Add(spriteListsDict.Count, Hobbies);
         spriteListsDict.Add(spriteListsDict.Count, Home);
-        spriteListsDict.Add(spriteListsDict.Count, Jewels);
-        spriteListsDict.Add(spriteListsDict.Count, Outdoor_Activities);
-        spriteListsDict.Add(spriteListsDict.Count, School_Supplies);
+        spriteListsDict.Add(spriteListsDict.Count, Mishmashes);
+        spriteListsDict.Add(spriteListsDict.Count, Signs);
         spriteListsDict.Add(spriteListsDict.Count, Toys);
-        spriteListsDict.Add(spriteListsDict.Count, Traffic);
         spriteListsDict.Add(spriteListsDict.Count, Traveller);
-        spriteListsDict.Add(spriteListsDict.Count, Vegetables);
     }
 
     void _CreateDictionary(List<Sprite> list)
@@ -76,11 +64,11 @@ public class SpriteController : MonoBehaviour
         idElement = 1;
     }
 
-    void _CreateDictionary(int indexTheme)
+    public void _CreateDictionary(int indexTheme)
     {
         Dictionary<string, Sprite> temp = new Dictionary<string, Sprite>();
         temp.Add("0", blocker);
-        foreach (Sprite sprite in spriteListsDict[indexTheme - 1])
+        foreach (Sprite sprite in spriteListsDict[(indexTheme - 1) % 9])
         {
             temp.Add(idElement.ToString(), sprite);
             idElement++;

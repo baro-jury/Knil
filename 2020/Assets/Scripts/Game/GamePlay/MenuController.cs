@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -12,9 +11,7 @@ public class MenuController : MonoBehaviour
     [SerializeField]
     private GameObject menuPanel, settingPanel, guidePanel;
     [SerializeField]
-    private Text stars, coins;
-    [SerializeField]
-    private TextMeshProUGUI level;
+    private Text stars, coins, level;
     [SerializeField]
     private AudioClip clickButtonClip, switchClip;
 

@@ -8,7 +8,7 @@ using UnityEngine.Events;
 public class TimeDemo : MonoBehaviour
 {
     public static TimeDemo instance;
-    public static bool muchTimeLeft;
+    public static bool muchTimeLeft, playingGame;
     public float time;
     public Transform iconClock;
 
@@ -33,12 +33,14 @@ public class TimeDemo : MonoBehaviour
     void Start()
     {
         muchTimeLeft = true;
+        playingGame = false;
+        _SetTime(BoardDemo.levelData.Time[0], 0);
         _ChangeTime(oldTime);
     }
 
     void Update()
     {
-        if (!isFreezed)
+        if (playingGame && !isFreezed)
         {
             if (time > 0)
             {
@@ -57,7 +59,7 @@ public class TimeDemo : MonoBehaviour
                 muchTimeLeft = true;
                 GameplayDemo.instance._ResetTileState();
                 //_ResetClockState();
-                LineDemo.instance._EraseLine();
+                LineController.instance._EraseLine();
                 GameplayDemo.instance._TimeOut();
             }
             _DisplayTime(oldTime);

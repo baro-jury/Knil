@@ -1,7 +1,6 @@
 ﻿using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,8 +20,8 @@ public class ShopController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = coin + "";
-        btBuy.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = money + "$";
+        transform.GetChild(1).GetComponent<Text>().text = coin + "";
+        btBuy.transform.GetChild(0).GetComponent<Text>().text = money + "$";
         btBuy.onClick.AddListener(delegate
         {
             _BuyCoinsInDemo();
@@ -80,7 +79,7 @@ public class ShopController : MonoBehaviour
         PlayerPrefsDemo.instance.audioSource.PlayOneShot(buyCoinsClip);
         GameplayDemo.instance.shop.transform.GetChild(4).gameObject.SetActive(false);
         var item = Instantiate(coinAnim, GameplayDemo.instance.startCoinAnimPos.position, Quaternion.identity, GameplayDemo.instance.shop.transform);
-        item.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = coin + "";
+        item.transform.GetChild(1).GetComponent<Text>().text = coin + "";
         item.transform.DOScale(new Vector3(96, 96, 96) * 1.5f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
         item.transform.GetChild(1).DOScale(new Vector3(0.02f, 0.02f, 1) / 1.5f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
         item.transform.GetChild(0).GetComponent<Image>().DOFade(.5f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true)

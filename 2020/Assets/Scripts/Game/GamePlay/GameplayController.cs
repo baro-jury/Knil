@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -148,10 +147,10 @@ public class GameplayController : MonoBehaviour
             {
                 settingOffButton.interactable = true;
                 pausePanel.GetComponent<Button>().interactable = true;
-                pausePanel.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
-                pausePanel.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
-                pausePanel.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
-                settingOffButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                pausePanel.transform.GetChild(0).GetChild(1).GetComponent<Text>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                pausePanel.transform.GetChild(1).GetChild(1).GetComponent<Text>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                pausePanel.transform.GetChild(2).GetChild(0).GetComponent<Text>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                settingOffButton.transform.GetChild(0).GetComponent<Text>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
                 PlayerPrefsController.instance.audioSource.Pause();
             });
 
@@ -165,10 +164,10 @@ public class GameplayController : MonoBehaviour
         PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
         settingOffButton.interactable = false;
         pausePanel.GetComponent<Button>().interactable = false;
-        pausePanel.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        pausePanel.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        pausePanel.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        settingOffButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(0).GetChild(1).GetComponent<Text>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(1).GetChild(1).GetComponent<Text>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(2).GetChild(0).GetComponent<Text>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        settingOffButton.transform.GetChild(0).GetComponent<Text>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
         pausePanel.transform.GetComponent<Image>().DOFade(0f, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
 
         settingOffButton.transform.DORotate(new Vector3(0, 0, 180), .5f).SetEase(Ease.InOutQuad).SetUpdate(true);

@@ -6,7 +6,7 @@
     "Process": [
         {
             "MinID": 1,
-            "MaxID": 86,
+            "MaxID": 15,
             "TotalTile": 36,
             "Shuffle": false,
             "Row": 7,

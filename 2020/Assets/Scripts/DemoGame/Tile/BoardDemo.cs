@@ -45,7 +45,6 @@ public class BoardDemo : MonoBehaviour
         //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelDemo.level) as TextAsset).text);
         //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("demo") as TextAsset).text);
 
-        TimeDemo.instance._SetTime(levelData.Time[0], 0);
         isConnectable = true;
         if (levelData.Process.Count == 2) twoProgresses.transform.parent.gameObject.SetActive(true);
         twoProgresses.type = Image.Type.Filled;
@@ -59,6 +58,7 @@ public class BoardDemo : MonoBehaviour
         if (process > 1 && twoProgresses.fillAmount < 1) twoProgresses.fillAmount += 2.1f * Time.deltaTime;
         if (!isConnectable && NoteRearrange.fillAmount < 1)
         {
+            NoteRearrange.transform.parent.gameObject.SetActive(true);
             NoteRearrange.gameObject.SetActive(true);
             NoteRearrange.fillOrigin = (int)Image.OriginHorizontal.Left;
             NoteRearrange.fillAmount += 2 * Time.deltaTime;
@@ -71,12 +71,14 @@ public class BoardDemo : MonoBehaviour
         else if (isConnectable && NoteRearrange.fillAmount == 0)
         {
             NoteRearrange.gameObject.SetActive(false);
+            NoteRearrange.transform.parent.gameObject.SetActive(false);
         }
     }
 
     #region Khởi tạo level
     void _InstantiateProcess(int orderNumber)
     {
+        SpriteController.instance._CreateDictionary(levelData.Theme);
         process = orderNumber;
         minId = levelData.Process[orderNumber - 1].MinID;
         maxId = levelData.Process[orderNumber - 1].MaxID;
@@ -404,9 +406,9 @@ public class BoardDemo : MonoBehaviour
             }
         }
     arrange:
-        tile1.DOLocalMove(tilePos1, 0.45f).SetEase(Ease.OutBack).SetDelay(delay);
+        tile1.DOLocalMove(tilePos1, 0.45f).SetEase(Ease.OutBack).SetDelay(delay).SetUpdate(true);
         posTiles.Remove(tilePos1);
-        tile2.DOLocalMove(tilePos2, 0.45f).SetEase(Ease.OutBack).SetDelay(delay);
+        tile2.DOLocalMove(tilePos2, 0.45f).SetEase(Ease.OutBack).SetDelay(delay).SetUpdate(true);
         posTiles.Remove(tilePos2);
 
         tile1.GetComponent<TileController>().Index = index1;

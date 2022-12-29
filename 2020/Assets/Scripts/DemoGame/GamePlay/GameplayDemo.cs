@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -25,9 +24,7 @@ public class GameplayDemo : MonoBehaviour
     private Transform tile;
 
     [SerializeField]
-    private Text coins, titleLv, titleComplete;
-    [SerializeField]
-    private TextMeshProUGUI lvComplete;
+    private Text coins, titleLv, lvComplete, contentComplete;
     [SerializeField]
     private GameObject pausePanel;
     [SerializeField]
@@ -53,18 +50,14 @@ public class GameplayDemo : MonoBehaviour
     void Start()
     {
         titleLv.text = "LEVEL " + BoardDemo.levelData.Level;
-        titleComplete.text = "LEVEL " + BoardDemo.levelData.Level;
+        lvComplete.text = "LEVEL " + BoardDemo.levelData.Level;
         pausePanel.transform.GetChild(0).GetChild(0).gameObject.SetActive(PlayerPrefsDemo.instance.audioSource.mute);
         pausePanel.transform.GetChild(1).GetChild(0).gameObject.SetActive(PlayerPrefsDemo.instance.musicSource.mute);
         coins.text = PlayerPrefsDemo.instance._GetCoinsInPossession() + "";
+        Time.timeScale = 0;
 
         Vector3 temp;
-        if (BoardDemo.levelData.Level == 1)
-        {
-            Time.timeScale = 1;
-            TimeDemo.instance._FreezeTime(true);
-        }
-        else Time.timeScale = 0;
+        if (BoardDemo.levelData.Level == 1) TimeDemo.instance._FreezeTime(true);
 
         if (BoardDemo.levelData.Level < 3) btSpHint.transform.parent.GetChild(1).gameObject.SetActive(true);
         else if (BoardDemo.levelData.Level == 3)
@@ -74,10 +67,10 @@ public class GameplayDemo : MonoBehaviour
             TutorialDemo.instance.tutorialPanel.transform.GetChild(1).localPosition = new Vector3
                 (temp.x, btSpHint.transform.parent.parent.parent.localPosition.y + 105 + 185, temp.z);
         }
-        else 
+        else
         {
             if (PlayerPrefsDemo.instance._GetNumOfHint() == 0) btSpHint.transform.GetChild(0).GetComponent<Text>().text = "+";
-            else btSpHint.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfHint() + ""; 
+            else btSpHint.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfHint() + "";
         }
 
         if (BoardDemo.levelData.Level < 5) btSpMagicWand.transform.parent.GetChild(1).gameObject.SetActive(true);
@@ -116,7 +109,7 @@ public class GameplayDemo : MonoBehaviour
             TutorialDemo.instance.tutorialPanel.transform.GetChild(4).localPosition = new Vector3
                 (temp.x, btSpShuffle.transform.parent.parent.parent.localPosition.y + 105 + 185, temp.z);
         }
-        else 
+        else
         {
             if (PlayerPrefsDemo.instance._GetNumOfShuffle() == 0) btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = "+";
             else btSpShuffle.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfShuffle() + "";
@@ -158,9 +151,9 @@ public class GameplayDemo : MonoBehaviour
             {
                 settingOffButton.interactable = true;
                 pausePanel.GetComponent<Button>().interactable = true;
-                pausePanel.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
-                pausePanel.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
-                settingOffButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                pausePanel.transform.GetChild(0).GetChild(1).GetComponent<Text>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                pausePanel.transform.GetChild(1).GetChild(1).GetComponent<Text>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                settingOffButton.transform.GetChild(0).GetComponent<Text>().DOFade(1f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
             });
     }
 
@@ -170,9 +163,9 @@ public class GameplayDemo : MonoBehaviour
         PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickButtonClip);
         settingOffButton.interactable = false;
         pausePanel.GetComponent<Button>().interactable = false;
-        pausePanel.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        pausePanel.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
-        settingOffButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(0).GetChild(1).GetComponent<Text>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        pausePanel.transform.GetChild(1).GetChild(1).GetComponent<Text>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        settingOffButton.transform.GetChild(0).GetComponent<Text>().DOFade(0f, 0.1f).SetEase(Ease.InOutQuad).SetUpdate(true);
         pausePanel.transform.GetComponent<Image>().DOFade(0f, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
 
         settingOffButton.transform.DORotate(new Vector3(0, 0, 180), .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
@@ -257,7 +250,7 @@ public class GameplayDemo : MonoBehaviour
                 timeOutPanel.SetActive(false);
                 numberOfRescue += 0.5f;
                 if (numberOfRescue > 2) numberOfRescue = 2;
-                timeOutPanel.transform.GetChild(0).GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().text = "PLAY      " + numberOfRescue * 100;
+                timeOutPanel.transform.GetChild(0).GetChild(3).GetChild(0).GetComponent<Text>().text = "PLAY      " + numberOfRescue * 100;
             });
             Time.timeScale = 1;
         }
@@ -312,7 +305,7 @@ public class GameplayDemo : MonoBehaviour
         if (BoardDemo.levelData.Level % 10 == 0)
         {
             PlayerPrefsDemo.instance._SetCoinsInPossession(250, true);
-            lvComplete.transform.GetChild(0).gameObject.SetActive(true);
+            contentComplete.transform.GetChild(0).gameObject.SetActive(true);
         }
     }
 
@@ -322,7 +315,7 @@ public class GameplayDemo : MonoBehaviour
         ACEPlay.Bridge.BridgeController.instance.levelCountShowAdsCurrent++;
         UnityEvent e = new UnityEvent();
         e.AddListener(() =>
-        { 
+        {
             if (BoardDemo.levelData.Level < Resources.LoadAll("Levels").Length)
             {
                 BoardDemo.levelData.Level++;
@@ -355,6 +348,7 @@ public class GameplayDemo : MonoBehaviour
             });
         }
         Time.timeScale = 1;
+        TimeDemo.playingGame = true;
         isCoupled = !isCoupled;
         if (!isCoupled)
         {
@@ -382,7 +376,7 @@ public class GameplayDemo : MonoBehaviour
                     //Debug.Log("Click khac tile khac ID");
                     foreach (var tile in BoardDemo.buttonList)
                     {
-                        if (tile != currentTile) 
+                        if (tile != currentTile)
                         {
                             tile.GetChild(0).GetComponent<Image>().DOKill();
                             tile.GetChild(0).GetComponent<Image>().color = Color.white;
@@ -396,7 +390,7 @@ public class GameplayDemo : MonoBehaviour
                     if (_HasAvailableConnection(tile, currentTile))
                     {
                         Transform[] temp = new Transform[4];
-                        for(int i = 0; i< points.Length;i++)
+                        for (int i = 0; i < points.Length; i++)
                         {
                             temp[i] = points[i];
                         }
@@ -410,10 +404,6 @@ public class GameplayDemo : MonoBehaviour
                         if (BoardDemo.levelData.Level == 1)
                         {
                             Handheld.Vibrate();
-                            //foreach(Transform item in BoardDemo.buttonList)
-                            //{
-                            //    item.DOShakePosition(0.1f);
-                            //}
                             TutorialDemo.order++;
                             if (TutorialDemo.order == 4)
                             {
@@ -429,7 +419,7 @@ public class GameplayDemo : MonoBehaviour
                         //Debug.Log("Khong the ket noi");
                         foreach (var tile in BoardDemo.buttonList)
                         {
-                            if (tile != currentTile) 
+                            if (tile != currentTile)
                             {
                                 tile.GetChild(0).GetComponent<Image>().DOKill();
                                 tile.GetChild(0).GetComponent<Image>().color = Color.white;
@@ -513,6 +503,8 @@ public class GameplayDemo : MonoBehaviour
     {
         if (PlayerPrefsDemo.instance._GetNumOfHint() > 0)
         {
+            Time.timeScale = 1;
+            TimeDemo.playingGame = true;
             if (BoardDemo.levelData.Level != 3)
             {
                 PlayerPrefsDemo.instance._SetNumOfHint(1, false);
@@ -569,6 +561,8 @@ public class GameplayDemo : MonoBehaviour
     {
         if (PlayerPrefsDemo.instance._GetNumOfMagicWand() > 0)
         {
+            Time.timeScale = 1;
+            TimeDemo.playingGame = true;
             if (BoardDemo.levelData.Level != 5)
             {
                 PlayerPrefsDemo.instance._SetNumOfMagicWand(1, false);
@@ -576,7 +570,6 @@ public class GameplayDemo : MonoBehaviour
                 else btSpMagicWand.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfMagicWand() + "";
             }
             PlayerPrefsDemo.instance.supporterSource.PlayOneShot(magicWandClip);
-            Time.timeScale = 1;
             isCoupled = true;
             foreach (var tile in BoardDemo.buttonList)
             {
@@ -619,6 +612,8 @@ public class GameplayDemo : MonoBehaviour
         PlayerPrefsDemo.instance.timeWarningSource.Pause();
         if (PlayerPrefsDemo.instance._GetNumOfFreezeTime() > 0)
         {
+            Time.timeScale = 1;
+            TimeDemo.playingGame = true;
             if (BoardDemo.levelData.Level != 7)
             {
                 PlayerPrefsDemo.instance._SetNumOfFreezeTime(1, false);
@@ -626,7 +621,6 @@ public class GameplayDemo : MonoBehaviour
                 else btSpFreeze.transform.GetChild(0).GetComponent<Text>().text = PlayerPrefsDemo.instance._GetNumOfFreezeTime() + "";
             }
             PlayerPrefsDemo.instance.supporterSource.PlayOneShot(freezeTimeClip);
-            Time.timeScale = 1;
             Color ice = new Color32(0, 221, 255, 255);
             TimeDemo.instance._FreezeTime(true);
             btSpFreeze.interactable = false;
@@ -657,8 +651,11 @@ public class GameplayDemo : MonoBehaviour
 
     public void _SupporterShuffle() //Đổi vị trí: Khi người chơi sử dụng, các item thay đổi vị trí cho nhau.
     {
+        TimeDemo.playingGame = true;
         if (PlayerPrefsDemo.instance._GetNumOfShuffle() > 0)
         {
+            Time.timeScale = 1;
+            TimeDemo.playingGame = true;
             if (BoardDemo.levelData.Level != 9)
             {
                 PlayerPrefsDemo.instance._SetNumOfShuffle(1, false);
@@ -685,9 +682,9 @@ public class GameplayDemo : MonoBehaviour
     #region IEnumerator
     IEnumerator MakeConnection(params Transform[] linePositions)
     {
-        LineDemo.instance._DrawLine(0.15f * tile.GetComponent<TileController>().Size / 100, linePositions);
+        LineController.instance._DrawLine(0.15f * tile.GetComponent<TileController>().Size / 100, linePositions);
         yield return new WaitForSeconds(0.4f);
-        LineDemo.instance._EraseLine();
+        LineController.instance._EraseLine();
     }
 
     IEnumerator DestroyTiles(params Transform[] linePositions)

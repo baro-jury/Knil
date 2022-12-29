@@ -4,7 +4,6 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using Newtonsoft.Json;
-using TMPro;
 using static UnityEngine.UI.Dropdown;
 using UnityEngine.SceneManagement;
 
@@ -46,7 +45,7 @@ public class SetUpMap : MonoBehaviour
     private Dropdown pullDown, pullUp, pullLeft, pullRight;
 
     [SerializeField]
-    private TextMeshProUGUI titleLv;
+    private Text titleLv;
     [SerializeField]
     private GameObject optionPanel;
 
@@ -237,13 +236,14 @@ public class SetUpMap : MonoBehaviour
         indexShape = 0;
         if (editCreatedLv.isOn)
         {
-            //var temp = Resources.Load("Levels/Level_" + createdLv.text) as TextAsset;
-            var temp = Resources.Load("demo") as TextAsset;
+            var temp = Resources.Load("Levels/Level_" + createdLv.text) as TextAsset;
+            //var temp = Resources.Load("demo") as TextAsset;
             levelData = JsonConvert.DeserializeObject<LevelData>(temp.text);
             time.text = levelData.Time[0] + "";
             timestampFor2Star.text = levelData.Time[2] + "";
             timestampFor3Star.text = levelData.Time[3] + "";
             themeWhileEditing.value = levelData.Theme;
+            SpriteController.instance._CreateDictionary(levelData.Theme);
 
             foreach (var item in levelData.Process) map.Add(item);
 

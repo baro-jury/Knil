@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -29,7 +28,7 @@ public class GameplayTrial : MonoBehaviour
     [SerializeField]
     private GameObject chooseLvPanel;
     [SerializeField]
-    private TextMeshProUGUI titleLv;
+    private Text titleLv;
     [SerializeField]
     private Button pauseButton;
     [SerializeField]
