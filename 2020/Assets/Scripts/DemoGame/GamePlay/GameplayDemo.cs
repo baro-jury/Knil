@@ -13,13 +13,13 @@ public class GameplayDemo : MonoBehaviour
     public static GameplayDemo instance;
 
     public GameObject pause, shop;
-    public AudioClip clickButtonClip, matchTileClip, switchClip, passLevelClip;
+    public AudioClip clickButtonClip, matchTileClip, switchClip, passLevelClip, chestReadyClip, chestOpenClip;
     public AudioClip extraTimeClip, hintClip, magicWandClip, freezeTimeClip, shuffleClip;
     public Transform startCoinAnimPos, endCoinAnimPos;
-    public Button btSpHint, btSpMagicWand, btSpFreeze, btSpShuffle;
+    public Button btSpHint, btSpMagicWand, btSpFreeze, btSpShuffle, btNextLevel;
 
-    private bool isCoupled = true, isHinted = false;
-    private float numberOfRescue = 1;
+    private bool isCoupled = true, isHinted = false, winGame, getReward;
+    private float numberOfRescue = 1, rewardProgress;
     private Transform[] points = new Transform[4];
     private Transform tile;
 
@@ -30,7 +30,9 @@ public class GameplayDemo : MonoBehaviour
     [SerializeField]
     private Button settingOnButton, settingOffButton;
     [SerializeField]
-    private GameObject timeOutPanel, winPanel;
+    private GameObject timeOutPanel, winPanel, chestReward, coinReward;
+    [SerializeField]
+    private Slider rewardSlider;
     [SerializeField]
     private Transform tempAlignWithLeft, tempAlignWithRight, tempAlignWithTop, tempAlignWithBottom, tempAlignWithStart, tempAlignWithEnd;
 
@@ -54,6 +56,10 @@ public class GameplayDemo : MonoBehaviour
         pausePanel.transform.GetChild(0).GetChild(0).gameObject.SetActive(PlayerPrefsDemo.instance.audioSource.mute);
         pausePanel.transform.GetChild(1).GetChild(0).gameObject.SetActive(PlayerPrefsDemo.instance.musicSource.mute);
         coins.text = PlayerPrefsDemo.instance._GetCoinsInPossession() + "";
+        winGame = false;
+        getReward = false;
+        rewardProgress = PlayerPrefsDemo.instance._GetRewardProgress();
+        rewardSlider.value = rewardProgress;
         Time.timeScale = 0;
 
         Vector3 temp;
@@ -116,6 +122,17 @@ public class GameplayDemo : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (winGame && rewardSlider.value < (rewardProgress + 10))
+        {
+            rewardSlider.value += 7 * Time.deltaTime;
+        }
+        if (getReward)
+        {
+            if (rewardSlider.value > rewardSlider.minValue) rewardSlider.value -= 100 * Time.deltaTime;
+        }
+    }
     void _PauseTime()
     {
         PlayerPrefsDemo.instance.supporterSource.Pause();
@@ -295,18 +312,64 @@ public class GameplayDemo : MonoBehaviour
 
     public void _CompleteLevel()
     {
-        Time.timeScale = 0;
+        TimeDemo.playingGame = false;
         PlayerPrefsDemo.instance.audioSource.Stop();
         PlayerPrefsDemo.instance.timeWarningSource.Stop();
         PlayerPrefsDemo.instance.audioSource.PlayOneShot(passLevelClip);
         //winPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
         winPanel.SetActive(true);
-        winPanel.transform.GetChild(0).GetComponent<RectTransform>().DOScale(Vector3.one, .2f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        //winPanel.transform.DOScale(Vector3.one, .2f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        winPanel.transform.GetChild(0).DOScale(Vector3.one, .2f).SetEase(Ease.InOutQuad).SetUpdate(true)
+            .OnComplete(delegate { winGame = true; });
+        PlayerPrefsDemo.instance._SetRewardProgress(rewardProgress + 10);
+        if (PlayerPrefsDemo.instance._GetRewardProgress() == rewardSlider.maxValue)
+        {
+            chestReward.transform.DOScale(new Vector3(1.1f, 1.1f, 1), .25f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo).SetUpdate(true).SetDelay(1.5f);
+            //PlayerPrefsDemo.instance.audioSource.PlayOneShot(chestReadyClip);
+            PlayerPrefsDemo.instance.audioSource.PlayDelayed(1.5f);
+        }
         if (BoardDemo.levelData.Level % 10 == 0)
         {
-            PlayerPrefsDemo.instance._SetCoinsInPossession(250, true);
-            contentComplete.transform.GetChild(0).gameObject.SetActive(true);
+            btNextLevel.interactable = false;
         }
+    }
+    public void _OpenChest()
+    {
+        if (!getReward && BoardDemo.levelData.Level % 10 == 0)
+        {
+            PlayerPrefsDemo.instance._SetRewardProgress(rewardSlider.minValue);
+            rewardSlider.value -= 1;
+            getReward = true;
+            chestReward.transform.DOKill();
+            chestReward.transform.localScale = Vector3.one;
+            chestReward.transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
+            chestReward.transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
+            _GetReward();
+        }
+    }
+    void _GetReward()
+    {
+        PlayerPrefsDemo.instance.audioSource.PlayOneShot(chestOpenClip);
+        PlayerPrefsDemo.instance._SetCoinsInPossession(250, true);
+        var item = Instantiate(coinReward, startCoinAnimPos.position, Quaternion.identity, chestReward.transform);
+        item.transform.GetChild(1).GetComponent<Text>().text = 250 + "";
+        item.transform.DOScale(new Vector3(96, 96, 96) * 1.5f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        item.transform.GetChild(1).DOScale(new Vector3(0.02f, 0.02f, 1) / 1.5f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        item.transform.GetChild(0).GetComponent<Image>().DOFade(.5f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true)
+            .OnComplete(delegate
+            {
+                item.transform.DOScale(new Vector3(96, 96, 96), .5f).SetEase(Ease.OutBounce).SetUpdate(true);
+                item.transform.GetChild(1).DOScale(new Vector3(0.02f, 0.02f, 1), .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                item.transform.GetComponent<Transform>().DOMove(endCoinAnimPos.position, .75f).SetEase(Ease.InOutQuad).SetUpdate(true).SetDelay(.5f);
+                item.transform.GetChild(0).GetComponent<Image>().DOFade(0f, .75f).SetEase(Ease.InOutQuad).SetUpdate(true).SetDelay(.5f)
+                .OnComplete(delegate
+                {
+                    Destroy(item);
+                    //Time.timeScale = 1;
+                    _UpdateCoin();
+                    btNextLevel.interactable = true;
+                });
+            });
     }
 
     public void _GoToNextLevel()

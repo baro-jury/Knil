@@ -42,7 +42,7 @@ public class BoardDemo : MonoBehaviour
 
     void Start()
     {
-        //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelDemo.level) as TextAsset).text);
+        levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelDemo.level) as TextAsset).text);
         //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("demo") as TextAsset).text);
 
         isConnectable = true;
@@ -78,7 +78,8 @@ public class BoardDemo : MonoBehaviour
     #region Khởi tạo level
     void _InstantiateProcess(int orderNumber)
     {
-        SpriteController.instance._CreateDictionary(levelData.Theme);
+        //SpriteController.instance._CreateDictionary(levelData.Theme);
+        SpriteController.instance._CreateDictionary(levelData.Level % 9);
         process = orderNumber;
         minId = levelData.Process[orderNumber - 1].MinID;
         maxId = levelData.Process[orderNumber - 1].MaxID;

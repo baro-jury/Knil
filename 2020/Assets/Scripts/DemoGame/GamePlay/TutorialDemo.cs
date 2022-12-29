@@ -86,7 +86,6 @@ public class TutorialDemo : MonoBehaviour
 
     public void _FingerSupporter(Transform supporter)
     {
-        Debug.Log(supporter.position);
         finger.transform.position = new Vector3(supporter.position.x, supporter.position.y - 0.45f, supporter.position.z);
         finger.transform.localScale = new Vector3(0.8f, 0.8f, 1);
         finger.SetActive(true);

@@ -15,7 +15,7 @@ public class TimeDemo : MonoBehaviour
     private float oldTime;
     private bool isFreezed = false;
     [SerializeField]
-    private Text timeText, timeTextComplete;
+    private Text timeText;
 
     void _MakeInstance()
     {
@@ -101,7 +101,6 @@ public class TimeDemo : MonoBehaviour
         if (minutes >= 0 && seconds >= 0)
         {
             timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
-            timeTextComplete.text = string.Format("{0:00}:{1:00}", minutes, seconds);
         }
     }
 

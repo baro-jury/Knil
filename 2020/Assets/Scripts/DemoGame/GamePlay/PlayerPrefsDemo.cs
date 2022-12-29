@@ -14,6 +14,7 @@ public class PlayerPrefsDemo : MonoBehaviour
 
     private const string PROGRESS = "Progress";
     private const string COINS = "Coins";
+    private const string REWARD = "Reward";
     private const string SP1 = "Hints", SP2 = "Wands", SP3 = "Freezers", SP4 = "Shufflers";
 
     void _MakeSingleInstance()
@@ -48,11 +49,14 @@ public class PlayerPrefsDemo : MonoBehaviour
         _CheckFirstTimePlayGame();
         //_SetMarkedLevel(41);
         BoardDemo.levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + _GetMarkedLevel()) as TextAsset).text);
+        //_SetRewardProgress(10 * ((BoardDemo.levelData.Level - 1) % 10));
+        //_SetRewardProgress(10 * ((LevelDemo.level - 1) % 10));
         //_SetCoinsInPossession(9999999, true);
         //_SetNumOfHint(100, false);
         //_SetNumOfMagicWand(10000, true);
         //_SetNumOfFreezeTime(100, true);
         //_SetNumOfShuffle(100, true);
+        Debug.Log(_GetRewardProgress());
     }
 
     public int _GetMarkedLevel()
@@ -65,6 +69,23 @@ public class PlayerPrefsDemo : MonoBehaviour
         PlayerPrefs.SetInt(PROGRESS, level);
     }
 
+    public float _GetRewardProgress()
+    {
+        return PlayerPrefs.GetFloat(REWARD);
+    }
+
+    public void _SetRewardProgress(float percent)
+    {
+        //int temp = 1;
+        //if (!increase) temp = -1;
+        //if (PlayerPrefs.GetFloat(REWARD) + temp * percent > 0)
+        //    PlayerPrefs.SetFloat(REWARD, PlayerPrefs.GetFloat(REWARD) + temp * percent);
+        //else
+        //    PlayerPrefs.SetFloat(REWARD, 0);
+
+        PlayerPrefs.SetFloat(REWARD, percent);
+    }
+
     public int _GetCoinsInPossession()
     {
         return PlayerPrefs.GetInt(COINS);
@@ -74,7 +95,7 @@ public class PlayerPrefsDemo : MonoBehaviour
     {
         int temp = -1;
         if (isEarning) temp = 1;
-        if (PlayerPrefs.GetInt(COINS) + temp * coin > 0) 
+        if (PlayerPrefs.GetInt(COINS) + temp * coin > 0)
             PlayerPrefs.SetInt(COINS, PlayerPrefs.GetInt(COINS) + temp * coin);
         else
             PlayerPrefs.SetInt(COINS, 0);
@@ -89,7 +110,7 @@ public class PlayerPrefsDemo : MonoBehaviour
     {
         int temp = -1;
         if (isBuying) temp = 1;
-        if (PlayerPrefs.GetInt(SP1) + temp * num > 0) 
+        if (PlayerPrefs.GetInt(SP1) + temp * num > 0)
             PlayerPrefs.SetInt(SP1, PlayerPrefs.GetInt(SP1) + temp * num);
         else
             PlayerPrefs.SetInt(SP1, 0);

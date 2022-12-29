@@ -329,7 +329,7 @@ MonoBehaviour:
   coin: 100
   money: 1.99
   btBuy: {fileID: 8561319547922862968}
-  coinAnim: {fileID: 7796095647186967718, guid: 1fac2bfa810003d4c9a03e3c7453886e, type: 3}
+  coinBought: {fileID: 7796095647186967718, guid: 1fac2bfa810003d4c9a03e3c7453886e, type: 3}
 --- !u!1 &8561319547922862974
 GameObject:
   m_ObjectHideFlags: 0

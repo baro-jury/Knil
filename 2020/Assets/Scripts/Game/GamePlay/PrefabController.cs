@@ -8,12 +8,12 @@ public class PrefabController : MonoBehaviour
     [SerializeField]
     private AudioSource audioSource;
     [SerializeField]
-    private AudioClip clickButtonClip, clickTileClip;
+    private AudioClip clickButtonClip, clickTileClip, closeClip;
 
     //close in game
     public void _Close()
     {
-        PlayerPrefsController.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsController.instance.audioSource.PlayOneShot(closeClip);
         transform.parent.GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true) //gameObject: form
             .OnComplete(() =>
             {
@@ -25,7 +25,7 @@ public class PrefabController : MonoBehaviour
     //close in demo game
     public void _DemoClose()
     {
-        PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickButtonClip);
+        PlayerPrefsDemo.instance.audioSource.PlayOneShot(closeClip);
         transform.parent.GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true) //gameObject: form
             .OnComplete(() =>
             {
@@ -37,7 +37,7 @@ public class PrefabController : MonoBehaviour
     //close while custom map
     public void _X()
     {
-        audioSource.PlayOneShot(clickButtonClip);
+        audioSource.PlayOneShot(closeClip);
         transform.parent.GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true) //gameObject: form
             .OnComplete(() =>
             {

@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class LevelDemo : MonoBehaviour
 {
     public static LevelDemo instance;
-    public static int level = 9;
+    public static int level = 3;
 
     [SerializeField]
     private InputField lvInput;

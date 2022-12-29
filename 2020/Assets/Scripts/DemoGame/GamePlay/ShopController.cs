@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class ShopController : MonoBehaviour
 {
+    public static ShopController instance;
     public AudioClip buyCoinsClip;
 
     [SerializeField]
@@ -15,9 +16,21 @@ public class ShopController : MonoBehaviour
     [SerializeField]
     private Button btBuy;
     [SerializeField]
-    private GameObject coinAnim;
+    private GameObject coinBought;
 
-    // Start is called before the first frame update
+    void _MakeInstance()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+    }
+
+    void Awake()
+    {
+        _MakeInstance();
+    }
+
     void Start()
     {
         transform.GetChild(1).GetComponent<Text>().text = coin + "";
@@ -78,7 +91,7 @@ public class ShopController : MonoBehaviour
     {
         PlayerPrefsDemo.instance.audioSource.PlayOneShot(buyCoinsClip);
         GameplayDemo.instance.shop.transform.GetChild(4).gameObject.SetActive(false);
-        var item = Instantiate(coinAnim, GameplayDemo.instance.startCoinAnimPos.position, Quaternion.identity, GameplayDemo.instance.shop.transform);
+        var item = Instantiate(coinBought, GameplayDemo.instance.startCoinAnimPos.position, Quaternion.identity, GameplayDemo.instance.shop.transform);
         item.transform.GetChild(1).GetComponent<Text>().text = coin + "";
         item.transform.DOScale(new Vector3(96, 96, 96) * 1.5f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
         item.transform.GetChild(1).DOScale(new Vector3(0.02f, 0.02f, 1) / 1.5f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
