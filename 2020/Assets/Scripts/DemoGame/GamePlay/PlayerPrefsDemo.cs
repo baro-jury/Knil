@@ -49,7 +49,7 @@ public class PlayerPrefsDemo : MonoBehaviour
         _CheckFirstTimePlayGame();
         //_SetMarkedLevel(41);
         BoardDemo.levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + _GetMarkedLevel()) as TextAsset).text);
-        //_SetRewardProgress(10 * ((BoardDemo.levelData.Level - 1) % 10));
+        _SetRewardProgress(10 * ((BoardDemo.levelData.Level - 1) % 10));
         //_SetRewardProgress(10 * ((LevelDemo.level - 1) % 10));
         //_SetCoinsInPossession(9999999, true);
         //_SetNumOfHint(100, false);
