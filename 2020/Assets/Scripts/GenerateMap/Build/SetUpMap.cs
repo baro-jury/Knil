@@ -75,10 +75,8 @@ public class SetUpMap : MonoBehaviour
         ////LevelData lv = new LevelData(11, 1, 420, temp);
         ////string json = JsonUtility.ToJson(lv); // <-
         ////LevelData loadLv = JsonUtility.FromJson<LevelData>(json); // <-
-        minId.text = 1 + "";
-        maxId.text = SpriteController.spritesDict.Count - 1 + "";
+        
         level.text = Resources.LoadAll("Levels").Length + 1 + "";
-        _CreateDataTile(1, SpriteController.spritesDict.Count - 1);
 
         createdLv.onEndEdit.AddListener(delegate { _CheckInput(createdLv, 1, Resources.LoadAll("Levels").Length); });
         level.onEndEdit.AddListener(delegate { _CheckInput(level, Resources.LoadAll("Levels").Length + 1, int.MaxValue); });
@@ -243,15 +241,15 @@ public class SetUpMap : MonoBehaviour
             timestampFor2Star.text = levelData.Time[2] + "";
             timestampFor3Star.text = levelData.Time[3] + "";
             themeWhileEditing.value = levelData.Theme;
-            SpriteController.instance._CreateDictionary(levelData.Theme);
+            SpriteController.instance._CreateDictionary(levelData.Level);
 
             foreach (var item in levelData.Process) map.Add(item);
 
             dataMap = new ProcessData(map[indexMap].MinID, map[indexMap].MaxID, map[indexMap].TotalTile, map[indexMap].Shuffle, map[indexMap].Row, map[indexMap].Column,
                 map[indexMap].Matrix, map[indexMap].PullDown, map[indexMap].PullUp, map[indexMap].PullLeft, map[indexMap].PullRight);
 
-            minId.text = dataMap.MinID + "";
-            maxId.text = dataMap.MaxID + "";
+            //minId.text = dataMap.MinID + "";
+            //maxId.text = dataMap.MaxID + "";
             shuffleTile.isOn = dataMap.Shuffle;
             totalTile.text = dataMap.TotalTile + "";
             row.text = dataMap.Row + "";
@@ -261,7 +259,6 @@ public class SetUpMap : MonoBehaviour
             pullUp.value = dataMap.PullUp == true ? 1 : 0;
             pullLeft.value = dataMap.PullLeft == true ? 1 : 0;
             pullRight.value = dataMap.PullRight == true ? 1 : 0;
-            _CreateDataTile(dataMap.MinID, dataMap.MaxID);
 
             string path = Application.dataPath + "/Resources/Shapes/" + dataMap.TotalTile + "/" + dataMap.Row + "x" + dataMap.Column + ".json";
             StreamReader reader = new StreamReader(path);
@@ -281,6 +278,7 @@ public class SetUpMap : MonoBehaviour
             levelData.Level = int.Parse(level.text);
             levelData.Difficulty = difficulty.options[difficulty.value].text;
             levelData.Theme = theme.value;
+            SpriteController.instance._CreateDictionary(levelData.Level);
             matrix = new string[1, 1];
             dataMap = new ProcessData(1, SpriteController.spritesDict.Count - 1, 0, false, 1, 1, matrix, false, false, false, false);
             for (int i = 0; i < int.Parse(process.text); i++)
@@ -290,6 +288,9 @@ public class SetUpMap : MonoBehaviour
             }
             themeWhileEditing.value = levelData.Theme;
         }
+        minId.text = dataMap.MinID + "";
+        maxId.text = dataMap.MaxID + "";
+        _CreateDataTile(dataMap.MinID, dataMap.MaxID);
         _EnableSwitchShape();
         SetUpBoard.setup = this;
         _GenerateMap(dataMap);

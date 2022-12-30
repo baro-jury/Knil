@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -18,7 +17,7 @@ public class GameplayDemo : MonoBehaviour
     public Transform startCoinAnimPos, endCoinAnimPos;
     public Button btSpHint, btSpMagicWand, btSpFreeze, btSpShuffle, btNextLevel;
 
-    private bool isCoupled = true, isHinted = false, winGame, getReward;
+    private bool isCoupled = true, isHinted = false, chestAvailable = false, passLevel = false;
     private float numberOfRescue = 1, rewardProgress;
     private Transform[] points = new Transform[4];
     private Transform tile;
@@ -33,6 +32,8 @@ public class GameplayDemo : MonoBehaviour
     private GameObject timeOutPanel, winPanel, chestReward, coinReward;
     [SerializeField]
     private Slider rewardSlider;
+    [SerializeField]
+    private Image chestImg;
     [SerializeField]
     private Transform tempAlignWithLeft, tempAlignWithRight, tempAlignWithTop, tempAlignWithBottom, tempAlignWithStart, tempAlignWithEnd;
 
@@ -56,10 +57,13 @@ public class GameplayDemo : MonoBehaviour
         pausePanel.transform.GetChild(0).GetChild(0).gameObject.SetActive(PlayerPrefsDemo.instance.audioSource.mute);
         pausePanel.transform.GetChild(1).GetChild(0).gameObject.SetActive(PlayerPrefsDemo.instance.musicSource.mute);
         coins.text = PlayerPrefsDemo.instance._GetCoinsInPossession() + "";
-        winGame = false;
-        getReward = false;
         rewardProgress = PlayerPrefsDemo.instance._GetRewardProgress();
         rewardSlider.value = rewardProgress;
+        chestImg.type = Image.Type.Filled;
+        chestImg.fillMethod = Image.FillMethod.Vertical;
+        chestImg.fillOrigin = (int)Image.OriginVertical.Bottom;
+        chestImg.fillAmount = rewardProgress / 100;
+        
         Time.timeScale = 0;
 
         Vector3 temp;
@@ -124,14 +128,27 @@ public class GameplayDemo : MonoBehaviour
 
     private void Update()
     {
-        if (winGame && rewardSlider.value < (rewardProgress + 10))
+        #region Chest with slider
+        //if (passLevel && rewardSlider.value < (rewardProgress + 10))
+        //{
+        //    rewardSlider.value += 7 * Time.deltaTime;
+        //}
+        //if (chestAvailable)
+        //{
+        //    if (rewardSlider.value > rewardSlider.minValue) rewardSlider.value -= 100 * Time.deltaTime;
+        //}
+        #endregion
+        //================
+        #region Only img chest
+        if (passLevel && chestImg.fillAmount < (rewardProgress + 10) / 100)
         {
-            rewardSlider.value += 7 * Time.deltaTime;
+            chestImg.fillAmount += 0.07f * Time.deltaTime;
         }
-        if (getReward)
+        if (chestAvailable)
         {
-            if (rewardSlider.value > rewardSlider.minValue) rewardSlider.value -= 100 * Time.deltaTime;
+            if (chestImg.fillAmount > 0) chestImg.fillAmount -= Time.deltaTime;
         }
+        #endregion
     }
     void _PauseTime()
     {
@@ -318,40 +335,62 @@ public class GameplayDemo : MonoBehaviour
         PlayerPrefsDemo.instance.audioSource.PlayOneShot(passLevelClip);
         //winPanel.transform.GetChild(0).GetComponent<RectTransform>().localScale = Vector3.zero;
         winPanel.SetActive(true);
-        //winPanel.transform.DOScale(Vector3.one, .2f).SetEase(Ease.InOutQuad).SetUpdate(true);
         winPanel.transform.GetChild(0).DOScale(Vector3.one, .2f).SetEase(Ease.InOutQuad).SetUpdate(true)
-            .OnComplete(delegate { winGame = true; });
+            .OnComplete(delegate { passLevel = true; });
         PlayerPrefsDemo.instance._SetRewardProgress(rewardProgress + 10);
-        if (PlayerPrefsDemo.instance._GetRewardProgress() == rewardSlider.maxValue)
+
+        #region Chest with slider
+        //if (PlayerPrefsDemo.instance._GetRewardProgress() == rewardSlider.maxValue)
+        //{
+        //    chestReward.transform.DOScale(new Vector3(1.1f, 1.1f, 1), .25f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo).SetUpdate(true).SetDelay(1.5f);
+        //    PlayerPrefsDemo.instance.audioSource.PlayDelayed(1.5f);
+        //} 
+        #endregion
+
+        #region Only img chest
+        if (PlayerPrefsDemo.instance._GetRewardProgress() / 100 == 1)
         {
-            chestReward.transform.DOScale(new Vector3(1.1f, 1.1f, 1), .25f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo).SetUpdate(true).SetDelay(1.5f);
-            //PlayerPrefsDemo.instance.audioSource.PlayOneShot(chestReadyClip);
+            chestImg.transform.DOScale(new Vector3(1.1f, 1.1f, 1), .25f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo).SetUpdate(true).SetDelay(1.5f);
             PlayerPrefsDemo.instance.audioSource.PlayDelayed(1.5f);
-        }
+        } 
+        #endregion
+
         if (BoardDemo.levelData.Level % 10 == 0)
         {
             btNextLevel.interactable = false;
         }
     }
-    public void _OpenChest()
+    public void _OpenChestReward()
     {
-        if (!getReward && BoardDemo.levelData.Level % 10 == 0)
+        if (BoardDemo.levelData.Level % 10 == 0 && rewardSlider.value == rewardSlider.maxValue)
         {
             PlayerPrefsDemo.instance._SetRewardProgress(rewardSlider.minValue);
-            rewardSlider.value -= 1;
-            getReward = true;
+            chestAvailable = true;
             chestReward.transform.DOKill();
             chestReward.transform.localScale = Vector3.one;
             chestReward.transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
             chestReward.transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
-            _GetReward();
+            _GetReward(chestReward.transform);
         }
     }
-    void _GetReward()
+    public void _OpenChestImg()
+    {
+        if (BoardDemo.levelData.Level % 10 == 0 && chestImg.fillAmount == 1)
+        {
+            PlayerPrefsDemo.instance._SetRewardProgress(0);
+            chestAvailable = true;
+            chestImg.transform.DOKill();
+            chestImg.transform.localScale = Vector3.one;
+            chestImg.transform.localScale = Vector3.zero;
+            chestImg.transform.parent.GetChild(1).gameObject.SetActive(true);
+            _GetReward(chestImg.transform.parent);
+        }
+    }
+    void _GetReward(Transform parentContainsReward)
     {
         PlayerPrefsDemo.instance.audioSource.PlayOneShot(chestOpenClip);
         PlayerPrefsDemo.instance._SetCoinsInPossession(250, true);
-        var item = Instantiate(coinReward, startCoinAnimPos.position, Quaternion.identity, chestReward.transform);
+        var item = Instantiate(coinReward, startCoinAnimPos.position, Quaternion.identity, parentContainsReward);
         item.transform.GetChild(1).GetComponent<Text>().text = 250 + "";
         item.transform.DOScale(new Vector3(96, 96, 96) * 1.5f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
         item.transform.GetChild(1).DOScale(new Vector3(0.02f, 0.02f, 1) / 1.5f, .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
@@ -360,13 +399,14 @@ public class GameplayDemo : MonoBehaviour
             {
                 item.transform.DOScale(new Vector3(96, 96, 96), .5f).SetEase(Ease.OutBounce).SetUpdate(true);
                 item.transform.GetChild(1).DOScale(new Vector3(0.02f, 0.02f, 1), .5f).SetEase(Ease.InOutQuad).SetUpdate(true);
-                item.transform.GetComponent<Transform>().DOMove(endCoinAnimPos.position, .75f).SetEase(Ease.InOutQuad).SetUpdate(true).SetDelay(.5f);
-                item.transform.GetChild(0).GetComponent<Image>().DOFade(0f, .75f).SetEase(Ease.InOutQuad).SetUpdate(true).SetDelay(.5f)
+                item.transform.GetComponent<Transform>().DOMove(endCoinAnimPos.position, .75f).SetEase(Ease.InOutQuad).SetUpdate(true).SetDelay(1f);
+                item.transform.GetChild(0).GetComponent<Image>().DOFade(0f, .75f).SetEase(Ease.InOutQuad).SetUpdate(true).SetDelay(1f)
                 .OnComplete(delegate
                 {
                     Destroy(item);
-                    //Time.timeScale = 1;
                     _UpdateCoin();
+                    passLevel = false;
+                    chestAvailable = false;
                     btNextLevel.interactable = true;
                 });
             });

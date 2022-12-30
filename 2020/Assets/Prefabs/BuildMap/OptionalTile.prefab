@@ -189,7 +189,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 45, y: -45}
-  m_SizeDelta: {x: 180, y: 180}
+  m_SizeDelta: {x: 126, y: 126}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7837302793525525721
 CanvasRenderer:
@@ -297,6 +297,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 600f5e457e3fbb04fb568163b1f0e918, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioSource: {fileID: 0}
   clickButtonClip: {fileID: 8300000, guid: 95b21bdbd9e14884ebee329f5a5e5e8e, type: 3}
   clickTileClip: {fileID: 8300000, guid: 01c871b692bc47041aeccf7dff4710cf, type: 3}
+  closeClip: {fileID: 8300000, guid: 810e2bef4f162ad49a58d598f72c5ad4, type: 3}

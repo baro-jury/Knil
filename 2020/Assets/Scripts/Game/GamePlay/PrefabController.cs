@@ -6,8 +6,6 @@ using UnityEngine;
 public class PrefabController : MonoBehaviour
 {
     [SerializeField]
-    private AudioSource audioSource;
-    [SerializeField]
     private AudioClip clickButtonClip, clickTileClip, closeClip;
 
     //close in game
@@ -37,8 +35,8 @@ public class PrefabController : MonoBehaviour
     //close while custom map
     public void _X()
     {
-        audioSource.PlayOneShot(closeClip);
-        transform.parent.GetComponent<RectTransform>().DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true) //gameObject: form
+        SetUpMap.instance.audioSource.PlayOneShot(closeClip);
+        transform.parent.DOScale(Vector3.zero, .25f).SetEase(Ease.InOutQuad).SetUpdate(true) //gameObject: form
             .OnComplete(() =>
             {
                 transform.parent.parent.gameObject.SetActive(false); //panel

@@ -20,7 +20,7 @@ public class TutorialDemo : MonoBehaviour
 
     public GameObject finger, tutorialPanel, notePanel;
     [SerializeField]
-    private GameObject timer, bottom;
+    private GameObject timer;
 
     void _MakeInstance()
     {
@@ -67,7 +67,7 @@ public class TutorialDemo : MonoBehaviour
 
     void _FingerTut()
     {
-        finger.transform.localPosition = new Vector3(0, -(0 - bottom.transform.localPosition.y) * 15 / 28, 0);
+        finger.transform.localPosition = new Vector3(0, -(0 - BoardDemo.instance.bottomFrame.transform.localPosition.y) * 15 / 28, 0);
         Vector3 temp = finger.transform.position;
 
         fingerSequence = DOTween.Sequence();
@@ -79,7 +79,6 @@ public class TutorialDemo : MonoBehaviour
         fingerSequence.Append(finger.transform.DOScale(new Vector3(0.6f, 0.6f, 1), 0.4f).SetUpdate(true));
         fingerSequence.Append(finger.transform.DOScale(Vector3.one, 0.4f).SetUpdate(true));
         fingerSequence.Append(finger.transform.DOMove(temp, 0.4f).SetUpdate(true).OnComplete(delegate { finger.transform.localScale = Vector3.zero; }));
-        //fingerSequence.Append(finger.transform.DOScale(Vector3.zero, 0.4f).SetUpdate(true));
         fingerSequence.AppendInterval(0.4f);
         fingerSequence.SetUpdate(true).SetLoops(-1);
     }
@@ -140,9 +139,9 @@ public class TutorialDemo : MonoBehaviour
         if (order == 5)
         {
             tutorialPanel.SetActive(false);
-            GameplayDemo.instance.pause.transform.SetAsLastSibling();
             tutorialPanel.transform.SetAsLastSibling();
             notePanel.transform.SetAsLastSibling();
+            GameplayDemo.instance.pause.transform.SetAsLastSibling();
             notePanel.transform.GetChild(2).DOScale(Vector3.one, .4f).SetEase(Ease.InOutQuad).SetUpdate(true);
         }
     }

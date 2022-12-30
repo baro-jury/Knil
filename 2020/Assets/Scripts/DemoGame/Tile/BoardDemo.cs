@@ -15,6 +15,10 @@ public class BoardDemo : MonoBehaviour
     public static Dictionary<string, Sprite> dict = new Dictionary<string, Sprite>();
     public static int row, column;
     public int sideMin = 112, sideMax = 180;
+ 
+    public Button btTutHint, btTutMagicWand, btTutFreeze, btTutShuffle;
+    public GameObject topFrame, bottomFrame;
+   
     private bool isConnectable;
     private int minId, maxId, orderOfPullingDirection, process = 1;
     private bool shuffle, pullDown, pullUp, pullLeft, pullRight;
@@ -42,13 +46,15 @@ public class BoardDemo : MonoBehaviour
 
     void Start()
     {
-        levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelDemo.level) as TextAsset).text);
+        //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("Levels/Level_" + LevelDemo.level) as TextAsset).text);
         //levelData = JsonConvert.DeserializeObject<LevelData>((Resources.Load("demo") as TextAsset).text);
 
         isConnectable = true;
         if (levelData.Process.Count == 2) twoProgresses.transform.parent.gameObject.SetActive(true);
         twoProgresses.type = Image.Type.Filled;
+        twoProgresses.fillMethod = Image.FillMethod.Horizontal;
         NoteRearrange.type = Image.Type.Filled;
+        NoteRearrange.fillMethod = Image.FillMethod.Horizontal;
 
         _GoToProcess(process);
     }
@@ -73,13 +79,57 @@ public class BoardDemo : MonoBehaviour
             NoteRearrange.gameObject.SetActive(false);
             NoteRearrange.transform.parent.gameObject.SetActive(false);
         }
+
+        #region Input
+        if (Input.GetKeyUp(KeyCode.U)) //bat tat all button
+        {
+            topFrame.SetActive(!topFrame.activeInHierarchy);
+            bottomFrame.SetActive(!bottomFrame.activeInHierarchy);
+            GameplayDemo.instance.pause.SetActive(!GameplayDemo.instance.pause.activeInHierarchy);
+        }
+        if (Input.GetKeyUp(KeyCode.N)) //next level
+        {
+            PlayerPrefsDemo.instance._SetMarkedLevel(levelData.Level + 1);
+            if (levelData.Level < Resources.LoadAll("Levels").Length)
+            {
+                levelData.Level++;
+                LevelDemo.instance._PlayLevel(levelData.Level);
+            }
+        }
+        if (Input.GetKeyUp(KeyCode.M)) //previous level
+        {
+            PlayerPrefsDemo.instance._SetMarkedLevel(levelData.Level - 1);
+            levelData.Level--;
+            LevelDemo.instance._PlayLevel(levelData.Level);
+        }
+        if (Input.GetKeyUp(KeyCode.Keypad0)) //1920x1080
+        {
+            Debug.Log("1920x1080");
+            Screen.SetResolution(1920, 1080, false);
+        }
+        if (Input.GetKeyUp(KeyCode.Keypad1)) //1080x1080
+        {
+            Debug.Log("1080x1080");
+            Screen.SetResolution(1080, 1080, false);
+        }
+        if (Input.GetKeyUp(KeyCode.Keypad2)) //1080x1920
+        {
+            Debug.Log("1080x1920");
+            Screen.SetResolution(1080, 1920, false);
+        }
+        if (Input.GetKeyUp(KeyCode.Keypad3)) //1080x1350
+        {
+            Debug.Log("1080x1350");
+            Screen.SetResolution(1080, 1350, false);
+        }
+        #endregion
     }
 
     #region Khởi tạo level
     void _InstantiateProcess(int orderNumber)
     {
         //SpriteController.instance._CreateDictionary(levelData.Theme);
-        SpriteController.instance._CreateDictionary(levelData.Level % 9);
+        SpriteController.instance._CreateDictionary(levelData.Level);
         process = orderNumber;
         minId = levelData.Process[orderNumber - 1].MinID;
         maxId = levelData.Process[orderNumber - 1].MaxID;
@@ -106,9 +156,9 @@ public class BoardDemo : MonoBehaviour
         dict = SpriteController.instance._CreateSubDictionary(minId, maxId);
         _GenerateTiles();
         _SpreadTiles();
-        GameplayDemo.instance.pause.transform.SetAsLastSibling();
         TutorialDemo.instance.tutorialPanel.transform.SetAsLastSibling();
         TutorialDemo.instance.notePanel.transform.SetAsLastSibling();
+        GameplayDemo.instance.pause.transform.SetAsLastSibling();
     }
     #endregion
 
@@ -264,10 +314,9 @@ public class BoardDemo : MonoBehaviour
                                 TutorialDemo.instance.tutorialPanel.SetActive(true);
                                 TutorialDemo.instance._FingerSupporter(GameplayDemo.instance.btSpHint.transform.parent);
                                 TutorialDemo.instance.tutorialPanel.transform.GetChild(1).gameObject.SetActive(true);
-                                TutorialDemo.instance.tutorialPanel.transform.GetChild(1).GetChild(1).GetComponent<Button>().onClick.AddListener(delegate
+                                btTutHint.onClick.AddListener(delegate
                                 {
                                     TutorialDemo.instance.tutorialPanel.SetActive(false);
-                                    //TutorialDemo.instance.tutorialPanel.transform.GetChild(1).gameObject.SetActive(false);
                                     TutorialDemo.instance.finger.SetActive(false);
                                     TutorialDemo.fingerSequence.Kill();
                                 });
@@ -276,10 +325,9 @@ public class BoardDemo : MonoBehaviour
                                 TutorialDemo.instance.tutorialPanel.SetActive(true);
                                 TutorialDemo.instance._FingerSupporter(GameplayDemo.instance.btSpMagicWand.transform.parent);
                                 TutorialDemo.instance.tutorialPanel.transform.GetChild(2).gameObject.SetActive(true);
-                                TutorialDemo.instance.tutorialPanel.transform.GetChild(2).GetChild(1).GetComponent<Button>().onClick.AddListener(delegate
+                                btTutMagicWand.onClick.AddListener(delegate
                                 {
                                     TutorialDemo.instance.tutorialPanel.SetActive(false);
-                                    //TutorialDemo.instance.tutorialPanel.transform.GetChild(2).gameObject.SetActive(false);
                                     TutorialDemo.instance.finger.SetActive(false);
                                     TutorialDemo.fingerSequence.Kill();
                                 });
@@ -288,10 +336,9 @@ public class BoardDemo : MonoBehaviour
                                 TutorialDemo.instance.tutorialPanel.SetActive(true);
                                 TutorialDemo.instance._FingerSupporter(GameplayDemo.instance.btSpFreeze.transform.parent);
                                 TutorialDemo.instance.tutorialPanel.transform.GetChild(3).gameObject.SetActive(true);
-                                TutorialDemo.instance.tutorialPanel.transform.GetChild(3).GetChild(1).GetComponent<Button>().onClick.AddListener(delegate
+                                btTutFreeze.onClick.AddListener(delegate
                                 {
                                     TutorialDemo.instance.tutorialPanel.SetActive(false);
-                                    //TutorialDemo.instance.tutorialPanel.transform.GetChild(3).gameObject.SetActive(false);
                                     TutorialDemo.instance.finger.SetActive(false);
                                     TutorialDemo.fingerSequence.Kill();
                                 });
@@ -300,10 +347,9 @@ public class BoardDemo : MonoBehaviour
                                 TutorialDemo.instance.tutorialPanel.SetActive(true);
                                 TutorialDemo.instance._FingerSupporter(GameplayDemo.instance.btSpShuffle.transform.parent);
                                 TutorialDemo.instance.tutorialPanel.transform.GetChild(4).gameObject.SetActive(true);
-                                TutorialDemo.instance.tutorialPanel.transform.GetChild(4).GetChild(1).GetComponent<Button>().onClick.AddListener(delegate
+                                btTutShuffle.onClick.AddListener(delegate
                                 {
                                     TutorialDemo.instance.tutorialPanel.SetActive(false);
-                                    //TutorialDemo.instance.tutorialPanel.transform.GetChild(4).gameObject.SetActive(false);
                                     TutorialDemo.instance.finger.SetActive(false);
                                     TutorialDemo.fingerSequence.Kill();
                                 });

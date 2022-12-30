@@ -298,3 +298,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clickTileClip: {fileID: 8300000, guid: 01c871b692bc47041aeccf7dff4710cf, type: 3}
+  blockerClip: {fileID: 8300000, guid: b0b5fe04a38e1e04bb69da9409c0134f, type: 3}

@@ -19,26 +19,48 @@ public class TileController : MonoBehaviour
 
 
     [SerializeField]
-    private AudioClip clickTileClip;
+    private AudioClip clickTileClip, blockerClip;
 
     //object ingame
     public void _TileClicked()
     {
-        PlayerPrefsController.instance.audioSource.PlayOneShot(clickTileClip);
-        GameplayController.instance._ClickTile(gameObject.transform);
+        //if (transform.GetComponent<TileController>().Id == 0)
+        if (Id == 0)
+        {
+            PlayerPrefsController.instance.audioSource.PlayOneShot(blockerClip);
+        }
+        else
+        {
+            PlayerPrefsController.instance.audioSource.PlayOneShot(clickTileClip);
+        }
+        GameplayController.instance._ClickTile(transform);
     }
 
     //object in demo game
     public void _TileDemoClicked()
     {
-        PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickTileClip);
-        GameplayDemo.instance._ClickTile(gameObject.transform);
+        if (Id == 0)
+        {
+            PlayerPrefsDemo.instance.audioSource.PlayOneShot(blockerClip);
+        }
+        else
+        {
+            PlayerPrefsDemo.instance.audioSource.PlayOneShot(clickTileClip);
+        }
+        GameplayDemo.instance._ClickTile(transform);
     }
 
     //object in trial game
     public void _TileTrialClicked()
     {
-        GameplayTrial.instance.audioSource.PlayOneShot(clickTileClip);
-        GameplayTrial.instance._ClickTile(gameObject.transform);
+        if (Id == 0)
+        {
+            GameplayTrial.instance.audioSource.PlayOneShot(blockerClip);
+        }
+        else
+        {
+            GameplayTrial.instance.audioSource.PlayOneShot(clickTileClip);
+        }
+        GameplayTrial.instance._ClickTile(transform);
     }
 }
