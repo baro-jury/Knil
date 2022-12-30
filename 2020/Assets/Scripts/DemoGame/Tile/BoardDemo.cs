@@ -81,47 +81,66 @@ public class BoardDemo : MonoBehaviour
         }
 
         #region Input
-        if (Input.GetKeyUp(KeyCode.U)) //bat tat all button
-        {
-            topFrame.SetActive(!topFrame.activeInHierarchy);
-            bottomFrame.SetActive(!bottomFrame.activeInHierarchy);
-            GameplayDemo.instance.pause.SetActive(!GameplayDemo.instance.pause.activeInHierarchy);
-        }
-        if (Input.GetKeyUp(KeyCode.N)) //next level
-        {
-            PlayerPrefsDemo.instance._SetMarkedLevel(levelData.Level + 1);
-            if (levelData.Level < Resources.LoadAll("Levels").Length)
-            {
-                levelData.Level++;
-                LevelDemo.instance._PlayLevel(levelData.Level);
-            }
-        }
-        if (Input.GetKeyUp(KeyCode.M)) //previous level
-        {
-            PlayerPrefsDemo.instance._SetMarkedLevel(levelData.Level - 1);
-            levelData.Level--;
-            LevelDemo.instance._PlayLevel(levelData.Level);
-        }
-        if (Input.GetKeyUp(KeyCode.Keypad0)) //1920x1080
-        {
-            Debug.Log("1920x1080");
-            Screen.SetResolution(1920, 1080, false);
-        }
-        if (Input.GetKeyUp(KeyCode.Keypad1)) //1080x1080
-        {
-            Debug.Log("1080x1080");
-            Screen.SetResolution(1080, 1080, false);
-        }
-        if (Input.GetKeyUp(KeyCode.Keypad2)) //1080x1920
-        {
-            Debug.Log("1080x1920");
-            Screen.SetResolution(1080, 1920, false);
-        }
-        if (Input.GetKeyUp(KeyCode.Keypad3)) //1080x1350
-        {
-            Debug.Log("1080x1350");
-            Screen.SetResolution(1080, 1350, false);
-        }
+        //if (Input.GetKeyUp(KeyCode.U)) //bat tat all button
+        //{
+        //    topFrame.SetActive(!topFrame.activeInHierarchy);
+        //    bottomFrame.SetActive(!bottomFrame.activeInHierarchy);
+        //    GameplayDemo.instance.pause.SetActive(!GameplayDemo.instance.pause.activeInHierarchy);
+        //}
+        //if (Input.GetKeyUp(KeyCode.N)) //next level
+        //{
+        //    PlayerPrefsDemo.instance._SetMarkedLevel(levelData.Level + 1);
+        //    if (levelData.Level < Resources.LoadAll("Levels").Length)
+        //    {
+        //        levelData.Level++;
+        //        if (PlayerPrefsDemo.instance._GetRewardProgress() != 100)
+        //        {
+        //            PlayerPrefsDemo.instance._SetRewardProgress(PlayerPrefsDemo.instance._GetRewardProgress() + 10);
+        //        }
+        //        else
+        //        {
+        //            PlayerPrefsDemo.instance._SetRewardProgress(10);
+        //        }
+        //        LevelDemo.instance._PlayLevel(levelData.Level);
+        //    }
+        //}
+        //if (Input.GetKeyUp(KeyCode.M)) //previous level
+        //{
+        //    PlayerPrefsDemo.instance._SetMarkedLevel(levelData.Level - 1);
+        //    if (levelData.Level > 1)
+        //    {
+        //        levelData.Level--;
+        //        if (PlayerPrefsDemo.instance._GetRewardProgress() != 0)
+        //        {
+        //            PlayerPrefsDemo.instance._SetRewardProgress(PlayerPrefsDemo.instance._GetRewardProgress() - 10);
+        //        }
+        //        else
+        //        {
+        //            PlayerPrefsDemo.instance._SetRewardProgress(90);
+        //        }
+        //        LevelDemo.instance._PlayLevel(levelData.Level);
+        //    }
+        //}
+        //if (Input.GetKeyUp(KeyCode.Keypad0)) //1920x1080
+        //{
+        //    Debug.Log("1920x1080");
+        //    Screen.SetResolution(1920, 1080, false);
+        //}
+        //if (Input.GetKeyUp(KeyCode.Keypad1)) //1080x1080
+        //{
+        //    Debug.Log("1080x1080");
+        //    Screen.SetResolution(1080, 1080, false);
+        //}
+        //if (Input.GetKeyUp(KeyCode.Keypad2)) //1080x1920
+        //{
+        //    Debug.Log("1080x1920");
+        //    Screen.SetResolution(1080, 1920, false);
+        //}
+        //if (Input.GetKeyUp(KeyCode.Keypad3)) //1080x1350
+        //{
+        //    Debug.Log("1080x1350");
+        //    Screen.SetResolution(1080, 1350, false);
+        //}
         #endregion
     }
 

@@ -84,10 +84,4 @@ public class ProcessData
         PullRight = pullRight;
     }
 
-    //public ProcessData(int minID, int maxID, int totalTile, bool shuffle, int row, int column, string[,] matrix, bool pullDown, bool pullUp, bool pullLeft, bool pullRight) : this(totalTile, row, column, matrix, pullDown, pullUp, pullLeft, pullRight)
-    //{
-    //    MinID = minID;
-    //    MaxID = maxID;
-    //    Shuffle = shuffle;
-    //}
 }

@@ -813,8 +813,8 @@ public class SetUpMap : MonoBehaviour
                 Debug.Log("Level " + levelData.Level + " - " + "Map " + (map.IndexOf(item) + 1) + " - " + item.TotalTile + " tiles");
             }
             string json = JsonConvert.SerializeObject(levelData);
-            //File.WriteAllText(Application.dataPath + "/Resources/Levels/Level_" + levelData.Level + ".json", json);
-            File.WriteAllText(Application.dataPath + "/Resources/demo.json", json);
+            File.WriteAllText(Application.dataPath + "/Resources/Levels/Level_" + levelData.Level + ".json", json);
+            //File.WriteAllText(Application.dataPath + "/Resources/demo.json", json);
 
             Debug.Log("Done");
         }
